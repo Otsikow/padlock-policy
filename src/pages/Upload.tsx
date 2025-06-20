@@ -51,14 +51,14 @@ const Upload = () => {
         setShowAIAnalysis(true);
         toast({
           title: "PDF Document Detected",
-          description: "After uploading, AI will extract text from your PDF and auto-fill policy details.",
+          description: "You can now use AI to analyze your PDF and auto-fill policy details.",
         });
       } else {
         // For other file types (DOC, DOCX, etc.), we'll show the AI analysis option
         setShowAIAnalysis(true);
         toast({
           title: "Document Detected",
-          description: "After uploading, you can use AI to analyze this document and auto-fill policy details.",
+          description: "You can now use AI to analyze this document and auto-fill policy details.",
         });
       }
     }
@@ -131,10 +131,8 @@ const Upload = () => {
         description: "Your policy has been added to your dashboard.",
       });
       
-      // Always show AI analysis if we had a file uploaded
-      if (formData.file) {
-        setShowAIAnalysis(true);
-      } else {
+      // If no file was uploaded, go directly to dashboard
+      if (!formData.file) {
         navigate('/dashboard');
       }
     } catch (error: any) {
@@ -154,6 +152,51 @@ const Upload = () => {
       description: "Your policy details have been automatically updated.",
     });
     setTimeout(() => navigate('/dashboard'), 2000);
+  };
+
+  // Create a temporary policy for AI analysis before upload
+  const createTemporaryPolicy = async () => {
+    if (!user || !formData.file) return null;
+
+    try {
+      // Upload file to storage first
+      const fileExt = formData.file.name.split('.').pop();
+      const fileName = `temp_${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(filePath, formData.file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('documents')
+        .getPublicUrl(filePath);
+
+      setDocumentUrl(data.publicUrl);
+
+      // Create a temporary policy for analysis
+      const { data: policyData, error } = await supabase
+        .from('policies')
+        .insert({
+          user_id: user.id,
+          policy_type: 'other' as PolicyType, // Default type for analysis
+          premium_amount: 0, // Will be updated by AI
+          start_date: new Date().toISOString().split('T')[0],
+          end_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          coverage_summary: 'Temporary policy for AI analysis',
+          document_url: data.publicUrl
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return policyData.id;
+    } catch (error) {
+      console.error('Error creating temporary policy:', error);
+      return null;
+    }
   };
 
   return (
@@ -244,6 +287,24 @@ const Upload = () => {
                 </div>
               </div>
 
+              {/* AI Analysis Section - Show when file is selected, before upload */}
+              {formData.file && showAIAnalysis && !uploadedPolicyId && (
+                <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-purple-800 mb-1">AI Analysis Available</h3>
+                      <p className="text-sm text-purple-600">Analyze your document first to auto-fill the form below</p>
+                    </div>
+                    <AIAnalysisIndicator
+                      policyId={uploadedPolicyId}
+                      documentText={documentText}
+                      documentUrl={documentUrl}
+                      onAnalysisComplete={handleAnalysisComplete}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Policy Type */}
               <div className="space-y-2">
                 <Label htmlFor="policyType">Policy Type</Label>
@@ -324,7 +385,7 @@ const Upload = () => {
               </Button>
             </form>
 
-            {/* AI Analysis Section */}
+            {/* AI Analysis Section - Show after upload */}
             {uploadedPolicyId && showAIAnalysis && (
               <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl">
                 <div className="flex items-center justify-between">
