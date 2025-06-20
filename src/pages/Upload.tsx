@@ -164,15 +164,15 @@ const Upload = () => {
   };
 
   // Create a temporary policy for AI analysis before upload
-  const createTemporaryPolicyForAnalysis = async (): Promise<string | null> => {
+  const createTemporaryPolicyForAnalysis = async (): Promise<{ policyId: string; documentUrl: string } | null> => {
     if (!user || !formData.file) {
       console.log('Cannot create temp policy - missing user or file');
       return null;
     }
 
-    if (tempPolicyForAnalysis) {
-      console.log('Temp policy already exists:', tempPolicyForAnalysis);
-      return tempPolicyForAnalysis;
+    if (tempPolicyForAnalysis && documentUrl) {
+      console.log('Temp policy already exists:', tempPolicyForAnalysis, 'with URL:', documentUrl);
+      return { policyId: tempPolicyForAnalysis, documentUrl };
     }
 
     console.log('Creating temporary policy for analysis...');
@@ -199,7 +199,8 @@ const Upload = () => {
         .getPublicUrl(filePath);
 
       console.log('File uploaded, public URL:', data.publicUrl);
-      setDocumentUrl(data.publicUrl);
+      const newDocumentUrl = data.publicUrl;
+      setDocumentUrl(newDocumentUrl);
 
       // Create a temporary policy for analysis
       const { data: policyData, error } = await supabase
@@ -211,7 +212,7 @@ const Upload = () => {
           start_date: new Date().toISOString().split('T')[0],
           end_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           coverage_summary: 'Temporary policy for AI analysis - will be updated',
-          document_url: data.publicUrl
+          document_url: newDocumentUrl
         })
         .select()
         .single();
@@ -221,9 +222,9 @@ const Upload = () => {
         throw error;
       }
 
-      console.log('Temporary policy created:', policyData.id);
+      console.log('Temporary policy created:', policyData.id, 'with URL:', newDocumentUrl);
       setTempPolicyForAnalysis(policyData.id);
-      return policyData.id;
+      return { policyId: policyData.id, documentUrl: newDocumentUrl };
     } catch (error) {
       console.error('Error creating temporary policy:', error);
       toast({

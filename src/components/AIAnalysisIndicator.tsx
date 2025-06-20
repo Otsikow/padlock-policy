@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Brain, Loader2, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
@@ -10,7 +9,7 @@ interface AIAnalysisIndicatorProps {
   documentText?: string;
   documentUrl?: string;
   onAnalysisComplete?: (result?: any) => void;
-  onPolicyIdNeeded?: () => Promise<string | null>;
+  onPolicyIdNeeded?: () => Promise<{ policyId: string; documentUrl: string } | null>;
 }
 
 const AIAnalysisIndicator = ({ 
@@ -23,13 +22,14 @@ const AIAnalysisIndicator = ({
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [currentDocumentUrl, setCurrentDocumentUrl] = useState(documentUrl);
 
   const analyzeDocument = async () => {
     console.log('Starting AI analysis...', { 
       policyId, 
       hasDocumentText: !!documentText, 
       documentLength: documentText?.length,
-      hasDocumentUrl: !!documentUrl,
+      hasDocumentUrl: !!currentDocumentUrl,
       hasOnPolicyIdNeeded: !!onPolicyIdNeeded
     });
     
@@ -38,15 +38,19 @@ const AIAnalysisIndicator = ({
 
     try {
       let currentPolicyId = policyId;
+      let urlToUse = currentDocumentUrl;
       
       // If no policy ID and we have a callback to create one, use it
       if (!currentPolicyId && onPolicyIdNeeded) {
         console.log('Creating temporary policy for analysis...');
-        currentPolicyId = await onPolicyIdNeeded();
-        if (!currentPolicyId) {
+        const result = await onPolicyIdNeeded();
+        if (!result) {
           throw new Error('Failed to create temporary policy for analysis');
         }
-        console.log('Temporary policy created:', currentPolicyId);
+        currentPolicyId = result.policyId;
+        urlToUse = result.documentUrl;
+        setCurrentDocumentUrl(result.documentUrl);
+        console.log('Temporary policy created:', currentPolicyId, 'with URL:', urlToUse);
       }
 
       if (!currentPolicyId) {
@@ -56,13 +60,14 @@ const AIAnalysisIndicator = ({
       console.log('Calling analyze-policy function with:', {
         policyId: currentPolicyId,
         hasDocumentText: !!documentText,
-        hasDocumentUrl: !!documentUrl
+        hasDocumentUrl: !!urlToUse,
+        documentUrl: urlToUse
       });
 
       const { data, error } = await supabase.functions.invoke('analyze-policy', {
         body: {
           documentText: documentText || "",
-          documentUrl: documentUrl || "",
+          documentUrl: urlToUse || "",
           policyId: currentPolicyId
         }
       });
@@ -154,12 +159,12 @@ const AIAnalysisIndicator = ({
     );
   }
 
-  const isButtonDisabled = analyzing || (!documentText && !documentUrl && !onPolicyIdNeeded);
+  const isButtonDisabled = analyzing || (!documentText && !currentDocumentUrl && !onPolicyIdNeeded);
 
   console.log('Button state:', {
     analyzing,
     hasDocumentText: !!documentText,
-    hasDocumentUrl: !!documentUrl,
+    hasCurrentDocumentUrl: !!currentDocumentUrl,
     hasOnPolicyIdNeeded: !!onPolicyIdNeeded,
     isButtonDisabled
   });
