@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -19,15 +20,42 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate authentication - replace with Supabase auth
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Account created!",
+          description: "Please check your email to verify your account.",
+        });
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Welcome back!",
+          description: "Redirecting to dashboard...",
+        });
+        navigate('/dashboard');
+      }
+    } catch (error: any) {
       toast({
-        title: isSignUp ? "Account created!" : "Welcome back!",
-        description: "Redirecting to dashboard...",
+        title: "Authentication Error",
+        description: error.message,
+        variant: "destructive",
       });
-      navigate('/dashboard');
-    }, 1500);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -82,6 +110,7 @@ const Auth = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  minLength={6}
                   className="border-gray-300 focus:border-[#183B6B] focus:ring-[#183B6B]"
                 />
               </div>

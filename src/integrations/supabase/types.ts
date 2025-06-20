@@ -9,7 +9,180 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      claims: {
+        Row: {
+          claim_amount: number | null
+          claim_documents: string | null
+          claim_reason: string
+          claim_status: Database["public"]["Enums"]["claim_status_enum"] | null
+          created_at: string | null
+          id: string
+          policy_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          claim_amount?: number | null
+          claim_documents?: string | null
+          claim_reason: string
+          claim_status?: Database["public"]["Enums"]["claim_status_enum"] | null
+          created_at?: string | null
+          id?: string
+          policy_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          claim_amount?: number | null
+          claim_documents?: string | null
+          claim_reason?: string
+          claim_status?: Database["public"]["Enums"]["claim_status_enum"] | null
+          created_at?: string | null
+          id?: string
+          policy_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claims_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comparison_offers: {
+        Row: {
+          benefits: string | null
+          contact_info: string | null
+          coverage_details: string | null
+          created_at: string | null
+          id: string
+          insurer_name: string
+          policy_type: Database["public"]["Enums"]["policy_type_enum"] | null
+          premium_amount: number
+        }
+        Insert: {
+          benefits?: string | null
+          contact_info?: string | null
+          coverage_details?: string | null
+          created_at?: string | null
+          id?: string
+          insurer_name: string
+          policy_type?: Database["public"]["Enums"]["policy_type_enum"] | null
+          premium_amount: number
+        }
+        Update: {
+          benefits?: string | null
+          contact_info?: string | null
+          coverage_details?: string | null
+          created_at?: string | null
+          id?: string
+          insurer_name?: string
+          policy_type?: Database["public"]["Enums"]["policy_type_enum"] | null
+          premium_amount?: number
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          created_at: string | null
+          document_type: Database["public"]["Enums"]["document_type_enum"]
+          file_size: number | null
+          file_url: string
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          document_type: Database["public"]["Enums"]["document_type_enum"]
+          file_size?: number | null
+          file_url: string
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          document_type?: Database["public"]["Enums"]["document_type_enum"]
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          id: string
+          message: string
+          status: Database["public"]["Enums"]["notification_status_enum"] | null
+          timestamp: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          message: string
+          status?:
+            | Database["public"]["Enums"]["notification_status_enum"]
+            | null
+          timestamp?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          message?: string
+          status?:
+            | Database["public"]["Enums"]["notification_status_enum"]
+            | null
+          timestamp?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      policies: {
+        Row: {
+          coverage_summary: string | null
+          created_at: string | null
+          document_url: string | null
+          end_date: string
+          id: string
+          policy_type: Database["public"]["Enums"]["policy_type_enum"]
+          premium_amount: number
+          start_date: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          coverage_summary?: string | null
+          created_at?: string | null
+          document_url?: string | null
+          end_date: string
+          id?: string
+          policy_type: Database["public"]["Enums"]["policy_type_enum"]
+          premium_amount: number
+          start_date: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          coverage_summary?: string | null
+          created_at?: string | null
+          document_url?: string | null
+          end_date?: string
+          id?: string
+          policy_type?: Database["public"]["Enums"]["policy_type_enum"]
+          premium_amount?: number
+          start_date?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +191,10 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      claim_status_enum: "pending" | "approved" | "rejected" | "processing"
+      document_type_enum: "policy" | "receipt" | "id" | "claim" | "other"
+      notification_status_enum: "read" | "unread"
+      policy_type_enum: "health" | "auto" | "life" | "home" | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +309,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      claim_status_enum: ["pending", "approved", "rejected", "processing"],
+      document_type_enum: ["policy", "receipt", "id", "claim", "other"],
+      notification_status_enum: ["read", "unread"],
+      policy_type_enum: ["health", "auto", "life", "home", "other"],
+    },
   },
 } as const
