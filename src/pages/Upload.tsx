@@ -44,28 +44,28 @@ const Upload = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/40 pb-20">
       {/* Header */}
-      <div className="bg-[#183B6B] text-white p-6 rounded-b-3xl">
+      <div className="bg-gradient-to-br from-[#183B6B] via-[#2a5490] to-[#1e4a78] text-white p-6 rounded-b-3xl shadow-xl">
         <div className="flex items-center mb-4">
           <Button
             variant="ghost"
             onClick={() => navigate('/dashboard')}
-            className="text-white hover:bg-white/10 p-2 -ml-2"
+            className="text-white hover:bg-white/10 p-2 -ml-2 backdrop-blur-sm"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <h1 className="text-xl font-bold ml-2">Upload New Policy</h1>
+          <h1 className="text-xl font-bold ml-2 drop-shadow-md">Upload New Policy</h1>
         </div>
-        <p className="text-white/80">Add your insurance policy documents</p>
+        <p className="text-white/90 drop-shadow-sm">Add your insurance policy documents</p>
       </div>
 
       {/* Content */}
       <div className="p-6">
-        <Card className="shadow-lg border-0">
+        <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-[#183B6B] flex items-center">
-              <UploadIcon className="w-5 h-5 mr-2" />
+            <CardTitle className="bg-gradient-to-r from-[#183B6B] to-[#2a5490] bg-clip-text text-transparent flex items-center">
+              <UploadIcon className="w-5 h-5 mr-2 text-[#183B6B]" />
               Policy Information
             </CardTitle>
           </CardHeader>
@@ -74,7 +74,7 @@ const Upload = () => {
               {/* File Upload */}
               <div className="space-y-2">
                 <Label htmlFor="file">Policy Document (PDF/DOC)</Label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#183B6B] transition-colors">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#183B6B] transition-colors bg-gradient-to-br from-gray-50/30 to-blue-50/20">
                   <input
                     id="file"
                     type="file"
@@ -160,7 +160,7 @@ const Upload = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#E2B319] hover:bg-[#d4a617] text-black font-semibold py-4 rounded-xl"
+                className="w-full bg-gradient-to-r from-[#E2B319] to-[#f5c842] hover:from-[#d4a617] hover:to-[#e6b73a] text-black font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 {loading ? 'Uploading...' : 'Upload Policy'}
               </Button>

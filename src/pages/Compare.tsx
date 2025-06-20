@@ -57,20 +57,20 @@ const Compare = () => {
   const totalSavings = offers.reduce((sum, offer) => sum + offer.savings, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/40 pb-20">
       {/* Header */}
-      <div className="bg-[#183B6B] text-white p-6 rounded-b-3xl">
-        <h1 className="text-2xl font-bold mb-2">Better Insurance Deals</h1>
-        <p className="text-white/80">Find competitive rates and save money</p>
+      <div className="bg-gradient-to-br from-[#183B6B] via-[#2a5490] to-[#1e4a78] text-white p-6 rounded-b-3xl shadow-xl">
+        <h1 className="text-2xl font-bold mb-2 drop-shadow-md">Better Insurance Deals</h1>
+        <p className="text-white/90 drop-shadow-sm">Find competitive rates and save money</p>
         
         {/* Savings Summary */}
-        <div className="mt-4 bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+        <div className="mt-4 bg-gradient-to-r from-white/15 to-white/5 backdrop-blur-md rounded-lg p-4 border border-white/30 shadow-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <TrendingDown className="w-5 h-5 text-[#E2B319]" />
-              <span className="text-white/90">Potential Monthly Savings</span>
+              <span className="text-white/95">Potential Monthly Savings</span>
             </div>
-            <span className="text-2xl font-bold text-[#E2B319]">${totalSavings}</span>
+            <span className="text-2xl font-bold text-[#E2B319] drop-shadow-sm">${totalSavings}</span>
           </div>
         </div>
       </div>
@@ -79,16 +79,16 @@ const Compare = () => {
       <div className="p-6">
         <div className="space-y-4">
           {offers.map((offer) => (
-            <Card key={offer.id} className={`shadow-lg border-0 ${offer.recommended ? 'ring-2 ring-[#E2B319]' : ''}`}>
+            <Card key={offer.id} className={`shadow-xl border-0 bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm ${offer.recommended ? 'ring-2 ring-[#E2B319] shadow-2xl' : ''}`}>
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-[#183B6B] text-lg">{offer.insurerName}</CardTitle>
+                    <CardTitle className="bg-gradient-to-r from-[#183B6B] to-[#2a5490] bg-clip-text text-transparent text-lg">{offer.insurerName}</CardTitle>
                     <p className="text-sm text-gray-600">{offer.policyType} Insurance</p>
                   </div>
                   <div className="text-right">
                     {offer.recommended && (
-                      <Badge className="bg-[#E2B319] text-black mb-2">
+                      <Badge className="bg-gradient-to-r from-[#E2B319] to-[#f5c842] text-black mb-2 shadow-md">
                         <Star className="w-3 h-3 mr-1" />
                         Recommended
                       </Badge>
@@ -114,7 +114,7 @@ const Compare = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="bg-gradient-to-r from-green-100 to-green-200 text-green-800 px-2 py-1 rounded-full text-xs font-medium shadow-sm">
                       {Math.round((offer.savings / offer.originalPremium) * 100)}% OFF
                     </div>
                   </div>
@@ -128,7 +128,7 @@ const Compare = () => {
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {offer.features.map((feature, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
+                      <Badge key={index} variant="outline" className="text-xs border-gray-300">
                         {feature}
                       </Badge>
                     ))}
@@ -137,10 +137,10 @@ const Compare = () => {
 
                 {/* Action Button */}
                 <Button 
-                  className={`w-full font-semibold py-3 rounded-lg ${
+                  className={`w-full font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ${
                     offer.recommended 
-                      ? 'bg-[#E2B319] hover:bg-[#d4a617] text-black' 
-                      : 'bg-[#183B6B] hover:bg-[#1a3d6f] text-white'
+                      ? 'bg-gradient-to-r from-[#E2B319] to-[#f5c842] hover:from-[#d4a617] hover:to-[#e6b73a] text-black' 
+                      : 'bg-gradient-to-r from-[#183B6B] to-[#2a5490] hover:from-[#1a3d6f] hover:to-[#2d5799] text-white'
                   }`}
                 >
                   <Zap className="w-4 h-4 mr-2" />
@@ -154,7 +154,7 @@ const Compare = () => {
         {/* Refresh Button */}
         <Button 
           variant="outline" 
-          className="w-full mt-6 border-[#183B6B] text-[#183B6B] hover:bg-[#183B6B] hover:text-white"
+          className="w-full mt-6 border-[#183B6B] text-[#183B6B] hover:bg-gradient-to-r hover:from-[#183B6B] hover:to-[#2a5490] hover:text-white shadow-lg"
         >
           Refresh Suggestions
         </Button>

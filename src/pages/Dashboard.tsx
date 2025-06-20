@@ -41,31 +41,31 @@ const Dashboard = () => {
   const totalPremium = policies.reduce((sum, policy) => sum + policy.premium, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/40 pb-20">
       {/* Header */}
-      <div className="bg-[#183B6B] text-white p-6 rounded-b-3xl">
+      <div className="bg-gradient-to-br from-[#183B6B] via-[#2a5490] to-[#1e4a78] text-white p-6 rounded-b-3xl shadow-xl">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Welcome back!</h1>
-            <p className="text-white/80">Manage your insurance policies</p>
+            <h1 className="text-2xl font-bold drop-shadow-md">Welcome back!</h1>
+            <p className="text-white/90 drop-shadow-sm">Manage your insurance policies</p>
           </div>
-          <div className="w-12 h-12 bg-[#E2B319] rounded-full flex items-center justify-center">
+          <div className="w-12 h-12 bg-gradient-to-br from-[#E2B319] to-[#f5c842] rounded-full flex items-center justify-center shadow-lg">
             <span className="text-black font-bold text-lg">U</span>
           </div>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
+          <Card className="bg-gradient-to-br from-white/15 to-white/5 border-white/30 backdrop-blur-md shadow-lg">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-[#E2B319]">{policies.length}</div>
-              <div className="text-white/80 text-sm">Active Policies</div>
+              <div className="text-2xl font-bold text-[#E2B319] drop-shadow-sm">{policies.length}</div>
+              <div className="text-white/90 text-sm">Active Policies</div>
             </CardContent>
           </Card>
-          <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
+          <Card className="bg-gradient-to-br from-white/15 to-white/5 border-white/30 backdrop-blur-md shadow-lg">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-[#E2B319]">${totalPremium}</div>
-              <div className="text-white/80 text-sm">Total Premium</div>
+              <div className="text-2xl font-bold text-[#E2B319] drop-shadow-sm">${totalPremium}</div>
+              <div className="text-white/90 text-sm">Total Premium</div>
             </CardContent>
           </Card>
         </div>
@@ -76,7 +76,7 @@ const Dashboard = () => {
         {/* Upload New Policy Button */}
         <Button
           onClick={() => navigate('/upload')}
-          className="w-full mb-6 bg-[#E2B319] hover:bg-[#d4a617] text-black font-semibold py-4 rounded-xl shadow-lg"
+          className="w-full mb-6 bg-gradient-to-r from-[#E2B319] to-[#f5c842] hover:from-[#d4a617] hover:to-[#e6b73a] text-black font-semibold py-4 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300"
         >
           <Plus className="w-5 h-5 mr-2" />
           Upload New Policy
@@ -84,10 +84,10 @@ const Dashboard = () => {
 
         {/* My Policies Section */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-[#183B6B] mb-4">My Policies</h2>
+          <h2 className="text-xl font-bold bg-gradient-to-r from-[#183B6B] to-[#2a5490] bg-clip-text text-transparent mb-4">My Policies</h2>
           <div className="space-y-4">
             {policies.map((policy) => (
-              <Card key={policy.id} className="shadow-md border-0">
+              <Card key={policy.id} className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm">
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-3">
                     <div>
@@ -96,8 +96,8 @@ const Dashboard = () => {
                     </div>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       policy.status === 'Active' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800' 
+                        : 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800'
                     }`}>
                       {policy.status}
                     </span>

@@ -31,28 +31,28 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#183B6B] to-[#2a5490] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#183B6B] via-[#2a5490] to-[#1e4a78] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         {/* Back Button */}
         <Button
           variant="ghost"
           onClick={() => navigate('/')}
-          className="mb-6 text-white hover:bg-white/10"
+          className="mb-6 text-white hover:bg-white/10 backdrop-blur-sm"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
 
-        <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
+        <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/95 to-white/85 backdrop-blur-lg">
           <CardHeader className="text-center pb-2">
-            <div className="w-16 h-16 mx-auto mb-4 bg-[#183B6B] rounded-full flex items-center justify-center">
-              <span className="text-[#E2B319] font-bold text-xl">B</span>
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#183B6B] to-[#2a5490] rounded-full flex items-center justify-center shadow-lg">
+              <span className="text-[#E2B319] font-bold text-xl">P</span>
             </div>
-            <CardTitle className="text-2xl font-bold text-[#183B6B]">
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-[#183B6B] to-[#2a5490] bg-clip-text text-transparent">
               {isSignUp ? 'Create Account' : 'Welcome Back'}
             </CardTitle>
             <CardDescription>
-              {isSignUp ? 'Join BOAFO to optimize your insurance' : 'Sign in to your BOAFO account'}
+              {isSignUp ? 'Join Padlock to optimize your insurance' : 'Sign in to your Padlock account'}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -84,7 +84,7 @@ const Auth = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#183B6B] hover:bg-[#1a3d6f] text-white py-3 rounded-lg font-semibold"
+                className="w-full bg-gradient-to-r from-[#183B6B] to-[#2a5490] hover:from-[#1a3d6f] hover:to-[#2d5799] text-white py-3 rounded-lg font-semibold shadow-lg"
               >
                 {loading ? 'Please wait...' : (isSignUp ? 'Sign Up' : 'Sign In')}
               </Button>
