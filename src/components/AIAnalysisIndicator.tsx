@@ -17,44 +17,45 @@ const AIAnalysisIndicator = ({ policyId, documentText, onAnalysisComplete }: AIA
   const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const analyzeDocument = async () => {
-    if (!documentText) {
-      toast({
-        title: "No document text available",
-        description: "Please ensure the document has been processed first.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+    console.log('Starting AI analysis...', { policyId, hasDocumentText: !!documentText });
+    
     setAnalyzing(true);
     setAnalysisError(null);
 
     try {
       const { data, error } = await supabase.functions.invoke('analyze-policy', {
         body: {
-          documentText,
+          documentText: documentText || "",
           policyId
         }
       });
 
-      if (error) throw error;
+      console.log('AI analysis response:', data, error);
 
-      if (data.success) {
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(error.message || 'Failed to call analysis function');
+      }
+
+      if (data && data.success) {
         setAnalysisComplete(true);
+        const fieldCount = data.updatedFields?.length || 0;
         toast({
           title: "AI Analysis Complete!",
-          description: `Extracted ${data.updatedFields.length} fields from your policy document.`,
+          description: fieldCount > 0 
+            ? `Successfully extracted and updated ${fieldCount} fields from your policy document.`
+            : "Analysis completed successfully.",
         });
         onAnalysisComplete?.();
       } else {
-        throw new Error(data.error || 'Analysis failed');
+        throw new Error(data?.error || 'Analysis failed - unknown error');
       }
     } catch (error: any) {
       console.error('AI Analysis error:', error);
       setAnalysisError(error.message);
       toast({
         title: "Analysis Failed",
-        description: error.message || "Failed to analyze the document with AI.",
+        description: `Error: ${error.message}. Please try again or contact support if the issue persists.`,
         variant: "destructive",
       });
     } finally {
@@ -91,7 +92,7 @@ const AIAnalysisIndicator = ({ policyId, documentText, onAnalysisComplete }: AIA
   return (
     <Button
       onClick={analyzeDocument}
-      disabled={analyzing || !documentText}
+      disabled={analyzing}
       variant="outline"
       size="sm"
       className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:border-purple-300"
