@@ -31,6 +31,7 @@ const Upload = () => {
   const [documentText, setDocumentText] = useState<string>('');
   const [documentUrl, setDocumentUrl] = useState<string>('');
   const [showAIAnalysis, setShowAIAnalysis] = useState(false);
+  const [tempPolicyForAnalysis, setTempPolicyForAnalysis] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -146,17 +147,27 @@ const Upload = () => {
     }
   };
 
-  const handleAnalysisComplete = () => {
+  const handleAnalysisComplete = (analysisResult?: any) => {
+    // Update form data with analysis results
+    if (analysisResult) {
+      setFormData(prev => ({
+        ...prev,
+        policyType: analysisResult.policy_type || prev.policyType,
+        monthlyPremium: analysisResult.premium_amount?.toString() || prev.monthlyPremium,
+        endDate: analysisResult.end_date || prev.endDate,
+        coverageSummary: analysisResult.coverage_summary || prev.coverageSummary
+      }));
+    }
+    
     toast({
       title: "Analysis Complete!",
-      description: "Your policy details have been automatically updated.",
+      description: "Your policy details have been automatically updated in the form below.",
     });
-    setTimeout(() => navigate('/dashboard'), 2000);
   };
 
   // Create a temporary policy for AI analysis before upload
-  const createTemporaryPolicy = async () => {
-    if (!user || !formData.file) return null;
+  const createTemporaryPolicyForAnalysis = async () => {
+    if (!user || !formData.file || tempPolicyForAnalysis) return tempPolicyForAnalysis;
 
     try {
       // Upload file to storage first
@@ -185,16 +196,22 @@ const Upload = () => {
           premium_amount: 0, // Will be updated by AI
           start_date: new Date().toISOString().split('T')[0],
           end_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          coverage_summary: 'Temporary policy for AI analysis',
+          coverage_summary: 'Temporary policy for AI analysis - will be updated',
           document_url: data.publicUrl
         })
         .select()
         .single();
 
       if (error) throw error;
+      setTempPolicyForAnalysis(policyData.id);
       return policyData.id;
     } catch (error) {
       console.error('Error creating temporary policy:', error);
+      toast({
+        title: "Error",
+        description: "Failed to prepare document for analysis. Please try again.",
+        variant: "destructive",
+      });
       return null;
     }
   };
@@ -296,10 +313,11 @@ const Upload = () => {
                       <p className="text-sm text-purple-600">Analyze your document first to auto-fill the form below</p>
                     </div>
                     <AIAnalysisIndicator
-                      policyId={uploadedPolicyId}
+                      policyId={tempPolicyForAnalysis}
                       documentText={documentText}
                       documentUrl={documentUrl}
                       onAnalysisComplete={handleAnalysisComplete}
+                      onPolicyIdNeeded={createTemporaryPolicyForAnalysis}
                     />
                   </div>
                 </div>
@@ -308,7 +326,7 @@ const Upload = () => {
               {/* Policy Type */}
               <div className="space-y-2">
                 <Label htmlFor="policyType">Policy Type</Label>
-                <Select onValueChange={(value) => setFormData(prev => ({ ...prev, policyType: value as PolicyType }))}>
+                <Select value={formData.policyType} onValueChange={(value) => setFormData(prev => ({ ...prev, policyType: value as PolicyType }))}>
                   <SelectTrigger className="border-gray-300 focus:border-[#183B6B] bg-white">
                     <SelectValue placeholder="Select policy type" />
                   </SelectTrigger>

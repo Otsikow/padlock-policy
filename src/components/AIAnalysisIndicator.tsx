@@ -6,13 +6,20 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
 interface AIAnalysisIndicatorProps {
-  policyId: string;
+  policyId: string | null;
   documentText?: string;
   documentUrl?: string;
-  onAnalysisComplete?: () => void;
+  onAnalysisComplete?: (result?: any) => void;
+  onPolicyIdNeeded?: () => Promise<string | null>;
 }
 
-const AIAnalysisIndicator = ({ policyId, documentText, documentUrl, onAnalysisComplete }: AIAnalysisIndicatorProps) => {
+const AIAnalysisIndicator = ({ 
+  policyId, 
+  documentText, 
+  documentUrl, 
+  onAnalysisComplete,
+  onPolicyIdNeeded 
+}: AIAnalysisIndicatorProps) => {
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
@@ -29,11 +36,26 @@ const AIAnalysisIndicator = ({ policyId, documentText, documentUrl, onAnalysisCo
     setAnalysisError(null);
 
     try {
+      let currentPolicyId = policyId;
+      
+      // If no policy ID and we have a callback to create one, use it
+      if (!currentPolicyId && onPolicyIdNeeded) {
+        console.log('Creating temporary policy for analysis...');
+        currentPolicyId = await onPolicyIdNeeded();
+        if (!currentPolicyId) {
+          throw new Error('Failed to create temporary policy for analysis');
+        }
+      }
+
+      if (!currentPolicyId) {
+        throw new Error('No policy ID available for analysis');
+      }
+
       const { data, error } = await supabase.functions.invoke('analyze-policy', {
         body: {
           documentText: documentText || "",
           documentUrl: documentUrl || "",
-          policyId
+          policyId: currentPolicyId
         }
       });
 
@@ -53,7 +75,7 @@ const AIAnalysisIndicator = ({ policyId, documentText, documentUrl, onAnalysisCo
             ? `Successfully extracted and updated ${fieldCount} fields from your policy document.`
             : "Analysis completed successfully."),
         });
-        onAnalysisComplete?.();
+        onAnalysisComplete?.(data.extractedData);
       } else {
         throw new Error(data?.error || 'Analysis failed - unknown error');
       }
