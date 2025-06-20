@@ -14,14 +14,16 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#183B6B] to-[#2a5490] flex items-center justify-center p-4">
       <div className={`max-w-sm w-full text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-        {/* Logo Placeholder */}
+        {/* Logo */}
         <div className="mb-8">
-          <div className="w-24 h-24 mx-auto mb-6 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30">
-            <div className="w-16 h-16 bg-[#E2B319] rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-xl">B</span>
-            </div>
+          <div className="w-24 h-24 mx-auto mb-6 bg-white rounded-2xl flex items-center justify-center shadow-lg">
+            <img 
+              src="/lovable-uploads/95b681ce-5792-40f4-8a40-28ccfc635d0f.png" 
+              alt="Padlock Logo" 
+              className="w-20 h-20 object-contain"
+            />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2">BOAFO</h1>
+          <h1 className="text-4xl font-bold text-white mb-2">Padlock</h1>
           <p className="text-white/80 text-lg">Insurance Optimization</p>
         </div>
 

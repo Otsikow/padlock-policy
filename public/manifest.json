@@ -1,7 +1,7 @@
 
 {
-  "name": "BOAFO - Insurance Optimization",
-  "short_name": "BOAFO",
+  "name": "Padlock - Insurance Optimization",
+  "short_name": "Padlock",
   "description": "Optimize your insurance policies, compare deals, and manage claims seamlessly",
   "start_url": "/",
   "display": "standalone",
