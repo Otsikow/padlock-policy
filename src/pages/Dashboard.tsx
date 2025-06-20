@@ -1,12 +1,21 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Calendar, DollarSign, LogOut } from 'lucide-react';
+import { Plus, Calendar, DollarSign, LogOut, X, AlertTriangle } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Policy = Tables<'policies'>;
@@ -16,6 +25,9 @@ const Dashboard = () => {
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showSwitchModal, setShowSwitchModal] = useState(false);
+  const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
 
   useEffect(() => {
     checkUser();
@@ -64,6 +76,51 @@ const Dashboard = () => {
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
+  };
+
+  const handleCancelPolicy = async () => {
+    if (!selectedPolicyId) return;
+
+    try {
+      const { error } = await supabase
+        .from('policies')
+        .update({ status: 'cancelled' })
+        .eq('id', selectedPolicyId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Policy Cancelled",
+        description: "Your policy has been successfully cancelled.",
+      });
+
+      fetchPolicies(); // Refresh the policies list
+    } catch (error: any) {
+      toast({
+        title: "Error cancelling policy",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setShowCancelModal(false);
+      setSelectedPolicyId(null);
+    }
+  };
+
+  const handleSwitchPolicy = () => {
+    setShowSwitchModal(false);
+    setSelectedPolicyId(null);
+    navigate('/compare');
+  };
+
+  const openCancelModal = (policyId: string) => {
+    setSelectedPolicyId(policyId);
+    setShowCancelModal(true);
+  };
+
+  const openSwitchModal = (policyId: string) => {
+    setSelectedPolicyId(policyId);
+    setShowSwitchModal(true);
   };
 
   if (loading) {
@@ -171,12 +228,16 @@ const Dashboard = () => {
                         </h3>
                         <p className="text-sm text-gray-600">{policy.coverage_summary || 'Insurance Coverage'}</p>
                       </div>
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-green-100 to-green-200 text-green-800">
-                        Active
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        policy.status === 'cancelled' 
+                          ? 'bg-gradient-to-r from-red-100 to-red-200 text-red-800'
+                          : 'bg-gradient-to-r from-green-100 to-green-200 text-green-800'
+                      }`}>
+                        {policy.status === 'cancelled' ? 'Cancelled' : 'Active'}
                       </span>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="grid grid-cols-2 gap-4 text-sm mb-4">
                       <div className="flex items-center text-gray-600">
                         <Calendar className="w-4 h-4 mr-1" />
                         {formatDate(policy.start_date)} - {formatDate(policy.end_date)}
@@ -186,6 +247,28 @@ const Dashboard = () => {
                         ${Number(policy.premium_amount).toFixed(2)}/month
                       </div>
                     </div>
+
+                    {/* Action Buttons */}
+                    {policy.status !== 'cancelled' && (
+                      <div className="flex space-x-2">
+                        <Button
+                          onClick={() => openSwitchModal(policy.id)}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 border-[#183B6B] text-[#183B6B] hover:bg-[#183B6B] hover:text-white"
+                        >
+                          Switch Policy
+                        </Button>
+                        <Button
+                          onClick={() => openCancelModal(policy.id)}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                        >
+                          Cancel Policy
+                        </Button>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -193,6 +276,55 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Cancel Policy Modal */}
+      <AlertDialog open={showCancelModal} onOpenChange={setShowCancelModal}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center">
+              <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
+              Cancel Policy
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel this policy? This action cannot be undone and you may lose coverage.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowCancelModal(false)}>
+              No, Keep Policy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelPolicy}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Yes, Cancel Policy
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Switch Policy Modal */}
+      <AlertDialog open={showSwitchModal} onOpenChange={setShowSwitchModal}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Switch to Another Policy</AlertDialogTitle>
+            <AlertDialogDescription>
+              Do you want to explore better insurance deals and switch to another policy? We'll show you competitive rates from other providers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowSwitchModal(false)}>
+              No, Stay Here
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleSwitchPolicy}
+              className="bg-gradient-to-r from-[#183B6B] to-[#2a5490] hover:from-[#1a3d6f] hover:to-[#2d5799]"
+            >
+              Yes, Find Better Deals
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <BottomNav />
     </div>
