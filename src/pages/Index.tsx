@@ -18,7 +18,7 @@ const Index = () => {
         <div className="mb-8">
           <div className="w-24 h-24 mx-auto mb-6 bg-white rounded-2xl flex items-center justify-center shadow-lg">
             <img 
-              src="/lovable-uploads/95b681ce-5792-40f4-8a40-28ccfc635d0f.png" 
+              src="/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png" 
               alt="Padlock Logo" 
               className="w-20 h-20 object-contain"
             />
