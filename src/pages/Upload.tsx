@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -46,11 +45,11 @@ const Upload = () => {
           setShowAIAnalysis(true);
         };
         reader.readAsText(file);
-      } else if (file.type === 'application/pdf') {
-        // For PDF files, we'll show the AI analysis option
+      } else {
+        // For other file types (PDF, DOC, etc.), we'll show the AI analysis option
         setShowAIAnalysis(true);
         toast({
-          title: "PDF Detected",
+          title: "Document Detected",
           description: "After uploading, you can use AI to analyze this document and auto-fill policy details.",
         });
       }
@@ -123,8 +122,8 @@ const Upload = () => {
         description: "Your policy has been added to your dashboard.",
       });
       
-      // If we have document text, show AI analysis option
-      if (documentText || formData.file) {
+      // Always show AI analysis if we had a file uploaded
+      if (formData.file) {
         setShowAIAnalysis(true);
       } else {
         navigate('/dashboard');
