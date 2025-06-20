@@ -12,6 +12,59 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Function to extract text from PDF using a simple approach
+async function extractTextFromPDF(pdfUrl: string): Promise<string> {
+  try {
+    console.log('Attempting to extract text from PDF:', pdfUrl);
+    
+    // For now, we'll use a simple approach that works with basic PDFs
+    // In production, you might want to use a more robust PDF parsing service
+    const response = await fetch(pdfUrl);
+    const arrayBuffer = await response.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    
+    // Convert PDF binary to text (this is a simplified approach)
+    // For better PDF parsing, consider using pdf-parse or similar libraries
+    let text = '';
+    const decoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: false });
+    
+    try {
+      // Try to extract readable text from PDF
+      const pdfString = decoder.decode(uint8Array);
+      
+      // Look for text patterns in PDF
+      const textMatches = pdfString.match(/BT\s*(.*?)\s*ET/g) || [];
+      const streamMatches = pdfString.match(/stream\s*(.*?)\s*endstream/gs) || [];
+      
+      // Extract text from BT/ET blocks (simple text extraction)
+      textMatches.forEach(match => {
+        const content = match.replace(/BT|ET/g, '').trim();
+        text += content + ' ';
+      });
+      
+      // Also try to extract from readable parts of the PDF
+      const readableText = pdfString.replace(/[^\x20-\x7E\n\r\t]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      if (readableText.length > text.length) {
+        text = readableText;
+      }
+      
+      console.log('Extracted text length:', text.length);
+      return text.substring(0, 8000); // Limit text length
+      
+    } catch (decodeError) {
+      console.error('Error decoding PDF:', decodeError);
+      throw new Error('Unable to extract text from PDF. The PDF might be image-based or encrypted.');
+    }
+    
+  } catch (error) {
+    console.error('PDF extraction error:', error);
+    throw new Error(`Failed to extract text from PDF: ${error.message}`);
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -20,8 +73,13 @@ serve(async (req) => {
   try {
     console.log('Analyze policy function called');
     
-    const { documentText, policyId } = await req.json();
-    console.log('Request data:', { policyId, hasDocumentText: !!documentText, documentLength: documentText?.length });
+    const { documentText, policyId, documentUrl } = await req.json();
+    console.log('Request data:', { 
+      policyId, 
+      hasDocumentText: !!documentText, 
+      documentLength: documentText?.length,
+      hasDocumentUrl: !!documentUrl 
+    });
 
     if (!policyId) {
       throw new Error('Policy ID is required');
@@ -41,14 +99,47 @@ serve(async (req) => {
       );
     }
 
-    // If no document text is provided, we'll analyze what we can from the policy record
     let textToAnalyze = documentText;
     
+    // If no document text but we have a document URL, try to extract text from the file
+    if ((!textToAnalyze || textToAnalyze.trim() === '') && documentUrl) {
+      console.log('No document text provided, attempting to extract from document URL:', documentUrl);
+      
+      try {
+        // Check if it's a PDF file
+        if (documentUrl.toLowerCase().includes('.pdf')) {
+          textToAnalyze = await extractTextFromPDF(documentUrl);
+          console.log('Successfully extracted text from PDF, length:', textToAnalyze.length);
+        } else {
+          // For other file types, try to fetch as text
+          const response = await fetch(documentUrl);
+          if (response.ok) {
+            textToAnalyze = await response.text();
+            console.log('Successfully extracted text from document, length:', textToAnalyze.length);
+          } else {
+            throw new Error(`Failed to fetch document: ${response.statusText}`);
+          }
+        }
+      } catch (extractionError) {
+        console.error('Document extraction error:', extractionError);
+        return new Response(
+          JSON.stringify({ 
+            error: `Failed to extract text from document: ${extractionError.message}. Please try uploading a text file (.txt) or ensure the PDF contains extractable text.`,
+            success: false 
+          }), 
+          {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+    
     if (!textToAnalyze || textToAnalyze.trim() === '') {
-      console.log('No document text provided for analysis');
+      console.log('No document text available for analysis');
       return new Response(
         JSON.stringify({ 
-          error: 'No document text provided for analysis. Please upload a text file or provide policy document text.',
+          error: 'No document text available for analysis. Please upload a text file (.txt) or a PDF with extractable text.',
           success: false 
         }), 
         {

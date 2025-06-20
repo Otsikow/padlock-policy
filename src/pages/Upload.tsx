@@ -29,6 +29,7 @@ const Upload = () => {
   const [loading, setLoading] = useState(false);
   const [uploadedPolicyId, setUploadedPolicyId] = useState<string | null>(null);
   const [documentText, setDocumentText] = useState<string>('');
+  const [documentUrl, setDocumentUrl] = useState<string>('');
   const [showAIAnalysis, setShowAIAnalysis] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,8 +46,15 @@ const Upload = () => {
           setShowAIAnalysis(true);
         };
         reader.readAsText(file);
+      } else if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        // For PDF files, we'll let the AI analysis handle text extraction
+        setShowAIAnalysis(true);
+        toast({
+          title: "PDF Document Detected",
+          description: "After uploading, AI will extract text from your PDF and auto-fill policy details.",
+        });
       } else {
-        // For other file types (PDF, DOC, etc.), we'll show the AI analysis option
+        // For other file types (DOC, DOCX, etc.), we'll show the AI analysis option
         setShowAIAnalysis(true);
         toast({
           title: "Document Detected",
@@ -97,6 +105,7 @@ const Upload = () => {
           .getPublicUrl(filePath);
 
         documentUrl = data.publicUrl;
+        setDocumentUrl(documentUrl);
       }
 
       const { data: policyData, error } = await supabase
@@ -182,7 +191,7 @@ const Upload = () => {
             </div>
             <div>
               <h3 className="font-semibold text-purple-800">AI-Powered Analysis</h3>
-              <p className="text-sm text-purple-600">Upload your policy document and let AI extract key details automatically!</p>
+              <p className="text-sm text-purple-600">Upload PDF, DOC, TXT files and let AI extract key details automatically!</p>
             </div>
           </div>
         </div>
@@ -326,6 +335,7 @@ const Upload = () => {
                   <AIAnalysisIndicator
                     policyId={uploadedPolicyId}
                     documentText={documentText}
+                    documentUrl={documentUrl}
                     onAnalysisComplete={handleAnalysisComplete}
                   />
                 </div>

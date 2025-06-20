@@ -8,16 +8,22 @@ import { supabase } from '@/integrations/supabase/client';
 interface AIAnalysisIndicatorProps {
   policyId: string;
   documentText?: string;
+  documentUrl?: string;
   onAnalysisComplete?: () => void;
 }
 
-const AIAnalysisIndicator = ({ policyId, documentText, onAnalysisComplete }: AIAnalysisIndicatorProps) => {
+const AIAnalysisIndicator = ({ policyId, documentText, documentUrl, onAnalysisComplete }: AIAnalysisIndicatorProps) => {
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const analyzeDocument = async () => {
-    console.log('Starting AI analysis...', { policyId, hasDocumentText: !!documentText, documentLength: documentText?.length });
+    console.log('Starting AI analysis...', { 
+      policyId, 
+      hasDocumentText: !!documentText, 
+      documentLength: documentText?.length,
+      hasDocumentUrl: !!documentUrl 
+    });
     
     setAnalyzing(true);
     setAnalysisError(null);
@@ -26,6 +32,7 @@ const AIAnalysisIndicator = ({ policyId, documentText, onAnalysisComplete }: AIA
       const { data, error } = await supabase.functions.invoke('analyze-policy', {
         body: {
           documentText: documentText || "",
+          documentUrl: documentUrl || "",
           policyId
         }
       });
@@ -59,8 +66,8 @@ const AIAnalysisIndicator = ({ policyId, documentText, onAnalysisComplete }: AIA
         errorMessage = 'OpenAI API quota exceeded. The AI analysis feature is temporarily unavailable due to API limits.';
       } else if (errorMessage.includes('API key')) {
         errorMessage = 'OpenAI API configuration issue. Please contact support.';
-      } else if (errorMessage.includes('No document text')) {
-        errorMessage = 'Please upload a text file (.txt) or a document with extractable text for AI analysis.';
+      } else if (errorMessage.includes('No document text') || errorMessage.includes('extract text from')) {
+        errorMessage = 'Unable to extract text from the document. Please try uploading a text file (.txt) or ensure your PDF contains extractable text (not just images).';
       }
       
       setAnalysisError(errorMessage);
@@ -118,7 +125,7 @@ const AIAnalysisIndicator = ({ policyId, documentText, onAnalysisComplete }: AIA
   return (
     <Button
       onClick={analyzeDocument}
-      disabled={analyzing || !documentText}
+      disabled={analyzing || (!documentText && !documentUrl)}
       variant="outline"
       size="sm"
       className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:border-purple-300"
