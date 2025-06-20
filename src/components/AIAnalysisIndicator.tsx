@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Brain, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Brain, Loader2, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -17,7 +17,7 @@ const AIAnalysisIndicator = ({ policyId, documentText, onAnalysisComplete }: AIA
   const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const analyzeDocument = async () => {
-    console.log('Starting AI analysis...', { policyId, hasDocumentText: !!documentText });
+    console.log('Starting AI analysis...', { policyId, hasDocumentText: !!documentText, documentLength: documentText?.length });
     
     setAnalyzing(true);
     setAnalysisError(null);
@@ -42,9 +42,9 @@ const AIAnalysisIndicator = ({ policyId, documentText, onAnalysisComplete }: AIA
         const fieldCount = data.updatedFields?.length || 0;
         toast({
           title: "AI Analysis Complete!",
-          description: fieldCount > 0 
+          description: data.message || (fieldCount > 0 
             ? `Successfully extracted and updated ${fieldCount} fields from your policy document.`
-            : "Analysis completed successfully.",
+            : "Analysis completed successfully."),
         });
         onAnalysisComplete?.();
       } else {
@@ -52,10 +52,21 @@ const AIAnalysisIndicator = ({ policyId, documentText, onAnalysisComplete }: AIA
       }
     } catch (error: any) {
       console.error('AI Analysis error:', error);
-      setAnalysisError(error.message);
+      let errorMessage = error.message;
+      
+      // Provide more helpful error messages
+      if (errorMessage.includes('quota')) {
+        errorMessage = 'OpenAI API quota exceeded. The AI analysis feature is temporarily unavailable due to API limits.';
+      } else if (errorMessage.includes('API key')) {
+        errorMessage = 'OpenAI API configuration issue. Please contact support.';
+      } else if (errorMessage.includes('No document text')) {
+        errorMessage = 'Please upload a text file (.txt) or a document with extractable text for AI analysis.';
+      }
+      
+      setAnalysisError(errorMessage);
       toast({
         title: "Analysis Failed",
-        description: `Error: ${error.message}. Please try again or contact support if the issue persists.`,
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -74,17 +85,32 @@ const AIAnalysisIndicator = ({ policyId, documentText, onAnalysisComplete }: AIA
 
   if (analysisError) {
     return (
-      <div className="flex items-center space-x-2 text-red-600">
-        <AlertCircle className="w-4 h-4" />
-        <span className="text-sm">Analysis failed</span>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={analyzeDocument}
-          disabled={analyzing}
-        >
-          Retry
-        </Button>
+      <div className="flex flex-col space-y-2">
+        <div className="flex items-center space-x-2 text-red-600">
+          <AlertCircle className="w-4 h-4" />
+          <span className="text-sm">Analysis failed</span>
+        </div>
+        <p className="text-xs text-red-500">{analysisError}</p>
+        <div className="flex space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={analyzeDocument}
+            disabled={analyzing}
+          >
+            Retry
+          </Button>
+          {analysisError.includes('quota') && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.open('https://platform.openai.com/account/billing', '_blank')}
+            >
+              <ExternalLink className="w-3 h-3 mr-1" />
+              Check Quota
+            </Button>
+          )}
+        </div>
       </div>
     );
   }
@@ -92,7 +118,7 @@ const AIAnalysisIndicator = ({ policyId, documentText, onAnalysisComplete }: AIA
   return (
     <Button
       onClick={analyzeDocument}
-      disabled={analyzing}
+      disabled={analyzing || !documentText}
       variant="outline"
       size="sm"
       className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:border-purple-300"

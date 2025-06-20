@@ -21,22 +21,41 @@ serve(async (req) => {
     console.log('Analyze policy function called');
     
     const { documentText, policyId } = await req.json();
-    console.log('Request data:', { policyId, hasDocumentText: !!documentText });
+    console.log('Request data:', { policyId, hasDocumentText: !!documentText, documentLength: documentText?.length });
 
     if (!policyId) {
       throw new Error('Policy ID is required');
     }
 
     if (!openAIApiKey) {
-      throw new Error('OpenAI API key is not configured');
+      console.error('OpenAI API key is not configured');
+      return new Response(
+        JSON.stringify({ 
+          error: 'OpenAI API key is not configured. Please add your OpenAI API key to the Supabase Edge Function secrets.',
+          success: false 
+        }), 
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // If no document text is provided, we'll analyze what we can from the policy record
     let textToAnalyze = documentText;
     
-    if (!textToAnalyze) {
-      console.log('No document text provided, will analyze available policy data');
-      textToAnalyze = "No document text available for analysis";
+    if (!textToAnalyze || textToAnalyze.trim() === '') {
+      console.log('No document text provided for analysis');
+      return new Response(
+        JSON.stringify({ 
+          error: 'No document text provided for analysis. Please upload a text file or provide policy document text.',
+          success: false 
+        }), 
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // AI prompt to extract policy information
@@ -59,7 +78,7 @@ serve(async (req) => {
       }
 
       Document text to analyze:
-      ${textToAnalyze}
+      ${textToAnalyze.substring(0, 8000)}
     `;
 
     console.log('Calling OpenAI API...');
@@ -75,23 +94,40 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: 'You are an expert insurance policy analyzer. Always return valid JSON responses only, no additional text.' 
+            content: 'You are an expert insurance policy analyzer. Always return valid JSON responses only, no additional text or explanations.' 
           },
           { role: 'user', content: prompt }
         ],
         temperature: 0.1,
-        max_tokens: 1000,
+        max_tokens: 1500,
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('OpenAI API error:', response.status, errorText);
-      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
+      
+      let errorMessage = `OpenAI API error: ${response.status}`;
+      if (response.status === 429) {
+        errorMessage = 'OpenAI API quota exceeded. Please check your OpenAI account billing and usage limits.';
+      } else if (response.status === 401) {
+        errorMessage = 'Invalid OpenAI API key. Please check your API key configuration.';
+      }
+      
+      return new Response(
+        JSON.stringify({ 
+          error: errorMessage,
+          success: false 
+        }), 
+        {
+          status: response.status,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     const aiResponse = await response.json();
-    console.log('OpenAI response received');
+    console.log('OpenAI response received successfully');
     
     const analysisText = aiResponse.choices[0].message.content;
     console.log('AI analysis text:', analysisText);
@@ -103,15 +139,19 @@ serve(async (req) => {
       const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
       const jsonString = jsonMatch ? jsonMatch[0] : analysisText;
       extractedData = JSON.parse(jsonString);
-      console.log('Extracted data:', extractedData);
+      console.log('Successfully parsed extracted data:', extractedData);
     } catch (parseError) {
       console.error('Failed to parse AI response as JSON:', analysisText);
-      // Return a basic analysis result
-      extractedData = {
-        coverage_summary: "AI analysis completed - manual review recommended",
-        policy_type: null,
-        premium_amount: null
-      };
+      return new Response(
+        JSON.stringify({ 
+          error: 'Failed to parse AI analysis results. The AI response was not in the expected format.',
+          success: false 
+        }), 
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // Update the policy in the database with extracted information
@@ -120,7 +160,7 @@ serve(async (req) => {
     const updateData: any = {};
     const updatedFields: string[] = [];
     
-    if (extractedData.coverage_summary && extractedData.coverage_summary !== "AI analysis completed - manual review recommended") {
+    if (extractedData.coverage_summary && extractedData.coverage_summary.trim() !== '') {
       updateData.coverage_summary = extractedData.coverage_summary;
       updatedFields.push('coverage_summary');
     }
@@ -142,25 +182,33 @@ serve(async (req) => {
     }
 
     console.log('Updating policy with data:', updateData);
+    console.log('Updated fields:', updatedFields);
 
-    // Update the policy with extracted information
-    const { error: updateError } = await supabase
-      .from('policies')
-      .update(updateData)
-      .eq('id', policyId);
+    if (Object.keys(updateData).length > 0) {
+      // Update the policy with extracted information
+      const { error: updateError } = await supabase
+        .from('policies')
+        .update(updateData)
+        .eq('id', policyId);
 
-    if (updateError) {
-      console.error('Error updating policy:', updateError);
-      throw new Error('Failed to update policy with extracted data');
+      if (updateError) {
+        console.error('Error updating policy:', updateError);
+        throw new Error('Failed to update policy with extracted data');
+      }
+
+      console.log('Policy updated successfully with', updatedFields.length, 'fields');
+    } else {
+      console.log('No valid data extracted to update policy');
     }
-
-    console.log('Policy updated successfully');
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         extractedData,
-        updatedFields: updatedFields.length > 0 ? updatedFields : ['analysis_completed']
+        updatedFields: updatedFields.length > 0 ? updatedFields : ['analysis_completed'],
+        message: updatedFields.length > 0 
+          ? `Successfully extracted and updated ${updatedFields.length} field(s): ${updatedFields.join(', ')}`
+          : 'Analysis completed but no extractable data found to update'
       }), 
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -171,11 +219,11 @@ serve(async (req) => {
     console.error('Error in analyze-policy function:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message,
+        error: error.message || 'An unexpected error occurred during analysis',
         success: false 
       }), 
       {
-        status: 400,
+        status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
