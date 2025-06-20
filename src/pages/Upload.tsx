@@ -11,12 +11,15 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import BottomNav from '@/components/BottomNav';
+import type { Database } from '@/integrations/supabase/types';
+
+type PolicyType = Database['public']['Enums']['policy_type_enum'];
 
 const Upload = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
-    policyType: '',
+    policyType: '' as PolicyType | '',
     startDate: '',
     endDate: '',
     monthlyPremium: '',
@@ -43,22 +46,29 @@ const Upload = () => {
       return;
     }
 
+    if (!formData.policyType) {
+      toast({
+        title: "Policy type required",
+        description: "Please select a policy type.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     
     try {
       const { error } = await supabase
         .from('policies')
-        .insert([
-          {
-            user_id: user.id,
-            policy_type: formData.policyType,
-            premium_amount: parseFloat(formData.monthlyPremium),
-            start_date: formData.startDate,
-            end_date: formData.endDate,
-            coverage_summary: formData.coverageSummary || `${formData.policyType} insurance coverage`,
-            document_url: formData.file ? `uploaded/${formData.file.name}` : null
-          }
-        ]);
+        .insert({
+          user_id: user.id,
+          policy_type: formData.policyType as PolicyType,
+          premium_amount: parseFloat(formData.monthlyPremium),
+          start_date: formData.startDate,
+          end_date: formData.endDate,
+          coverage_summary: formData.coverageSummary || `${formData.policyType} insurance coverage`,
+          document_url: formData.file ? `uploaded/${formData.file.name}` : null
+        });
 
       if (error) throw error;
 
@@ -147,11 +157,11 @@ const Upload = () => {
               {/* Policy Type */}
               <div className="space-y-2">
                 <Label htmlFor="policyType">Policy Type</Label>
-                <Select onValueChange={(value) => setFormData(prev => ({ ...prev, policyType: value }))}>
-                  <SelectTrigger className="border-gray-300 focus:border-[#183B6B]">
+                <Select onValueChange={(value) => setFormData(prev => ({ ...prev, policyType: value as PolicyType }))}>
+                  <SelectTrigger className="border-gray-300 focus:border-[#183B6B] bg-white">
                     <SelectValue placeholder="Select policy type" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                     <SelectItem value="health">Health Insurance</SelectItem>
                     <SelectItem value="auto">Auto Insurance</SelectItem>
                     <SelectItem value="life">Life Insurance</SelectItem>

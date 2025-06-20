@@ -36,10 +36,13 @@ const Claims = () => {
   }, [user]);
 
   const fetchPolicies = async () => {
+    if (!user) return;
+    
     try {
       const { data, error } = await supabase
         .from('policies')
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -50,10 +53,13 @@ const Claims = () => {
   };
 
   const fetchClaims = async () => {
+    if (!user) return;
+    
     try {
       const { data, error } = await supabase
         .from('claims')
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -86,16 +92,14 @@ const Claims = () => {
     try {
       const { error } = await supabase
         .from('claims')
-        .insert([
-          {
-            user_id: user.id,
-            policy_id: claimData.policyId,
-            claim_reason: claimData.reason,
-            claim_amount: claimData.claimAmount ? parseFloat(claimData.claimAmount) : null,
-            claim_documents: claimData.supportingDocs ? `uploaded/${claimData.supportingDocs.name}` : null,
-            claim_status: 'pending'
-          }
-        ]);
+        .insert({
+          user_id: user.id,
+          policy_id: claimData.policyId,
+          claim_reason: claimData.reason,
+          claim_amount: claimData.claimAmount ? parseFloat(claimData.claimAmount) : null,
+          claim_documents: claimData.supportingDocs ? `uploaded/${claimData.supportingDocs.name}` : null,
+          claim_status: 'pending'
+        });
 
       if (error) throw error;
 
@@ -183,11 +187,11 @@ const Claims = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="policy">Select Policy</Label>
-                <Select onValueChange={(value) => setClaimData(prev => ({ ...prev, policyId: value }))}>
-                  <SelectTrigger className="border-gray-300 focus:border-[#183B6B]">
+                <Select value={claimData.policyId} onValueChange={(value) => setClaimData(prev => ({ ...prev, policyId: value }))}>
+                  <SelectTrigger className="border-gray-300 focus:border-[#183B6B] bg-white">
                     <SelectValue placeholder="Choose a policy" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                     {policies.map((policy) => (
                       <SelectItem key={policy.id} value={policy.id}>
                         {formatPolicyType(policy.policy_type)} Insurance - ${policy.premium_amount}/month
