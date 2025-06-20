@@ -160,6 +160,7 @@ export type Database = {
           policy_type: Database["public"]["Enums"]["policy_type_enum"]
           premium_amount: number
           start_date: string
+          status: string | null
           updated_at: string | null
           user_id: string
         }
@@ -172,6 +173,7 @@ export type Database = {
           policy_type: Database["public"]["Enums"]["policy_type_enum"]
           premium_amount: number
           start_date: string
+          status?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -184,6 +186,7 @@ export type Database = {
           policy_type?: Database["public"]["Enums"]["policy_type_enum"]
           premium_amount?: number
           start_date?: string
+          status?: string | null
           updated_at?: string | null
           user_id?: string
         }
