@@ -1,10 +1,11 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, TrendingDown, Shield, Zap } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
+import { useEffect } from 'react';
+import { toast } from '@/hooks/use-toast';
 
 const Compare = () => {
   const [offers] = useState([
@@ -55,6 +56,26 @@ const Compare = () => {
   ]);
 
   const totalSavings = offers.reduce((sum, offer) => sum + offer.savings, 0);
+
+  useEffect(() => {
+    handleUrlParams();
+  }, []);
+
+  const handleUrlParams = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+    const fromPolicyId = urlParams.get('from_policy_id');
+    const policyType = urlParams.get('policy_type');
+
+    if (status === 'switching' && fromPolicyId) {
+      toast({
+        title: "Policy Switch Initiated",
+        description: `We're showing you better ${policyType || 'insurance'} options. Compare and choose the best deal for you.`,
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/40 pb-20">
