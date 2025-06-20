@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,16 +7,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { User, Bell, Shield, HelpCircle, LogOut, Edit } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { User, Bell, Shield, HelpCircle, LogOut, Edit, Key, Mail, Phone, MessageSquare } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
+import ProfilePhotoUpload from '@/components/ProfilePhotoUpload';
+import PasswordReset from '@/components/PasswordReset';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [profile, setProfile] = useState({
+    full_name: '',
+    avatar_url: ''
+  });
   const [userInfo, setUserInfo] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+1 (555) 123-4567'
+    name: '',
+    email: user?.email || '',
+    phone: ''
   });
   const [isEditing, setIsEditing] = useState(false);
   const [notifications, setNotifications] = useState({
@@ -25,8 +35,117 @@ const Settings = () => {
     smsAlerts: false,
     policyReminders: true
   });
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
 
-  const handleLogout = () => {
+  useEffect(() => {
+    if (user) {
+      fetchProfile();
+    }
+  }, [user]);
+
+  const fetchProfile = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (data) {
+      setProfile(data);
+      setUserInfo(prev => ({
+        ...prev,
+        name: data.full_name || ''
+      }));
+    }
+  };
+
+  const handlePhotoUpdate = async (url: string) => {
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('profiles')
+      .upsert({
+        id: user.id,
+        avatar_url: url,
+        full_name: profile.full_name
+      });
+
+    if (!error) {
+      setProfile(prev => ({ ...prev, avatar_url: url }));
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          full_name: userInfo.name,
+          avatar_url: profile.avatar_url
+        });
+
+      if (error) throw error;
+
+      setProfile(prev => ({ ...prev, full_name: userInfo.name }));
+      setIsEditing(false);
+      toast({
+        title: "Profile updated",
+        description: "Your profile information has been saved.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error updating profile",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please make sure both passwords are the same.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Password updated",
+        description: "Your password has been successfully changed.",
+      });
+      setPasswordDialogOpen(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
+      toast({
+        title: "Error updating password",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     toast({
       title: "Logged out successfully",
       description: "You have been signed out of your account.",
@@ -34,12 +153,8 @@ const Settings = () => {
     navigate('/');
   };
 
-  const handleSaveProfile = () => {
-    setIsEditing(false);
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been saved.",
-    });
+  const handleContactSupport = () => {
+    window.location.href = 'mailto:support@padlockpolicy.com?subject=Support Request';
   };
 
   return (
@@ -80,46 +195,54 @@ const Settings = () => {
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                value={userInfo.name}
-                onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
-                disabled={!isEditing}
-                className="border-gray-300 focus:border-[#183B6B]"
+          <CardContent className="space-y-6">
+            <div className="flex justify-center">
+              <ProfilePhotoUpload 
+                currentPhotoUrl={profile.avatar_url}
+                onPhotoUpdate={handlePhotoUpdate}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={userInfo.email}
-                onChange={(e) => setUserInfo(prev => ({ ...prev, email: e.target.value }))}
-                disabled={!isEditing}
-                className="border-gray-300 focus:border-[#183B6B]"
-              />
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  value={userInfo.name}
+                  onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
+                  disabled={!isEditing}
+                  className="border-gray-300 focus:border-[#183B6B]"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={userInfo.email}
+                  disabled
+                  className="border-gray-300 bg-gray-100"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  value={userInfo.phone}
+                  onChange={(e) => setUserInfo(prev => ({ ...prev, phone: e.target.value }))}
+                  disabled={!isEditing}
+                  className="border-gray-300 focus:border-[#183B6B]"
+                />
+              </div>
+              {isEditing && (
+                <Button
+                  onClick={handleSaveProfile}
+                  className="w-full bg-[#E2B319] hover:bg-[#d4a617] text-black font-semibold"
+                >
+                  Save Changes
+                </Button>
+              )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                value={userInfo.phone}
-                onChange={(e) => setUserInfo(prev => ({ ...prev, phone: e.target.value }))}
-                disabled={!isEditing}
-                className="border-gray-300 focus:border-[#183B6B]"
-              />
-            </div>
-            {isEditing && (
-              <Button
-                onClick={handleSaveProfile}
-                className="w-full bg-[#E2B319] hover:bg-[#d4a617] text-black font-semibold"
-              >
-                Save Changes
-              </Button>
-            )}
           </CardContent>
         </Card>
 
@@ -195,22 +318,81 @@ const Settings = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start border-gray-300 hover:bg-gray-50"
+                >
+                  <Key className="w-4 h-4 mr-2" />
+                  Change Password
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Change Password</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="border-gray-300 focus:border-[#183B6B]"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="border-gray-300 focus:border-[#183B6B]"
+                    />
+                  </div>
+                  <Button
+                    onClick={handleChangePassword}
+                    className="w-full bg-[#E2B319] hover:bg-[#d4a617] text-black font-semibold"
+                  >
+                    Update Password
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={resetPasswordDialogOpen} onOpenChange={setResetPasswordDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start border-gray-300 hover:bg-gray-50"
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Reset Password via Email
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Reset Password</DialogTitle>
+                </DialogHeader>
+                <PasswordReset />
+              </DialogContent>
+            </Dialog>
+
             <Button 
               variant="outline" 
               className="w-full justify-start border-gray-300 hover:bg-gray-50"
             >
-              Change Password
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start border-gray-300 hover:bg-gray-50"
-            >
+              <Shield className="w-4 h-4 mr-2" />
               Two-Factor Authentication
             </Button>
             <Button 
               variant="outline" 
               className="w-full justify-start border-gray-300 hover:bg-gray-50"
             >
+              <Shield className="w-4 h-4 mr-2" />
               Privacy Settings
             </Button>
           </CardContent>
@@ -228,24 +410,46 @@ const Settings = () => {
             <Button 
               variant="outline" 
               className="w-full justify-start border-gray-300 hover:bg-gray-50"
+              onClick={() => window.open('https://help.padlockpolicy.com', '_blank')}
             >
+              <HelpCircle className="w-4 h-4 mr-2" />
               Help Center
             </Button>
             <Button 
               variant="outline" 
               className="w-full justify-start border-gray-300 hover:bg-gray-50"
+              onClick={handleContactSupport}
             >
+              <Mail className="w-4 h-4 mr-2" />
               Contact Support
             </Button>
             <Button 
               variant="outline" 
               className="w-full justify-start border-gray-300 hover:bg-gray-50"
+              onClick={() => window.open('tel:+1-800-PADLOCK', '_blank')}
+            >
+              <Phone className="w-4 h-4 mr-2" />
+              Call Support
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start border-gray-300 hover:bg-gray-50"
+              onClick={() => window.open('https://chat.padlockpolicy.com', '_blank')}
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Live Chat
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start border-gray-300 hover:bg-gray-50"
+              onClick={() => window.open('/terms', '_blank')}
             >
               Terms of Service
             </Button>
             <Button 
               variant="outline" 
               className="w-full justify-start border-gray-300 hover:bg-gray-50"
+              onClick={() => window.open('/privacy', '_blank')}
             >
               Privacy Policy
             </Button>

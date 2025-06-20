@@ -89,6 +89,8 @@ export type Database = {
       documents: {
         Row: {
           created_at: string | null
+          description: string | null
+          document_category: string | null
           document_type: Database["public"]["Enums"]["document_type_enum"]
           file_size: number | null
           file_url: string
@@ -98,6 +100,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          description?: string | null
+          document_category?: string | null
           document_type: Database["public"]["Enums"]["document_type_enum"]
           file_size?: number | null
           file_url: string
@@ -107,6 +111,8 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          description?: string | null
+          document_category?: string | null
           document_type?: Database["public"]["Enums"]["document_type_enum"]
           file_size?: number | null
           file_url?: string
@@ -180,6 +186,30 @@ export type Database = {
           start_date?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          full_name: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
