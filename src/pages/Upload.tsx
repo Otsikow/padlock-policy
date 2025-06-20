@@ -47,15 +47,24 @@ const Upload = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/40 pb-20">
       {/* Header */}
       <div className="bg-gradient-to-br from-[#183B6B] via-[#2a5490] to-[#1e4a78] text-white p-6 rounded-b-3xl shadow-xl">
-        <div className="flex items-center mb-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/dashboard')}
-            className="text-white hover:bg-white/10 p-2 -ml-2 backdrop-blur-sm"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-xl font-bold ml-2 drop-shadow-md">Upload New Policy</h1>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/dashboard')}
+              className="text-white hover:bg-white/10 p-2 -ml-2 backdrop-blur-sm"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h1 className="text-xl font-bold ml-2 drop-shadow-md">Upload New Policy</h1>
+          </div>
+          <div className="w-10 h-10 bg-gradient-to-br from-white to-gray-100 rounded-xl flex items-center justify-center shadow-lg">
+            <img 
+              src="/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png" 
+              alt="Padlock Logo" 
+              className="w-6 h-6 object-contain"
+            />
+          </div>
         </div>
         <p className="text-white/90 drop-shadow-sm">Add your insurance policy documents</p>
       </div>

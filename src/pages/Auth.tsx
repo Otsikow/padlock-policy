@@ -45,8 +45,12 @@ const Auth = () => {
 
         <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/95 to-white/85 backdrop-blur-lg">
           <CardHeader className="text-center pb-2">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#183B6B] to-[#2a5490] rounded-full flex items-center justify-center shadow-lg">
-              <span className="text-[#E2B319] font-bold text-xl">P</span>
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-white to-gray-100 rounded-2xl flex items-center justify-center shadow-lg">
+              <img 
+                src="/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png" 
+                alt="Padlock Logo" 
+                className="w-12 h-12 object-contain"
+              />
             </div>
             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-[#183B6B] to-[#2a5490] bg-clip-text text-transparent">
               {isSignUp ? 'Create Account' : 'Welcome Back'}

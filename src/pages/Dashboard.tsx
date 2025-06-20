@@ -49,8 +49,12 @@ const Dashboard = () => {
             <h1 className="text-2xl font-bold drop-shadow-md">Welcome back!</h1>
             <p className="text-white/90 drop-shadow-sm">Manage your insurance policies</p>
           </div>
-          <div className="w-12 h-12 bg-gradient-to-br from-[#E2B319] to-[#f5c842] rounded-full flex items-center justify-center shadow-lg">
-            <span className="text-black font-bold text-lg">U</span>
+          <div className="w-12 h-12 bg-gradient-to-br from-white to-gray-100 rounded-full flex items-center justify-center shadow-lg">
+            <img 
+              src="/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png" 
+              alt="Padlock Logo" 
+              className="w-8 h-8 object-contain"
+            />
           </div>
         </div>
 
