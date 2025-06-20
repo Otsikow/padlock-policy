@@ -6,11 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Upload as UploadIcon, File } from 'lucide-react';
+import { ArrowLeft, Upload as UploadIcon, File, Brain, Sparkles } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import BottomNav from '@/components/BottomNav';
+import AIAnalysisIndicator from '@/components/AIAnalysisIndicator';
 import type { Database } from '@/integrations/supabase/types';
 
 type PolicyType = Database['public']['Enums']['policy_type_enum'];
@@ -27,11 +28,32 @@ const Upload = () => {
     file: null as File | null
   });
   const [loading, setLoading] = useState(false);
+  const [uploadedPolicyId, setUploadedPolicyId] = useState<string | null>(null);
+  const [documentText, setDocumentText] = useState<string>('');
+  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setFormData(prev => ({ ...prev, file }));
+      
+      // Try to extract text from the file if it's a text-based format
+      if (file.type === 'text/plain') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const text = e.target?.result as string;
+          setDocumentText(text);
+          setShowAIAnalysis(true);
+        };
+        reader.readAsText(file);
+      } else if (file.type === 'application/pdf') {
+        // For PDF files, we'll show the AI analysis option
+        setShowAIAnalysis(true);
+        toast({
+          title: "PDF Detected",
+          description: "After uploading, you can use AI to analyze this document and auto-fill policy details.",
+        });
+      }
     }
   };
 
@@ -58,7 +80,27 @@ const Upload = () => {
     setLoading(true);
     
     try {
-      const { error } = await supabase
+      // Upload file to storage if present
+      let documentUrl = null;
+      if (formData.file) {
+        const fileExt = formData.file.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `${user.id}/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(filePath, formData.file);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage
+          .from('documents')
+          .getPublicUrl(filePath);
+
+        documentUrl = data.publicUrl;
+      }
+
+      const { data: policyData, error } = await supabase
         .from('policies')
         .insert({
           user_id: user.id,
@@ -67,17 +109,26 @@ const Upload = () => {
           start_date: formData.startDate,
           end_date: formData.endDate,
           coverage_summary: formData.coverageSummary || `${formData.policyType} insurance coverage`,
-          document_url: formData.file ? `uploaded/${formData.file.name}` : null
-        });
+          document_url: documentUrl
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      setUploadedPolicyId(policyData.id);
 
       toast({
         title: "Policy uploaded successfully!",
         description: "Your policy has been added to your dashboard.",
       });
       
-      navigate('/dashboard');
+      // If we have document text, show AI analysis option
+      if (documentText || formData.file) {
+        setShowAIAnalysis(true);
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error: any) {
       toast({
         title: "Upload failed",
@@ -87,6 +138,14 @@ const Upload = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAnalysisComplete = () => {
+    toast({
+      title: "Analysis Complete!",
+      description: "Your policy details have been automatically updated.",
+    });
+    setTimeout(() => navigate('/dashboard'), 2000);
   };
 
   return (
@@ -115,6 +174,21 @@ const Upload = () => {
         <p className="text-white/90 drop-shadow-sm">Add your insurance policy documents</p>
       </div>
 
+      {/* AI Feature Highlight */}
+      <div className="p-6 pb-0">
+        <div className="bg-gradient-to-r from-purple-100 via-blue-100 to-indigo-100 border border-purple-200 rounded-xl p-4 mb-6">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-purple-800">AI-Powered Analysis</h3>
+              <p className="text-sm text-purple-600">Upload your policy document and let AI extract key details automatically!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Content */}
       <div className="p-6">
         <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm">
@@ -128,26 +202,34 @@ const Upload = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* File Upload */}
               <div className="space-y-2">
-                <Label htmlFor="file">Policy Document (PDF/DOC)</Label>
+                <Label htmlFor="file">Policy Document (PDF/DOC/TXT)</Label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#183B6B] transition-colors bg-gradient-to-br from-gray-50/30 to-blue-50/20">
                   <input
                     id="file"
                     type="file"
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf,.doc,.docx,.txt"
                     onChange={handleFileChange}
                     className="hidden"
                   />
                   <label htmlFor="file" className="cursor-pointer">
                     {formData.file ? (
-                      <div className="flex items-center justify-center space-x-2">
-                        <File className="w-8 h-8 text-[#183B6B]" />
-                        <span className="text-[#183B6B] font-medium">{formData.file.name}</span>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-center space-x-2">
+                          <File className="w-8 h-8 text-[#183B6B]" />
+                          <span className="text-[#183B6B] font-medium">{formData.file.name}</span>
+                        </div>
+                        {showAIAnalysis && (
+                          <div className="flex items-center justify-center space-x-2 text-sm text-purple-600">
+                            <Brain className="w-4 h-4" />
+                            <span>Ready for AI analysis</span>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div>
                         <UploadIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
                         <p className="text-gray-600">Click to upload your policy document</p>
-                        <p className="text-xs text-gray-400 mt-1">PDF, DOC, or DOCX files</p>
+                        <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX, or TXT files</p>
                       </div>
                     )}
                   </label>
@@ -233,6 +315,23 @@ const Upload = () => {
                 {loading ? 'Uploading...' : 'Upload Policy'}
               </Button>
             </form>
+
+            {/* AI Analysis Section */}
+            {uploadedPolicyId && showAIAnalysis && (
+              <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-purple-800 mb-1">AI Analysis Available</h3>
+                    <p className="text-sm text-purple-600">Let AI analyze your document to auto-fill policy details</p>
+                  </div>
+                  <AIAnalysisIndicator
+                    policyId={uploadedPolicyId}
+                    documentText={documentText}
+                    onAnalysisComplete={handleAnalysisComplete}
+                  />
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
