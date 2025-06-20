@@ -8,15 +8,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Upload as UploadIcon, File } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import BottomNav from '@/components/BottomNav';
 
 const Upload = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     policyType: '',
     startDate: '',
     endDate: '',
     monthlyPremium: '',
+    coverageSummary: '',
     file: null as File | null
   });
   const [loading, setLoading] = useState(false);
@@ -30,17 +34,49 @@ const Upload = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to upload policies.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     
-    // Simulate upload and save to Supabase
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const { error } = await supabase
+        .from('policies')
+        .insert([
+          {
+            user_id: user.id,
+            policy_type: formData.policyType,
+            premium_amount: parseFloat(formData.monthlyPremium),
+            start_date: formData.startDate,
+            end_date: formData.endDate,
+            coverage_summary: formData.coverageSummary || `${formData.policyType} insurance coverage`,
+            document_url: formData.file ? `uploaded/${formData.file.name}` : null
+          }
+        ]);
+
+      if (error) throw error;
+
       toast({
         title: "Policy uploaded successfully!",
         description: "Your policy has been added to your dashboard.",
       });
+      
       navigate('/dashboard');
-    }, 2000);
+    } catch (error: any) {
+      toast({
+        title: "Upload failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -163,6 +199,19 @@ const Upload = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, monthlyPremium: e.target.value }))}
                   className="border-gray-300 focus:border-[#183B6B]"
                   required
+                />
+              </div>
+
+              {/* Coverage Summary */}
+              <div className="space-y-2">
+                <Label htmlFor="coverageSummary">Coverage Summary (Optional)</Label>
+                <Input
+                  id="coverageSummary"
+                  type="text"
+                  placeholder="Brief description of coverage"
+                  value={formData.coverageSummary}
+                  onChange={(e) => setFormData(prev => ({ ...prev, coverageSummary: e.target.value }))}
+                  className="border-gray-300 focus:border-[#183B6B]"
                 />
               </div>
 

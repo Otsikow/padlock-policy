@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,46 +8,60 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, FileText, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import BottomNav from '@/components/BottomNav';
+import type { Tables } from '@/integrations/supabase/types';
+
+type Policy = Tables<'policies'>;
+type Claim = Tables<'claims'>;
 
 const Claims = () => {
+  const { user } = useAuth();
   const [claimData, setClaimData] = useState({
     policyId: '',
     reason: '',
+    claimAmount: '',
     supportingDocs: null as File | null
   });
   const [loading, setLoading] = useState(false);
+  const [policies, setPolicies] = useState<Policy[]>([]);
+  const [existingClaims, setExistingClaims] = useState<Claim[]>([]);
 
-  // Mock claims data
-  const [existingClaims] = useState([
-    {
-      id: 1,
-      policyName: 'Health Insurance Premium',
-      reason: 'Medical treatment for accident',
-      amount: '$1,200',
-      status: 'Pending',
-      date: '2024-06-15',
-      statusColor: 'bg-yellow-100 text-yellow-800'
-    },
-    {
-      id: 2,
-      policyName: 'Auto Coverage Plan',
-      reason: 'Vehicle collision repair',
-      amount: '$3,500',
-      status: 'Approved',
-      date: '2024-06-10',
-      statusColor: 'bg-green-100 text-green-800'
-    },
-    {
-      id: 3,
-      policyName: 'Life Insurance Policy',
-      reason: 'Annual health checkup',
-      amount: '$150',
-      status: 'Rejected',
-      date: '2024-06-05',
-      statusColor: 'bg-red-100 text-red-800'
+  useEffect(() => {
+    if (user) {
+      fetchPolicies();
+      fetchClaims();
     }
-  ]);
+  }, [user]);
+
+  const fetchPolicies = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('policies')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPolicies(data || []);
+    } catch (error: any) {
+      console.error('Error fetching policies:', error);
+    }
+  };
+
+  const fetchClaims = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('claims')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setExistingClaims(data || []);
+    } catch (error: any) {
+      console.error('Error fetching claims:', error);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -58,29 +72,84 @@ const Claims = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to submit claims.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const { error } = await supabase
+        .from('claims')
+        .insert([
+          {
+            user_id: user.id,
+            policy_id: claimData.policyId,
+            claim_reason: claimData.reason,
+            claim_amount: claimData.claimAmount ? parseFloat(claimData.claimAmount) : null,
+            claim_documents: claimData.supportingDocs ? `uploaded/${claimData.supportingDocs.name}` : null,
+            claim_status: 'pending'
+          }
+        ]);
+
+      if (error) throw error;
+
       toast({
         title: "Claim submitted successfully!",
         description: "We'll review your claim and get back to you soon.",
       });
-      setClaimData({ policyId: '', reason: '', supportingDocs: null });
-    }, 1500);
+      
+      setClaimData({ policyId: '', reason: '', claimAmount: '', supportingDocs: null });
+      fetchClaims(); // Refresh claims list
+    } catch (error: any) {
+      toast({
+        title: "Claim submission failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'Pending':
+      case 'pending':
         return <Clock className="w-4 h-4" />;
-      case 'Approved':
+      case 'approved':
         return <CheckCircle className="w-4 h-4" />;
-      case 'Rejected':
+      case 'rejected':
         return <XCircle className="w-4 h-4" />;
       default:
         return <Clock className="w-4 h-4" />;
     }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'approved':
+        return 'bg-green-100 text-green-800';
+      case 'rejected':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const formatPolicyType = (type: string) => {
+    return type.charAt(0).toUpperCase() + type.slice(1);
+  };
+
+  const getPolicyName = (policyId: string) => {
+    const policy = policies.find(p => p.id === policyId);
+    return policy ? `${formatPolicyType(policy.policy_type)} Insurance` : 'Unknown Policy';
   };
 
   return (
@@ -119,9 +188,11 @@ const Claims = () => {
                     <SelectValue placeholder="Choose a policy" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="health">Health Insurance Premium</SelectItem>
-                    <SelectItem value="auto">Auto Coverage Plan</SelectItem>
-                    <SelectItem value="life">Life Insurance Policy</SelectItem>
+                    {policies.map((policy) => (
+                      <SelectItem key={policy.id} value={policy.id}>
+                        {formatPolicyType(policy.policy_type)} Insurance - ${policy.premium_amount}/month
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -135,6 +206,19 @@ const Claims = () => {
                   onChange={(e) => setClaimData(prev => ({ ...prev, reason: e.target.value }))}
                   className="border-gray-300 focus:border-[#183B6B] min-h-[100px]"
                   required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="claimAmount">Claim Amount ($) - Optional</Label>
+                <Input
+                  id="claimAmount"
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={claimData.claimAmount}
+                  onChange={(e) => setClaimData(prev => ({ ...prev, claimAmount: e.target.value }))}
+                  className="border-gray-300 focus:border-[#183B6B]"
                 />
               </div>
 
@@ -167,7 +251,7 @@ const Claims = () => {
 
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !claimData.policyId}
                 className="w-full bg-[#E2B319] hover:bg-[#d4a617] text-black font-semibold py-3 rounded-lg"
               >
                 {loading ? 'Submitting...' : 'Submit Claim'}
@@ -183,24 +267,33 @@ const Claims = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {existingClaims.map((claim) => (
-                <div key={claim.id} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h3 className="font-semibold text-[#183B6B]">{claim.policyName}</h3>
-                      <p className="text-sm text-gray-600 mt-1">{claim.reason}</p>
-                    </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${claim.statusColor}`}>
-                      {getStatusIcon(claim.status)}
-                      <span>{claim.status}</span>
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm text-gray-500">
-                    <span>Amount: {claim.amount}</span>
-                    <span>{claim.date}</span>
-                  </div>
+              {existingClaims.length === 0 ? (
+                <div className="text-center py-8">
+                  <FileText className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                  <p className="text-gray-500">No claims submitted yet</p>
                 </div>
-              ))}
+              ) : (
+                existingClaims.map((claim) => (
+                  <div key={claim.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="font-semibold text-[#183B6B]">{getPolicyName(claim.policy_id)}</h3>
+                        <p className="text-sm text-gray-600 mt-1">{claim.claim_reason}</p>
+                      </div>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${getStatusColor(claim.claim_status || 'pending')}`}>
+                        {getStatusIcon(claim.claim_status || 'pending')}
+                        <span>{claim.claim_status || 'Pending'}</span>
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm text-gray-500">
+                      <span>
+                        {claim.claim_amount ? `Amount: $${Number(claim.claim_amount).toFixed(2)}` : 'Amount: TBD'}
+                      </span>
+                      <span>{new Date(claim.created_at || '').toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
