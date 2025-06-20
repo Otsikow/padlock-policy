@@ -29,7 +29,8 @@ const AIAnalysisIndicator = ({
       policyId, 
       hasDocumentText: !!documentText, 
       documentLength: documentText?.length,
-      hasDocumentUrl: !!documentUrl 
+      hasDocumentUrl: !!documentUrl,
+      hasOnPolicyIdNeeded: !!onPolicyIdNeeded
     });
     
     setAnalyzing(true);
@@ -45,11 +46,18 @@ const AIAnalysisIndicator = ({
         if (!currentPolicyId) {
           throw new Error('Failed to create temporary policy for analysis');
         }
+        console.log('Temporary policy created:', currentPolicyId);
       }
 
       if (!currentPolicyId) {
         throw new Error('No policy ID available for analysis');
       }
+
+      console.log('Calling analyze-policy function with:', {
+        policyId: currentPolicyId,
+        hasDocumentText: !!documentText,
+        hasDocumentUrl: !!documentUrl
+      });
 
       const { data, error } = await supabase.functions.invoke('analyze-policy', {
         body: {
@@ -146,10 +154,20 @@ const AIAnalysisIndicator = ({
     );
   }
 
+  const isButtonDisabled = analyzing || (!documentText && !documentUrl && !onPolicyIdNeeded);
+
+  console.log('Button state:', {
+    analyzing,
+    hasDocumentText: !!documentText,
+    hasDocumentUrl: !!documentUrl,
+    hasOnPolicyIdNeeded: !!onPolicyIdNeeded,
+    isButtonDisabled
+  });
+
   return (
     <Button
       onClick={analyzeDocument}
-      disabled={analyzing || (!documentText && !documentUrl)}
+      disabled={isButtonDisabled}
       variant="outline"
       size="sm"
       className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:border-purple-300"

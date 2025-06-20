@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -36,6 +37,7 @@ const Upload = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      console.log('File selected:', file.name, file.type, file.size);
       setFormData(prev => ({ ...prev, file }));
       
       // Try to extract text from the file if it's a text-based format
@@ -43,19 +45,14 @@ const Upload = () => {
         const reader = new FileReader();
         reader.onload = (e) => {
           const text = e.target?.result as string;
+          console.log('Text extracted from file:', text.length, 'characters');
           setDocumentText(text);
           setShowAIAnalysis(true);
         };
         reader.readAsText(file);
-      } else if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-        // For PDF files, we'll let the AI analysis handle text extraction
-        setShowAIAnalysis(true);
-        toast({
-          title: "PDF Document Detected",
-          description: "You can now use AI to analyze your PDF and auto-fill policy details.",
-        });
       } else {
-        // For other file types (DOC, DOCX, etc.), we'll show the AI analysis option
+        // For PDF and other files, we'll show the AI analysis option
+        console.log('Non-text file detected, enabling AI analysis');
         setShowAIAnalysis(true);
         toast({
           title: "Document Detected",
@@ -148,6 +145,7 @@ const Upload = () => {
   };
 
   const handleAnalysisComplete = (analysisResult?: any) => {
+    console.log('Analysis complete, result:', analysisResult);
     // Update form data with analysis results
     if (analysisResult) {
       setFormData(prev => ({
@@ -166,8 +164,18 @@ const Upload = () => {
   };
 
   // Create a temporary policy for AI analysis before upload
-  const createTemporaryPolicyForAnalysis = async () => {
-    if (!user || !formData.file || tempPolicyForAnalysis) return tempPolicyForAnalysis;
+  const createTemporaryPolicyForAnalysis = async (): Promise<string | null> => {
+    if (!user || !formData.file) {
+      console.log('Cannot create temp policy - missing user or file');
+      return null;
+    }
+
+    if (tempPolicyForAnalysis) {
+      console.log('Temp policy already exists:', tempPolicyForAnalysis);
+      return tempPolicyForAnalysis;
+    }
+
+    console.log('Creating temporary policy for analysis...');
 
     try {
       // Upload file to storage first
@@ -175,16 +183,22 @@ const Upload = () => {
       const fileName = `temp_${Date.now()}.${fileExt}`;
       const filePath = `${user.id}/${fileName}`;
 
+      console.log('Uploading file to:', filePath);
+
       const { error: uploadError } = await supabase.storage
         .from('documents')
         .upload(filePath, formData.file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('File upload error:', uploadError);
+        throw uploadError;
+      }
 
       const { data } = supabase.storage
         .from('documents')
         .getPublicUrl(filePath);
 
+      console.log('File uploaded, public URL:', data.publicUrl);
       setDocumentUrl(data.publicUrl);
 
       // Create a temporary policy for analysis
@@ -202,7 +216,12 @@ const Upload = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Policy creation error:', error);
+        throw error;
+      }
+
+      console.log('Temporary policy created:', policyData.id);
       setTempPolicyForAnalysis(policyData.id);
       return policyData.id;
     } catch (error) {
