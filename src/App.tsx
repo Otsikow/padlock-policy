@@ -44,66 +44,70 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const AppContent = () => (
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/auth" element={<Auth />} />
+      <Route 
+        path="/dashboard" 
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/upload" 
+        element={
+          <ProtectedRoute>
+            <Upload />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/claims" 
+        element={
+          <ProtectedRoute>
+            <Claims />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/compare" 
+        element={
+          <ProtectedRoute>
+            <Compare />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/vault" 
+        element={
+          <ProtectedRoute>
+            <Vault />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/settings" 
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        } 
+      />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  </BrowserRouter>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+    <TooltipProvider delayDuration={300}>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/upload" 
-            element={
-              <ProtectedRoute>
-                <Upload />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/claims" 
-            element={
-              <ProtectedRoute>
-                <Claims />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/compare" 
-            element={
-              <ProtectedRoute>
-                <Compare />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/vault" 
-            element={
-              <ProtectedRoute>
-                <Vault />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/settings" 
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            } 
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AppContent />
     </TooltipProvider>
   </QueryClientProvider>
 );
