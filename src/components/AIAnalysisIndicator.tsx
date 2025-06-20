@@ -37,7 +37,7 @@ const AIAnalysisIndicator = ({ policyId, documentText, documentUrl, onAnalysisCo
         }
       });
 
-      console.log('AI analysis response:', data, error);
+      console.log('AI analysis response:', { data, error });
 
       if (error) {
         console.error('Supabase function error:', error);
@@ -68,6 +68,8 @@ const AIAnalysisIndicator = ({ policyId, documentText, documentUrl, onAnalysisCo
         errorMessage = 'OpenAI API configuration issue. Please contact support.';
       } else if (errorMessage.includes('No document text') || errorMessage.includes('extract text from')) {
         errorMessage = 'Unable to extract text from the document. Please try uploading a text file (.txt) or ensure your PDF contains extractable text (not just images).';
+      } else if (errorMessage.includes('Failed to fetch')) {
+        errorMessage = 'Unable to access the uploaded document. Please try uploading the file again.';
       }
       
       setAnalysisError(errorMessage);

@@ -12,52 +12,61 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Function to extract text from PDF using a simple approach
+// Simple PDF text extraction function
 async function extractTextFromPDF(pdfUrl: string): Promise<string> {
   try {
     console.log('Attempting to extract text from PDF:', pdfUrl);
     
-    // For now, we'll use a simple approach that works with basic PDFs
-    // In production, you might want to use a more robust PDF parsing service
     const response = await fetch(pdfUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch PDF: ${response.statusText}`);
+    }
+    
     const arrayBuffer = await response.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     
-    // Convert PDF binary to text (this is a simplified approach)
-    // For better PDF parsing, consider using pdf-parse or similar libraries
-    let text = '';
+    // Simple text extraction - look for readable text patterns
     const decoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: false });
+    const pdfString = decoder.decode(uint8Array);
     
-    try {
-      // Try to extract readable text from PDF
-      const pdfString = decoder.decode(uint8Array);
-      
-      // Look for text patterns in PDF
-      const textMatches = pdfString.match(/BT\s*(.*?)\s*ET/g) || [];
-      const streamMatches = pdfString.match(/stream\s*(.*?)\s*endstream/gs) || [];
-      
-      // Extract text from BT/ET blocks (simple text extraction)
-      textMatches.forEach(match => {
-        const content = match.replace(/BT|ET/g, '').trim();
-        text += content + ' ';
-      });
-      
-      // Also try to extract from readable parts of the PDF
-      const readableText = pdfString.replace(/[^\x20-\x7E\n\r\t]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-      
-      if (readableText.length > text.length) {
-        text = readableText;
+    // Extract text between common PDF text markers
+    let extractedText = '';
+    
+    // Look for text streams and patterns
+    const textPatterns = [
+      /\((.*?)\)/g,  // Text in parentheses
+      /\[(.*?)\]/g,  // Text in brackets
+      /BT\s*(.*?)\s*ET/gs,  // BT/ET blocks
+    ];
+    
+    textPatterns.forEach(pattern => {
+      const matches = pdfString.match(pattern);
+      if (matches) {
+        matches.forEach(match => {
+          const cleaned = match.replace(/[()[\]BT ET]/g, '').trim();
+          if (cleaned.length > 3 && /[a-zA-Z]/.test(cleaned)) {
+            extractedText += cleaned + ' ';
+          }
+        });
       }
+    });
+    
+    // Fallback: extract readable ASCII text
+    if (extractedText.length < 100) {
+      const readableText = pdfString
+        .replace(/[^\x20-\x7E\n\r\t]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .split(' ')
+        .filter(word => word.length > 2 && /[a-zA-Z]/.test(word))
+        .join(' ');
       
-      console.log('Extracted text length:', text.length);
-      return text.substring(0, 8000); // Limit text length
-      
-    } catch (decodeError) {
-      console.error('Error decoding PDF:', decodeError);
-      throw new Error('Unable to extract text from PDF. The PDF might be image-based or encrypted.');
+      if (readableText.length > extractedText.length) {
+        extractedText = readableText;
+      }
     }
+    
+    console.log('Extracted text length:', extractedText.length);
+    return extractedText.substring(0, 8000); // Limit text length
     
   } catch (error) {
     console.error('PDF extraction error:', error);
@@ -110,12 +119,22 @@ serve(async (req) => {
         if (documentUrl.toLowerCase().includes('.pdf')) {
           textToAnalyze = await extractTextFromPDF(documentUrl);
           console.log('Successfully extracted text from PDF, length:', textToAnalyze.length);
-        } else {
-          // For other file types, try to fetch as text
+        } else if (documentUrl.toLowerCase().includes('.txt')) {
+          // For text files, fetch directly
           const response = await fetch(documentUrl);
           if (response.ok) {
             textToAnalyze = await response.text();
-            console.log('Successfully extracted text from document, length:', textToAnalyze.length);
+            console.log('Successfully extracted text from text file, length:', textToAnalyze.length);
+          } else {
+            throw new Error(`Failed to fetch text document: ${response.statusText}`);
+          }
+        } else {
+          // For other file types (DOC, DOCX), we'll try as text but warn user
+          console.log('Attempting to extract text from non-PDF document');
+          const response = await fetch(documentUrl);
+          if (response.ok) {
+            textToAnalyze = await response.text();
+            console.log('Extracted text from document, length:', textToAnalyze.length);
           } else {
             throw new Error(`Failed to fetch document: ${response.statusText}`);
           }
@@ -124,7 +143,7 @@ serve(async (req) => {
         console.error('Document extraction error:', extractionError);
         return new Response(
           JSON.stringify({ 
-            error: `Failed to extract text from document: ${extractionError.message}. Please try uploading a text file (.txt) or ensure the PDF contains extractable text.`,
+            error: `Failed to extract text from document: ${extractionError.message}. For best results, please upload a PDF with extractable text or a plain text file (.txt).`,
             success: false 
           }), 
           {
@@ -139,7 +158,7 @@ serve(async (req) => {
       console.log('No document text available for analysis');
       return new Response(
         JSON.stringify({ 
-          error: 'No document text available for analysis. Please upload a text file (.txt) or a PDF with extractable text.',
+          error: 'No document text available for analysis. Please upload a PDF with extractable text or a plain text file (.txt).',
           success: false 
         }), 
         {
@@ -299,7 +318,7 @@ serve(async (req) => {
         updatedFields: updatedFields.length > 0 ? updatedFields : ['analysis_completed'],
         message: updatedFields.length > 0 
           ? `Successfully extracted and updated ${updatedFields.length} field(s): ${updatedFields.join(', ')}`
-          : 'Analysis completed but no extractable data found to update'
+          : 'Analysis completed successfully but no extractable policy data was found to update'
       }), 
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
