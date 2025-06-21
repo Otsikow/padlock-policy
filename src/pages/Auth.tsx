@@ -93,7 +93,7 @@ const Auth = () => {
 
   if (showPasswordReset) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <Button
             variant="ghost"
@@ -110,28 +110,28 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Logo and Header */}
         <div className="text-center space-y-4">
           <div className="flex justify-center">
             <img 
-              src="/lovable-uploads/da2d5e44-7846-4551-bd2b-b08a7a2190dc.png"
+              src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png"
               alt="Padlock Insurance Logo"
               className="h-16 w-auto"
             />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Welcome to Padlock</h1>
+            <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600">Welcome to Padlock</h1>
             <p className="text-gray-600 mt-2">Your intelligent insurance companion</p>
           </div>
         </div>
 
-        <Card className="border-0 shadow-xl">
+        <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
           <CardHeader className="space-y-1 pb-4">
-            <div className="flex items-center justify-center space-x-2 text-blue-600">
-              <Shield className="h-5 w-5" />
-              <CardTitle className="text-xl">Get Started</CardTitle>
+            <div className="flex items-center justify-center space-x-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+              <Shield className="h-5 w-5 text-purple-600" />
+              <CardTitle className="text-xl text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Get Started</CardTitle>
             </div>
             <CardDescription className="text-center">
               Sign in to your account or create a new one
@@ -180,7 +180,7 @@ const Auth = () => {
                   </div>
                   <Button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                     disabled={loading}
                   >
                     {loading ? "Signing in..." : "Sign In"}
@@ -190,7 +190,7 @@ const Auth = () => {
                       type="button"
                       variant="link"
                       onClick={() => setShowPasswordReset(true)}
-                      className="text-sm text-blue-600 hover:text-blue-800"
+                      className="text-sm text-purple-600 hover:text-purple-800"
                     >
                       Forgot your password?
                     </Button>
@@ -262,7 +262,7 @@ const Auth = () => {
                   </div>
                   <Button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                     disabled={loading}
                   >
                     {loading ? "Creating account..." : "Create Account"}
