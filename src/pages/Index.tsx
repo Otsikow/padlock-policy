@@ -201,9 +201,7 @@ const Index = () => {
           <h2 className="text-4xl font-bold mb-6">
             Ready to Transform Your Insurance Experience?
           </h2>
-          <p className="text-xl mb-8 text-purple-100">
-            Join thousands who trust PadLock to manage their insurance policies smarter.
-          </p>
+          <p className="text-xl mb-8 text-purple-100">Join thousands who trust Padlock to manage their insurance policies smarter.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" className="text-lg px-8 py-4 bg-white text-purple-600 hover:bg-purple-50 shadow-lg" asChild>
               <Link to="/auth">
