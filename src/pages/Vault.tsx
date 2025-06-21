@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -119,7 +118,7 @@ const Vault = () => {
         <div className="text-center">
           <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-white to-gray-100 rounded-full flex items-center justify-center shadow-lg">
             <img 
-              src="/lovable-uploads/6f4f2ad0-19b7-4654-b9bf-35b79aadc6b7.png" 
+              src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png" 
               alt="PadLock Logo" 
               className="w-8 h-8 object-contain"
             />
@@ -138,7 +137,7 @@ const Vault = () => {
           <h1 className="text-2xl font-bold">Document Vault</h1>
           <div className="w-10 h-10 bg-gradient-to-br from-white to-gray-100 rounded-xl flex items-center justify-center shadow-lg">
             <img 
-              src="/lovable-uploads/6f4f2ad0-19b7-4654-b9bf-35b79aadc6b7.png" 
+              src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png" 
               alt="PadLock Logo" 
               className="w-6 h-6 object-contain"
             />

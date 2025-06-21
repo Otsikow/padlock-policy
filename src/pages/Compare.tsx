@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -110,7 +109,7 @@ const Compare = () => {
           </div>
           <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-white via-gray-100 to-gray-200 rounded-xl flex items-center justify-center shadow-xl">
             <img 
-              src="/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png" 
+              src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png" 
               alt="Padlock Logo" 
               className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
             />

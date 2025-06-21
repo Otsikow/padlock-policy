@@ -21,6 +21,7 @@ type Claim = Tables<'claims'>;
 const Claims = () => {
   const { user } = useAuth();
   const { formatAmount, currency } = useCurrency();
+  
   const [claimData, setClaimData] = useState({
     policyId: '',
     reason: '',
@@ -246,7 +247,7 @@ const Claims = () => {
           <h1 className="text-2xl font-bold">Claims Management</h1>
           <div className="w-10 h-10 bg-gradient-to-br from-white to-gray-100 rounded-xl flex items-center justify-center shadow-lg">
             <img 
-              src="/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png" 
+              src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png" 
               alt="Padlock Logo" 
               className="w-6 h-6 object-contain"
             />
