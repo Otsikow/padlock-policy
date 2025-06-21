@@ -11,13 +11,14 @@ import { useAuth } from '@/hooks/useAuth';
 
 interface DocumentUploadProps {
   onUploadComplete: () => void;
+  documentType?: string;
 }
 
-const DocumentUpload = ({ onUploadComplete }: DocumentUploadProps) => {
+const DocumentUpload = ({ onUploadComplete, documentType }: DocumentUploadProps) => {
   const { user } = useAuth();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(documentType || '');
   const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
 
@@ -32,7 +33,8 @@ const DocumentUpload = ({ onUploadComplete }: DocumentUploadProps) => {
   };
 
   const handleUpload = async () => {
-    if (!selectedFile || !title || !category || !user) {
+    const finalCategory = documentType || category;
+    if (!selectedFile || !title || !finalCategory || !user) {
       toast({
         title: "Missing information",
         description: "Please fill in all required fields and select a file.",
@@ -63,8 +65,8 @@ const DocumentUpload = ({ onUploadComplete }: DocumentUploadProps) => {
         .insert({
           user_id: user.id,
           title,
-          document_type: category as any,
-          document_category: category,
+          document_type: finalCategory as any,
+          document_category: finalCategory,
           description,
           file_url: data.publicUrl,
           file_size: selectedFile.size
@@ -80,7 +82,7 @@ const DocumentUpload = ({ onUploadComplete }: DocumentUploadProps) => {
       // Reset form
       setSelectedFile(null);
       setTitle('');
-      setCategory('');
+      setCategory(documentType || '');
       setDescription('');
       onUploadComplete();
     } catch (error: any) {
@@ -133,24 +135,26 @@ const DocumentUpload = ({ onUploadComplete }: DocumentUploadProps) => {
             />
           </div>
 
-          <div>
-            <Label htmlFor="category">Document Category</Label>
-            <Select onValueChange={setCategory}>
-              <SelectTrigger className="border-gray-300 focus:border-[#183B6B]">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="policy">Insurance Policy</SelectItem>
-                <SelectItem value="receipt">Receipt/Bill</SelectItem>
-                <SelectItem value="id">ID Document</SelectItem>
-                <SelectItem value="claim">Claim Document</SelectItem>
-                <SelectItem value="medical">Medical Record</SelectItem>
-                <SelectItem value="financial">Financial Document</SelectItem>
-                <SelectItem value="legal">Legal Document</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {!documentType && (
+            <div>
+              <Label htmlFor="category">Document Category</Label>
+              <Select onValueChange={setCategory}>
+                <SelectTrigger className="border-gray-300 focus:border-[#183B6B]">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="policy">Insurance Policy</SelectItem>
+                  <SelectItem value="receipt">Receipt/Bill</SelectItem>
+                  <SelectItem value="id">ID Document</SelectItem>
+                  <SelectItem value="claim">Claim Document</SelectItem>
+                  <SelectItem value="medical">Medical Record</SelectItem>
+                  <SelectItem value="financial">Financial Document</SelectItem>
+                  <SelectItem value="legal">Legal Document</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div>
             <Label htmlFor="description">Description (Optional)</Label>
