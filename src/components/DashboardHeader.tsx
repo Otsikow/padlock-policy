@@ -9,9 +9,21 @@ import CurrencySelector from './CurrencySelector';
 
 interface DashboardHeaderProps {
   notifications?: number;
+  userEmail?: string;
+  policiesCount?: number;
+  totalPremium?: string;
+  onSignOut?: () => void;
+  onUploadClick?: () => void;
 }
 
-const DashboardHeader = ({ notifications = 0 }: DashboardHeaderProps) => {
+const DashboardHeader = ({ 
+  notifications = 0,
+  userEmail,
+  policiesCount,
+  totalPremium,
+  onSignOut,
+  onUploadClick
+}: DashboardHeaderProps) => {
   const { user } = useAuth();
 
   return (
@@ -20,7 +32,7 @@ const DashboardHeader = ({ notifications = 0 }: DashboardHeaderProps) => {
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 bg-gradient-to-br from-white to-gray-100 rounded-xl flex items-center justify-center shadow-lg">
             <img 
-              src="/lovable-uploads/6f4f2ad0-19b7-4654-b9bf-35b79aadc6b7.png" 
+              src="/lovable-uploads/da2d5e44-7846-4551-bd2b-b08a7a2190dc.png" 
               alt="PadLock Logo" 
               className="w-8 h-8 object-contain"
             />
