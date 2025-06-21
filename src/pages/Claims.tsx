@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +10,7 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import BottomNav from '@/components/BottomNav';
+import ClaimRiskIndicator from '@/components/ClaimRiskIndicator';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Policy = Tables<'policies'>;
@@ -27,6 +27,7 @@ const Claims = () => {
   const [loading, setLoading] = useState(false);
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [existingClaims, setExistingClaims] = useState<Claim[]>([]);
+  const [riskAnalysis, setRiskAnalysis] = useState<any>(null);
 
   useEffect(() => {
     if (user) {
@@ -90,16 +91,24 @@ const Claims = () => {
     setLoading(true);
     
     try {
+      const claimInsertData: any = {
+        user_id: user.id,
+        policy_id: claimData.policyId,
+        claim_reason: claimData.reason,
+        claim_amount: claimData.claimAmount ? parseFloat(claimData.claimAmount) : null,
+        claim_documents: claimData.supportingDocs ? `uploaded/${claimData.supportingDocs.name}` : null,
+        claim_status: 'pending'
+      };
+
+      // Add AI risk analysis if available
+      if (riskAnalysis) {
+        claimInsertData.ai_risk_score = riskAnalysis.risk_score;
+        claimInsertData.risk_factors = riskAnalysis.risk_factors;
+      }
+
       const { error } = await supabase
         .from('claims')
-        .insert({
-          user_id: user.id,
-          policy_id: claimData.policyId,
-          claim_reason: claimData.reason,
-          claim_amount: claimData.claimAmount ? parseFloat(claimData.claimAmount) : null,
-          claim_documents: claimData.supportingDocs ? `uploaded/${claimData.supportingDocs.name}` : null,
-          claim_status: 'pending'
-        });
+        .insert(claimInsertData);
 
       if (error) throw error;
 
@@ -109,6 +118,7 @@ const Claims = () => {
       });
       
       setClaimData({ policyId: '', reason: '', claimAmount: '', supportingDocs: null });
+      setRiskAnalysis(null);
       fetchClaims(); // Refresh claims list
     } catch (error: any) {
       toast({
@@ -154,6 +164,10 @@ const Claims = () => {
   const getPolicyName = (policyId: string) => {
     const policy = policies.find(p => p.id === policyId);
     return policy ? `${formatPolicyType(policy.policy_type)} Insurance` : 'Unknown Policy';
+  };
+
+  const getSelectedPolicy = () => {
+    return policies.find(p => p.id === claimData.policyId);
   };
 
   return (
@@ -226,6 +240,18 @@ const Claims = () => {
                 />
               </div>
 
+              {/* AI Risk Analysis */}
+              {claimData.policyId && claimData.reason && (
+                <ClaimRiskIndicator
+                  claimData={{
+                    policy_type: getSelectedPolicy()?.policy_type || '',
+                    claim_reason: claimData.reason,
+                    claim_amount: claimData.claimAmount ? parseFloat(claimData.claimAmount) : undefined,
+                  }}
+                  onRiskAnalysis={setRiskAnalysis}
+                />
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="documents">Supporting Documents</Label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-[#183B6B] transition-colors">
@@ -283,6 +309,13 @@ const Claims = () => {
                       <div>
                         <h3 className="font-semibold text-[#183B6B]">{getPolicyName(claim.policy_id)}</h3>
                         <p className="text-sm text-gray-600 mt-1">{claim.claim_reason}</p>
+                        {claim.ai_risk_score && (
+                          <div className="mt-2">
+                            <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
+                              AI Risk Score: {claim.ai_risk_score}/100
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${getStatusColor(claim.claim_status || 'pending')}`}>
                         {getStatusIcon(claim.claim_status || 'pending')}

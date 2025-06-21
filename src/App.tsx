@@ -13,6 +13,7 @@ import Claims from "./pages/Claims";
 import Compare from "./pages/Compare";
 import Vault from "./pages/Vault";
 import Settings from "./pages/Settings";
+import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -86,6 +87,14 @@ const AppContent = () => (
         element={
           <ProtectedRoute>
             <Vault />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/chat" 
+        element={
+          <ProtectedRoute>
+            <Chat />
           </ProtectedRoute>
         } 
       />

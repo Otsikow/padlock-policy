@@ -1,7 +1,9 @@
 
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, DollarSign } from 'lucide-react';
+import { Calendar, DollarSign, ChevronDown, ChevronUp } from 'lucide-react';
+import PolicyAISummary from './PolicyAISummary';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Policy = Tables<'policies'>;
@@ -13,6 +15,8 @@ interface PolicyCardProps {
 }
 
 const PolicyCard = ({ policy, onCancel, onSwitch }: PolicyCardProps) => {
+  const [showAISummary, setShowAISummary] = useState(false);
+
   const formatPolicyType = (type: string) => {
     return type.charAt(0).toUpperCase() + type.slice(1);
   };
@@ -49,6 +53,25 @@ const PolicyCard = ({ policy, onCancel, onSwitch }: PolicyCardProps) => {
             <DollarSign className="w-4 h-4 mr-1" />
             ${Number(policy.premium_amount).toFixed(2)}/month
           </div>
+        </div>
+
+        {/* AI Summary Toggle */}
+        <div className="mb-4">
+          <Button
+            onClick={() => setShowAISummary(!showAISummary)}
+            variant="outline"
+            size="sm"
+            className="w-full justify-between text-purple-600 border-purple-200 hover:bg-purple-50"
+          >
+            <span>AI Policy Analysis</span>
+            {showAISummary ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </Button>
+          
+          {showAISummary && (
+            <div className="mt-3">
+              <PolicyAISummary policy={policy} />
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}

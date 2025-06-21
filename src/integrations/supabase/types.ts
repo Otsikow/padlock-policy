@@ -9,8 +9,65 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      chat_conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string | null
+          id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       claims: {
         Row: {
+          ai_risk_score: number | null
           claim_amount: number | null
           claim_documents: string | null
           claim_reason: string
@@ -18,10 +75,12 @@ export type Database = {
           created_at: string | null
           id: string
           policy_id: string
+          risk_factors: string[] | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          ai_risk_score?: number | null
           claim_amount?: number | null
           claim_documents?: string | null
           claim_reason: string
@@ -29,10 +88,12 @@ export type Database = {
           created_at?: string | null
           id?: string
           policy_id: string
+          risk_factors?: string[] | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          ai_risk_score?: number | null
           claim_amount?: number | null
           claim_documents?: string | null
           claim_reason?: string
@@ -40,6 +101,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           policy_id?: string
+          risk_factors?: string[] | null
           updated_at?: string | null
           user_id?: string
         }
@@ -152,10 +214,12 @@ export type Database = {
       }
       policies: {
         Row: {
+          ai_summary: string | null
           coverage_summary: string | null
           created_at: string | null
           document_url: string | null
           end_date: string
+          fine_print_summary: string | null
           id: string
           policy_type: Database["public"]["Enums"]["policy_type_enum"]
           premium_amount: number
@@ -165,10 +229,12 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_summary?: string | null
           coverage_summary?: string | null
           created_at?: string | null
           document_url?: string | null
           end_date: string
+          fine_print_summary?: string | null
           id?: string
           policy_type: Database["public"]["Enums"]["policy_type_enum"]
           premium_amount: number
@@ -178,10 +244,12 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_summary?: string | null
           coverage_summary?: string | null
           created_at?: string | null
           document_url?: string | null
           end_date?: string
+          fine_print_summary?: string | null
           id?: string
           policy_type?: Database["public"]["Enums"]["policy_type_enum"]
           premium_amount?: number
