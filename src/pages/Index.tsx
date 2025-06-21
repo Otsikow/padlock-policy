@@ -69,7 +69,7 @@ const Index = () => {
       {/* Hero Section */}
       <section className="px-6 py-20 text-center">
         <div className="max-w-4xl mx-auto">
-          <Badge variant="secondary" className="mb-6 bg-blue-100 text-blue-800">
+          <Badge variant="secondary" className="mb-6 bg-blue-100 text-blue-800 text-lg px-6 py-3">
             🚀 AI-Powered Insurance Management
           </Badge>
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
