@@ -5,12 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Upload as UploadIcon, File, Brain, Sparkles } from 'lucide-react';
+import { ArrowLeft, Upload as UploadIcon, File, Brain, Sparkles, Camera } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import BottomNav from '@/components/BottomNav';
 import AIAnalysisIndicator from '@/components/AIAnalysisIndicator';
+import CameraCapture from '@/components/CameraCapture';
 import type { Database } from '@/integrations/supabase/types';
 
 type PolicyType = Database['public']['Enums']['policy_type_enum'];
@@ -33,6 +34,7 @@ const Upload = () => {
   const [documentUrl, setDocumentUrl] = useState<string>('');
   const [showAIAnalysis, setShowAIAnalysis] = useState(false);
   const [tempPolicyForAnalysis, setTempPolicyForAnalysis] = useState<string | null>(null);
+  const [showCamera, setShowCamera] = useState(false);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -61,6 +63,16 @@ const Upload = () => {
         });
       }
     }
+  };
+
+  const handleCameraCapture = (file: File) => {
+    console.log('Camera captured file:', file.name, file.type, file.size);
+    setFormData(prev => ({ ...prev, file }));
+    setShowAIAnalysis(true);
+    toast({
+      title: "Photo Captured",
+      description: "Document photo captured! You can now use AI to analyze it and auto-fill policy details.",
+    });
   };
 
   const extractPolicyNumber = async (text: string) => {
@@ -297,7 +309,7 @@ const Upload = () => {
             </div>
             <div>
               <h3 className="font-semibold text-purple-800">AI-Powered Analysis</h3>
-              <p className="text-sm text-purple-600">Upload PDF, DOC, TXT files and let AI extract key details automatically!</p>
+              <p className="text-sm text-purple-600">Upload PDF, DOC, TXT files or scan with camera and let AI extract key details automatically!</p>
             </div>
           </div>
         </div>
@@ -316,37 +328,57 @@ const Upload = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* File Upload */}
               <div className="space-y-2">
-                <Label htmlFor="file">Policy Document (PDF/DOC/TXT)</Label>
+                <Label htmlFor="file">Policy Document (PDF/DOC/TXT/Image)</Label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#183B6B] transition-colors bg-gradient-to-br from-gray-50/30 to-blue-50/20">
                   <input
                     id="file"
                     type="file"
-                    accept=".pdf,.doc,.docx,.txt"
+                    accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
                     onChange={handleFileChange}
                     className="hidden"
                   />
-                  <label htmlFor="file" className="cursor-pointer">
-                    {formData.file ? (
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-center space-x-2">
-                          <File className="w-8 h-8 text-[#183B6B]" />
-                          <span className="text-[#183B6B] font-medium">{formData.file.name}</span>
-                        </div>
-                        {showAIAnalysis && (
-                          <div className="flex items-center justify-center space-x-2 text-sm text-purple-600">
-                            <Brain className="w-4 h-4" />
-                            <span>Ready for AI analysis</span>
-                          </div>
-                        )}
+                  
+                  {formData.file ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-center space-x-2">
+                        <File className="w-8 h-8 text-[#183B6B]" />
+                        <span className="text-[#183B6B] font-medium">{formData.file.name}</span>
                       </div>
-                    ) : (
+                      {showAIAnalysis && (
+                        <div className="flex items-center justify-center space-x-2 text-sm text-purple-600">
+                          <Brain className="w-4 h-4" />
+                          <span>Ready for AI analysis</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
                       <div>
                         <UploadIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-600">Click to upload your policy document</p>
-                        <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX, or TXT files</p>
+                        <p className="text-gray-600">Upload your policy document</p>
+                        <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX, TXT, or Image files</p>
                       </div>
-                    )}
-                  </label>
+                      
+                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        <label htmlFor="file" className="cursor-pointer">
+                          <Button type="button" variant="outline" className="w-full sm:w-auto">
+                            <UploadIcon className="w-4 h-4 mr-2" />
+                            Choose File
+                          </Button>
+                        </label>
+                        
+                        <Button
+                          type="button"
+                          onClick={() => setShowCamera(true)}
+                          variant="outline"
+                          className="w-full sm:w-auto border-[#183B6B] text-[#183B6B] hover:bg-[#183B6B] hover:text-white"
+                        >
+                          <Camera className="w-4 h-4 mr-2" />
+                          Scan Document
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -481,6 +513,14 @@ const Upload = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Camera Capture Modal */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={handleCameraCapture}
+          onClose={() => setShowCamera(false)}
+        />
+      )}
 
       <BottomNav />
     </div>

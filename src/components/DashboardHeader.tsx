@@ -1,4 +1,5 @@
-import { Bell, Settings, User } from 'lucide-react';
+
+import { Bell, Settings, User, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +44,14 @@ const DashboardHeader = ({
         </div>
         
         <div className="flex items-center space-x-3">
+          <Button
+            onClick={onUploadClick}
+            className="bg-gradient-to-r from-[#E2B319] to-[#f5c842] hover:from-[#d4a617] hover:to-[#e6b73a] text-black font-semibold px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Upload Policy
+          </Button>
+          
           <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1 border border-white/20">
             <CurrencySelector minimal={true} />
           </div>
