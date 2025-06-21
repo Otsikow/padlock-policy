@@ -18,7 +18,7 @@ const Index = () => {
   }, {
     icon: Award,
     title: "Best Value Guarantee",
-    description: "Compare rates across top insurers to ensure you get the best deal"
+    description: "Save Money with Padlock Padlock compares rates from leading insurers to make sure you always get the lowest price and best value for your policy."
   }];
 
   // Use current plans from pricingService
