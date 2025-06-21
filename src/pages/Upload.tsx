@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -360,12 +361,15 @@ const Upload = () => {
                       </div>
                       
                       <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        <label htmlFor="file" className="cursor-pointer">
-                          <Button type="button" variant="outline" className="w-full sm:w-auto">
-                            <UploadIcon className="w-4 h-4 mr-2" />
-                            Choose File
-                          </Button>
-                        </label>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          className="w-full sm:w-auto"
+                          onClick={() => document.getElementById('file')?.click()}
+                        >
+                          <UploadIcon className="w-4 h-4 mr-2" />
+                          Choose File
+                        </Button>
                         
                         <Button
                           type="button"
