@@ -1,5 +1,3 @@
-
-
 import { Shield, Users, Award, ChevronRight, ArrowRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -86,7 +84,7 @@ const Index = () => {
           {/* Prominent Logo and Name */}
           <div className="flex flex-col items-center mb-8">
             <img 
-              src="/lovable-uploads/af333e86-bd90-4a46-92a1-f7c8b35bbe90.png"
+              src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png"
               alt="PadLock Insurance Logo"
               className="h-20 w-auto mb-4"
             />
@@ -267,7 +265,7 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <img 
-                src="/lovable-uploads/af333e86-bd90-4a46-92a1-f7c8b35bbe90.png"
+                src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png"
                 alt="PadLock Insurance Logo"
                 className="h-8 w-auto"
               />

@@ -1,4 +1,3 @@
-
 import { Bell, Settings, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -32,7 +31,7 @@ const DashboardHeader = ({
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 bg-gradient-to-br from-white to-gray-100 rounded-xl flex items-center justify-center shadow-lg">
             <img 
-              src="/lovable-uploads/da2d5e44-7846-4551-bd2b-b08a7a2190dc.png" 
+              src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png" 
               alt="PadLock Logo" 
               className="w-8 h-8 object-contain"
             />
