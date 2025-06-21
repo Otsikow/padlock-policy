@@ -10,6 +10,15 @@ export interface PricingPlan {
     GHS: number;
     NGN: number;
   };
+  annualPrices: {
+    GBP: number;
+    USD: number;
+    GHS: number;
+    NGN: number;
+  };
+  isFree?: boolean;
+  policyLimit?: string;
+  bestFor?: string;
 }
 
 export interface OneTimeService {
@@ -29,23 +38,34 @@ export const subscriptionPlans: PricingPlan[] = [
     id: 'basic',
     name: 'Padlock Basic',
     description: 'Essential features for managing your insurance',
+    isFree: true,
+    policyLimit: '3 policies',
+    bestFor: 'New/personal users',
     features: [
-      'Store up to 5 policies',
+      'Store up to 3 policies',
       'Basic AI analysis',
       'Email notifications',
       'Mobile app access'
     ],
     prices: {
-      GBP: 4.99,
-      USD: 6.99,
-      GHS: 45.99,
-      NGN: 2999.99
+      GBP: 0,
+      USD: 0,
+      GHS: 0,
+      NGN: 0
+    },
+    annualPrices: {
+      GBP: 0,
+      USD: 0,
+      GHS: 0,
+      NGN: 0
     }
   },
   {
     id: 'pro',
     name: 'Padlock Pro',
     description: 'Advanced features for power users',
+    policyLimit: 'Unlimited',
+    bestFor: 'Families/power users',
     features: [
       'Unlimited policies',
       'Advanced AI analysis',
@@ -55,28 +75,43 @@ export const subscriptionPlans: PricingPlan[] = [
       'Document vault'
     ],
     prices: {
-      GBP: 9.99,
-      USD: 12.99,
-      GHS: 89.99,
-      NGN: 5999.99
+      GBP: 3.99,
+      USD: 4.99,
+      GHS: 32.99,
+      NGN: 1999.99
+    },
+    annualPrices: {
+      GBP: 39.99,
+      USD: 49.99,
+      GHS: 329.99,
+      NGN: 19999.99
     }
   },
   {
     id: 'premium',
     name: 'Padlock Premium',
     description: 'Complete insurance management solution',
+    policyLimit: 'Unlimited',
+    bestFor: 'VIPs, business, advisors',
     features: [
       'Everything in Pro',
       'Personal insurance advisor',
       'Custom policy recommendations',
       'Insurance comparison tools',
-      'White-glove support'
+      'White-glove support',
+      'VIP priority support'
     ],
     prices: {
-      GBP: 19.99,
-      USD: 24.99,
-      GHS: 179.99,
-      NGN: 11999.99
+      GBP: 9.99,
+      USD: 12.99,
+      GHS: 79.99,
+      NGN: 4999.99
+    },
+    annualPrices: {
+      GBP: 99.99,
+      USD: 129.99,
+      GHS: 799.99,
+      NGN: 49999.99
     }
   }
 ];
@@ -129,6 +164,7 @@ export const getCurrencySymbol = (currency: string): string => {
 
 export const formatPrice = (amount: number, currency: string): string => {
   const symbol = getCurrencySymbol(currency);
+  if (amount === 0) return 'Free';
   return `${symbol}${amount.toFixed(2)}`;
 };
 
