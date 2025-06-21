@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Globe, MapPin, RefreshCw } from 'lucide-react';
-import { getAllSupportedCurrencies, isStripeCurrencySupported } from '@/services/currencyService';
+import { getAllSupportedCurrencies, isStripeCurrencySupported, getCurrencyByCountry } from '@/services/currencyService';
 import { toast } from '@/hooks/use-toast';
 
 interface CurrencySelectorProps {
@@ -25,9 +25,11 @@ const CurrencySelector = ({ showCard = true, compact = false }: CurrencySelector
     setUpdating(true);
     try {
       await updateUserCountry(countryCode);
+      // Get the new currency info after update
+      const newCurrency = getCurrencyByCountry(countryCode);
       toast({
         title: "Currency Updated",
-        description: `Prices will now be shown in ${currency?.name}`,
+        description: `Prices will now be shown in ${newCurrency.name}`,
       });
     } catch (error) {
       toast({

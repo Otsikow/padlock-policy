@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrency } from '@/hooks/useCurrency';
@@ -149,6 +150,7 @@ const Upgrade = () => {
           {subscriptionPlans.map((plan) => {
             const isCurrent = isCurrentPlan(plan.id);
             const isPopular = plan.id === 'pro';
+            const isPremium = plan.id === 'premium';
             const priceSource = isAnnual ? plan.annualPrices : plan.prices;
             const baseAmount = priceSource[currency?.code as keyof typeof priceSource] || priceSource.GBP;
             
@@ -157,11 +159,18 @@ const Upgrade = () => {
                 key={plan.id} 
                 className={`relative transition-all duration-300 hover:shadow-xl ${
                   isPopular ? 'border-blue-500 shadow-lg scale-105' : ''
-                } ${isCurrent ? 'ring-2 ring-green-500' : ''}`}
+                } ${isPremium ? 'border-yellow-400 shadow-lg bg-gradient-to-br from-yellow-50 to-orange-50' : ''} ${
+                  isCurrent ? 'ring-2 ring-green-500' : ''
+                }`}
               >
                 {isPopular && (
                   <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
                     Most Popular
+                  </Badge>
+                )}
+                {isPremium && (
+                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
+                    Premium
                   </Badge>
                 )}
                 {isCurrent && (
@@ -172,9 +181,13 @@ const Upgrade = () => {
                 
                 <CardHeader className="text-center pb-8">
                   <div className="flex justify-center mb-4">
-                    {getPlanIcon(plan.id)}
+                    <div className={isPremium ? 'text-yellow-600' : ''}>
+                      {getPlanIcon(plan.id)}
+                    </div>
                   </div>
-                  <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
+                  <CardTitle className={`text-2xl font-bold ${isPremium ? 'text-yellow-700' : ''}`}>
+                    {plan.name}
+                  </CardTitle>
                   <CardDescription className="text-lg">{plan.description}</CardDescription>
                   <div className="mt-4">
                     <PriceDisplay
@@ -219,7 +232,7 @@ const Upgrade = () => {
                         ? 'bg-gray-700 hover:bg-gray-800'
                         : plan.id === 'pro' 
                           ? 'bg-blue-600 hover:bg-blue-700' 
-                          : 'bg-purple-600 hover:bg-purple-700'
+                          : 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white'
                     }`}
                   >
                     {loading === plan.id ? (
