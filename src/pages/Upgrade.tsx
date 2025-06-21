@@ -10,11 +10,11 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Check, Crown, Zap, Star, Sparkles } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { subscriptionPlans, formatPrice, getStripeCurrency, convertCurrency, getSavingsPercentage } from '@/services/pricingService';
+import { subscriptionPlans, getSavingsPercentage } from '@/services/pricingService';
 import { useNavigate } from 'react-router-dom';
 import CurrencySelector from '@/components/CurrencySelector';
 import PriceDisplay from '@/components/PriceDisplay';
-import { getCurrencyDisplayInfo, isStripeCurrencySupported } from '@/services/currencyService';
+import { isStripeCurrencySupported } from '@/services/currencyService';
 
 const Upgrade = () => {
   const { user } = useAuth();
@@ -93,16 +93,6 @@ const Upgrade = () => {
 
   const isCurrentPlan = (planId: string) => {
     return userPlan === planId;
-  };
-
-  const getPrice = (plan: any) => {
-    const priceSource = isAnnual ? plan.annualPrices : plan.prices;
-    return formatPrice(priceSource[currency?.code as keyof typeof priceSource] || priceSource.GBP, currency?.code || 'GBP');
-  };
-
-  const getSavings = (plan: any) => {
-    if (plan.isFree) return null;
-    return getSavingsPercentage(plan, currency?.code || 'GBP');
   };
 
   return (
@@ -272,73 +262,6 @@ const Upgrade = () => {
               <Check className="h-4 w-4 text-green-500 mr-1" />
               Secure payments by Stripe
             </div>
-          </div>
-        </div>
-
-        {/* Feature Comparison Table */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold text-center mb-8">Feature Comparison</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-lg shadow-lg">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left font-semibold text-gray-900">Feature</th>
-                  <th className="px-6 py-4 text-center font-semibold text-gray-900">Basic (Free)</th>
-                  <th className="px-6 py-4 text-center font-semibold text-gray-900">Pro (£3.99/mo)</th>
-                  <th className="px-6 py-4 text-center font-semibold text-gray-900">Premium (£9.99/mo)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                <tr>
-                  <td className="px-6 py-4 font-medium">Policy Storage</td>
-                  <td className="px-6 py-4 text-center">Up to 3</td>
-                  <td className="px-6 py-4 text-center">Unlimited</td>
-                  <td className="px-6 py-4 text-center">Unlimited</td>
-                </tr>
-                <tr className="bg-gray-50">
-                  <td className="px-6 py-4 font-medium">AI Analysis</td>
-                  <td className="px-6 py-4 text-center">Basic</td>
-                  <td className="px-6 py-4 text-center">Advanced with insights</td>
-                  <td className="px-6 py-4 text-center">Advanced with insights</td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 font-medium">Support</td>
-                  <td className="px-6 py-4 text-center">Email only</td>
-                  <td className="px-6 py-4 text-center">Priority (&lt;24h)</td>
-                  <td className="px-6 py-4 text-center">White-glove (live chat/phone)</td>
-                </tr>
-                <tr className="bg-gray-50">
-                  <td className="px-6 py-4 font-medium">Claims Assistance</td>
-                  <td className="px-6 py-4 text-center">—</td>
-                  <td className="px-6 py-4 text-center">✓</td>
-                  <td className="px-6 py-4 text-center">✓</td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 font-medium">Document Vault</td>
-                  <td className="px-6 py-4 text-center">—</td>
-                  <td className="px-6 py-4 text-center">✓</td>
-                  <td className="px-6 py-4 text-center">✓</td>
-                </tr>
-                <tr className="bg-gray-50">
-                  <td className="px-6 py-4 font-medium">Dedicated Advisor</td>
-                  <td className="px-6 py-4 text-center">—</td>
-                  <td className="px-6 py-4 text-center">—</td>
-                  <td className="px-6 py-4 text-center">✓</td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 font-medium">Comparison Tools</td>
-                  <td className="px-6 py-4 text-center">—</td>
-                  <td className="px-6 py-4 text-center">—</td>
-                  <td className="px-6 py-4 text-center">✓</td>
-                </tr>
-                <tr className="bg-gray-50">
-                  <td className="px-6 py-4 font-medium">Early Access</td>
-                  <td className="px-6 py-4 text-center">—</td>
-                  <td className="px-6 py-4 text-center">—</td>
-                  <td className="px-6 py-4 text-center">✓</td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
 

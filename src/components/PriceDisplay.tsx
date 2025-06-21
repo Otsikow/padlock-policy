@@ -70,14 +70,6 @@ const PriceDisplay = ({
     lg: 'text-4xl'
   };
 
-  const getCurrencySymbol = (currencyCode: string) => {
-    const symbols: { [key: string]: string } = {
-      GBP: '£', USD: '$', EUR: '€', CAD: 'C$', AUD: 'A$',
-      GHS: '₵', NGN: '₦', INR: '₹', JPY: '¥', SGD: 'S$'
-    };
-    return symbols[currencyCode] || currencyCode;
-  };
-
   if (baseAmount === 0) {
     return (
       <div className={`${sizeClasses[size]} font-bold text-gray-900 ${className}`}>
@@ -86,22 +78,16 @@ const PriceDisplay = ({
     );
   }
 
-  // Use the actual user's currency for display if available
-  const actualDisplayCurrency = currency?.code || baseCurrency;
-  const actualDisplaySymbol = getCurrencySymbol(actualDisplayCurrency);
-  
-  // For currencies like GHS, show the converted amount in the user's currency
-  let finalAmount = displayInfo.displayAmount;
-  if (currency && currency.code !== baseCurrency) {
-    // If we have a specific price for this currency, use it
-    finalAmount = displayInfo.displayAmount;
-  }
+  // Always use the user's preferred currency for display
+  const displayCurrency = currency?.code || baseCurrency;
+  const displaySymbol = currency?.symbol || '£';
+  const finalAmount = displayInfo.displayAmount;
 
   return (
     <div className={`${className}`}>
       <div className={`${sizeClasses[size]} font-bold text-gray-900 flex items-baseline gap-1`}>
         <span>
-          {actualDisplaySymbol}
+          {displaySymbol}
           {finalAmount.toFixed(2)}
         </span>
         <span className="text-base font-normal text-gray-600">
@@ -117,9 +103,9 @@ const PriceDisplay = ({
       
       {showBadge && (
         <div className="flex items-center gap-2 mt-2">
-          {isStripeCurrencySupported(actualDisplayCurrency) ? (
+          {isStripeCurrencySupported(displayCurrency) ? (
             <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
-              Billed in {actualDisplayCurrency}
+              Billed in {displayCurrency}
             </Badge>
           ) : (
             <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
