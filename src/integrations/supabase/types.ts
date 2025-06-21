@@ -221,6 +221,7 @@ export type Database = {
           end_date: string
           fine_print_summary: string | null
           id: string
+          policy_number: string | null
           policy_type: Database["public"]["Enums"]["policy_type_enum"]
           premium_amount: number
           start_date: string
@@ -236,6 +237,7 @@ export type Database = {
           end_date: string
           fine_print_summary?: string | null
           id?: string
+          policy_number?: string | null
           policy_type: Database["public"]["Enums"]["policy_type_enum"]
           premium_amount: number
           start_date: string
@@ -251,6 +253,7 @@ export type Database = {
           end_date?: string
           fine_print_summary?: string | null
           id?: string
+          policy_number?: string | null
           policy_type?: Database["public"]["Enums"]["policy_type_enum"]
           premium_amount?: number
           start_date?: string
