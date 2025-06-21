@@ -223,7 +223,7 @@ const Index = () => {
               <img src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png" alt="PadLock Insurance Logo" className="h-8 w-auto" />
               <span className="text-lg font-semibold">Padlock Insurance</span>
             </div>
-            <p className="text-gray-300">© 2024 Padlock Insurance. All rights reserved.</p>
+            <p className="text-gray-300">© 2025 Padlock Insurance. All rights reserved.</p>
           </div>
         </div>
       </footer>
