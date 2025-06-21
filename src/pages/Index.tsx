@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import PriceDisplay from '@/components/PriceDisplay';
 import CurrencySelector from '@/components/CurrencySelector';
+import { subscriptionPlans } from '@/services/pricingService';
 
 const Index = () => {
   const features = [
@@ -25,51 +26,22 @@ const Index = () => {
     }
   ];
 
-  const plans = [
-    {
-      name: "Free",
-      description: "Perfect for getting started",
-      price: 0,
-      currency: "GBP",
-      features: [
-        "Basic policy management",
-        "Document storage (up to 5 files)",
-        "Simple claims tracking",
-        "Email support"
-      ],
-      popular: false
-    },
-    {
-      name: "Premium",
-      description: "Most popular for individuals",
-      price: 9.99,
-      currency: "GBP",
-      features: [
-        "Everything in Free",
-        "AI policy analysis",
-        "Unlimited document storage",
-        "Priority support",
-        "Smart reminders",
-        "Risk assessments"
-      ],
-      popular: true
-    },
-    {
-      name: "Family",
-      description: "Perfect for families",
-      price: 19.99,
-      currency: "GBP",
-      features: [
-        "Everything in Premium",
-        "Up to 6 family members",
-        "Family dashboard",
-        "Bulk policy management",
-        "Advanced analytics",
-        "Dedicated account manager"
-      ],
-      popular: false
+  // Use current plans from pricingService
+  const plans = subscriptionPlans.map(plan => ({
+    name: plan.name,
+    description: plan.description,
+    price: plan.prices.GBP,
+    features: plan.features,
+    popular: plan.id === 'pro',
+    id: plan.id
+  }));
+
+  const scrollToFeatures = () => {
+    const featuresSection = document.getElementById('features');
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' });
     }
-  ];
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -77,7 +49,7 @@ const Index = () => {
       <nav className="flex items-center justify-between p-6 bg-white/80 backdrop-blur-sm border-b border-white/20">
         <div className="flex items-center space-x-3">
           <img 
-            src="/lovable-uploads/6f4f2ad0-19b7-4654-b9bf-35b79aadc6b7.png"
+            src="/lovable-uploads/af333e86-bd90-4a46-92a1-f7c8b35bbe90.png"
             alt="PadLock Insurance Logo"
             className="h-10 w-auto"
           />
@@ -117,11 +89,9 @@ const Index = () => {
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-4" asChild>
-              <Link to="#features">
-                Learn More
-                <ChevronRight className="ml-2 w-5 h-5" />
-              </Link>
+            <Button variant="outline" size="lg" className="text-lg px-8 py-4" onClick={scrollToFeatures}>
+              Learn More
+              <ChevronRight className="ml-2 w-5 h-5" />
             </Button>
           </div>
         </div>
@@ -199,7 +169,7 @@ const Index = () => {
                   <div className="mb-4">
                     <PriceDisplay 
                       baseAmount={plan.price}
-                      baseCurrency={plan.currency}
+                      baseCurrency="GBP"
                       size="lg"
                       showBadge={false}
                     />
@@ -224,7 +194,7 @@ const Index = () => {
                     asChild
                   >
                     <Link to="/auth">
-                      {plan.price === 0 ? 'Get Started Free' : 'Start Free Trial'}
+                      {plan.price === 0 ? 'Start Free Today' : 'Start Free Today'}
                     </Link>
                   </Button>
                 </CardContent>
@@ -246,7 +216,7 @@ const Index = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" className="text-lg px-8 py-4" asChild>
               <Link to="/auth">
-                Start Your Free Trial
+                Start Free Today
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
@@ -260,7 +230,7 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <img 
-                src="/lovable-uploads/6f4f2ad0-19b7-4654-b9bf-35b79aadc6b7.png"
+                src="/lovable-uploads/af333e86-bd90-4a46-92a1-f7c8b35bbe90.png"
                 alt="PadLock Insurance Logo"
                 className="h-8 w-auto"
               />
