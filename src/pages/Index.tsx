@@ -6,25 +6,20 @@ import { Link } from 'react-router-dom';
 import PriceDisplay from '@/components/PriceDisplay';
 import CurrencySelector from '@/components/CurrencySelector';
 import { subscriptionPlans } from '@/services/pricingService';
-
 const Index = () => {
-  const features = [
-    {
-      icon: Shield,
-      title: "AI-Powered Protection",
-      description: "Smart analysis of your insurance policies with instant recommendations"
-    },
-    {
-      icon: Users,
-      title: "Expert Support",
-      description: "24/7 access to insurance professionals and personalized guidance"
-    },
-    {
-      icon: Award,
-      title: "Best Value Guarantee",
-      description: "Compare rates across top insurers to ensure you get the best deal"
-    }
-  ];
+  const features = [{
+    icon: Shield,
+    title: "AI-Powered Protection",
+    description: "Smart analysis of your insurance policies with instant recommendations"
+  }, {
+    icon: Users,
+    title: "Expert Support",
+    description: "24/7 access to insurance professionals and personalized guidance"
+  }, {
+    icon: Award,
+    title: "Best Value Guarantee",
+    description: "Compare rates across top insurers to ensure you get the best deal"
+  }];
 
   // Use current plans from pricingService
   const plans = subscriptionPlans.map(plan => ({
@@ -35,34 +30,39 @@ const Index = () => {
     popular: plan.id === 'pro',
     id: plan.id
   }));
-
   const scrollToFeatures = () => {
     const featuresSection = document.getElementById('features');
     if (featuresSection) {
-      featuresSection.scrollIntoView({ behavior: 'smooth' });
+      featuresSection.scrollIntoView({
+        behavior: 'smooth'
+      });
     }
   };
-
   const getButtonText = (planId: string) => {
     switch (planId) {
-      case 'basic': return 'Start Free Today';
-      case 'pro': return 'Upgrade To Pro';
-      case 'premium': return 'Upgrade To Premium';
-      default: return 'Get Started';
+      case 'basic':
+        return 'Start Free Today';
+      case 'pro':
+        return 'Upgrade To Pro';
+      case 'premium':
+        return 'Upgrade To Premium';
+      default:
+        return 'Get Started';
     }
   };
-
   const getButtonStyles = (planId: string) => {
     switch (planId) {
-      case 'basic': return 'bg-green-600 hover:bg-green-700 text-white';
-      case 'pro': return 'bg-blue-600 hover:bg-blue-700';
-      case 'premium': return 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white';
-      default: return '';
+      case 'basic':
+        return 'bg-green-600 hover:bg-green-700 text-white';
+      case 'pro':
+        return 'bg-blue-600 hover:bg-blue-700';
+      case 'premium':
+        return 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white';
+      default:
+        return '';
     }
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+  return <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       {/* Navigation */}
       <nav className="flex items-center justify-between p-6 bg-white/90 backdrop-blur-sm border-b border-purple-100 shadow-sm">
         <div className="flex items-center space-x-4">
@@ -83,14 +83,8 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           {/* Prominent Logo and Name */}
           <div className="flex flex-col items-center mb-8">
-            <img 
-              src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png"
-              alt="PadLock Insurance Logo"
-              className="h-20 w-auto mb-4"
-            />
-            <h1 className="text-6xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 mb-2">
-              PadLock
-            </h1>
+            <img src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png" alt="PadLock Insurance Logo" className="h-20 w-auto mb-4" />
+            <h1 className="text-6xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 mb-2">Padlock</h1>
             <p className="text-2xl font-semibold text-gray-700 mb-8">
               Your Smart Insurance Companion
             </p>
@@ -100,10 +94,7 @@ const Index = () => {
             🚀 AI-Powered Insurance Management
           </Badge>
           
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Revolutionize how you manage insurance with AI-powered insights, 
-            seamless policy tracking, and intelligent recommendations tailored just for you.
-          </p>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">Revolutionise how you manage insurance with AI-powered insights, seamless policy tracking, and intelligent recommendations tailored just for you.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button size="lg" className="text-lg px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg" asChild>
               <Link to="/auth">
@@ -123,9 +114,7 @@ const Index = () => {
       <section id="features" className="px-6 py-20 bg-gradient-to-r from-white/80 to-purple-50/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-              Why Choose PadLock?
-            </h2>
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">Why Choose Padlock?</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Experience the future of insurance management with cutting-edge technology
             </p>
@@ -133,9 +122,8 @@ const Index = () => {
           
           <div className="grid md:grid-cols-3 gap-8">
             {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <Card key={index} className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white/90 backdrop-blur-sm hover:scale-105">
+            const Icon = feature.icon;
+            return <Card key={index} className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white/90 backdrop-blur-sm hover:scale-105">
                   <CardHeader className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 via-pink-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
                       <Icon className="w-8 h-8 text-white" />
@@ -149,9 +137,8 @@ const Index = () => {
                       {feature.description}
                     </CardDescription>
                   </CardContent>
-                </Card>
-              );
-            })}
+                </Card>;
+          })}
           </div>
         </div>
       </section>
@@ -169,72 +156,41 @@ const Index = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {plans.map((plan, index) => (
-              <Card 
-                key={index} 
-                className={`relative border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white/90 backdrop-blur-sm hover:scale-105 ${
-                  plan.id === 'basic' ? 'ring-2 ring-green-400 shadow-green-100' : ''
-                } ${
-                  plan.popular ? 'ring-2 ring-blue-400 shadow-blue-100' : ''
-                } ${plan.id === 'premium' ? 'ring-2 ring-purple-400 shadow-purple-100 bg-gradient-to-br from-purple-50/50 to-pink-50/50' : ''}`}
-              >
-                {plan.id === 'basic' && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg">
+            {plans.map((plan, index) => <Card key={index} className={`relative border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white/90 backdrop-blur-sm hover:scale-105 ${plan.id === 'basic' ? 'ring-2 ring-green-400 shadow-green-100' : ''} ${plan.popular ? 'ring-2 ring-blue-400 shadow-blue-100' : ''} ${plan.id === 'premium' ? 'ring-2 ring-purple-400 shadow-purple-100 bg-gradient-to-br from-purple-50/50 to-pink-50/50' : ''}`}>
+                {plan.id === 'basic' && <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg">
                     Free
-                  </Badge>
-                )}
-                {plan.popular && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg">
+                  </Badge>}
+                {plan.popular && <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg">
                     Most Popular
-                  </Badge>
-                )}
-                {plan.id === 'premium' && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg">
+                  </Badge>}
+                {plan.id === 'premium' && <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg">
                     Premium
-                  </Badge>
-                )}
+                  </Badge>}
                 <CardHeader className="text-center">
-                  <CardTitle className={`text-2xl font-bold ${
-                    plan.id === 'basic' ? 'text-green-700' : 
-                    plan.id === 'premium' ? 'text-purple-700' : 'text-gray-900'
-                  }`}>
+                  <CardTitle className={`text-2xl font-bold ${plan.id === 'basic' ? 'text-green-700' : plan.id === 'premium' ? 'text-purple-700' : 'text-gray-900'}`}>
                     {plan.name}
                   </CardTitle>
                   <CardDescription className="text-gray-600 mb-4">
                     {plan.description}
                   </CardDescription>
                   <div className="mb-4">
-                    <PriceDisplay 
-                      baseAmount={plan.price}
-                      baseCurrency="GBP"
-                      size="lg"
-                      showBadge={false}
-                    />
+                    <PriceDisplay baseAmount={plan.price} baseCurrency="GBP" size="lg" showBadge={false} />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start space-x-3">
-                        <Check className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
-                          plan.id === 'basic' ? 'text-green-500' :
-                          plan.id === 'premium' ? 'text-purple-500' : 'text-blue-500'
-                        }`} />
+                    {plan.features.map((feature, featureIndex) => <li key={featureIndex} className="flex items-start space-x-3">
+                        <Check className={`w-5 h-5 mt-0.5 flex-shrink-0 ${plan.id === 'basic' ? 'text-green-500' : plan.id === 'premium' ? 'text-purple-500' : 'text-blue-500'}`} />
                         <span className="text-gray-600">{feature}</span>
-                      </li>
-                    ))}
+                      </li>)}
                   </ul>
-                  <Button 
-                    className={`w-full shadow-lg ${getButtonStyles(plan.id)}`}
-                    asChild
-                  >
+                  <Button className={`w-full shadow-lg ${getButtonStyles(plan.id)}`} asChild>
                     <Link to="/auth">
                       {getButtonText(plan.id)}
                     </Link>
                   </Button>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -264,21 +220,13 @@ const Index = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <img 
-                src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png"
-                alt="PadLock Insurance Logo"
-                className="h-8 w-auto"
-              />
-              <span className="text-lg font-semibold">PadLock Insurance</span>
+              <img src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png" alt="PadLock Insurance Logo" className="h-8 w-auto" />
+              <span className="text-lg font-semibold">Padlock Insurance</span>
             </div>
-            <p className="text-gray-300">
-              © 2024 PadLock Insurance. All rights reserved.
-            </p>
+            <p className="text-gray-300">© 2024 Padlock Insurance. All rights reserved.</p>
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
