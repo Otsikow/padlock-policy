@@ -56,6 +56,42 @@ const Vault = () => {
     }
   };
 
+  const handleViewDocument = async (doc: Document) => {
+    try {
+      console.log('Attempting to view document:', doc.file_url);
+      
+      // Check if the URL is accessible by trying to get a signed URL first
+      const fileName = doc.file_url.split('/').pop();
+      const filePath = `${user?.id}/${fileName}`;
+      
+      // Try to create a signed URL for more reliable access
+      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+        .from('documents')
+        .createSignedUrl(filePath, 3600); // 1 hour expiry
+
+      if (signedUrlError) {
+        console.log('Signed URL failed, trying direct URL:', signedUrlError);
+        // Fallback to direct URL
+        window.open(doc.file_url, '_blank');
+      } else if (signedUrlData?.signedUrl) {
+        console.log('Using signed URL:', signedUrlData.signedUrl);
+        window.open(signedUrlData.signedUrl, '_blank');
+      } else {
+        // Last resort - direct URL
+        window.open(doc.file_url, '_blank');
+      }
+    } catch (error: any) {
+      console.error('Error viewing document:', error);
+      toast({
+        title: "Error opening document",
+        description: "Unable to open the document. Please try again.",
+        variant: "destructive",
+      });
+      // Still try to open the direct URL as fallback
+      window.open(doc.file_url, '_blank');
+    }
+  };
+
   const handleDeleteDocument = async (id: string) => {
     try {
       const { error } = await supabase
@@ -224,7 +260,7 @@ const Vault = () => {
                           variant="ghost" 
                           size="sm"
                           className="text-[#183B6B] hover:bg-[#183B6B] hover:text-white"
-                          onClick={() => window.open(doc.file_url, '_blank')}
+                          onClick={() => handleViewDocument(doc)}
                         >
                           <Eye className="w-4 h-4 mr-1" />
                           View

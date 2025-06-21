@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { getCurrencyByCountry, formatCurrency } from '@/services/currencyService';
 import { detectUserCountry, getTimezoneCountry } from '@/services/geolocationService';
+import { toast } from '@/hooks/use-toast';
 
 export const useCurrency = () => {
   const { user } = useAuth();
@@ -24,6 +25,7 @@ export const useCurrency = () => {
     if (!user) return;
 
     try {
+      console.log('Fetching user country for user:', user.id);
       const { data, error } = await supabase
         .from('profiles')
         .select('country')
@@ -35,11 +37,13 @@ export const useCurrency = () => {
         // Auto-detect if no saved preference
         await autoDetectCountry();
       } else if (data?.country) {
+        console.log('Found saved country:', data.country);
         setUserCountry(data.country);
         setAutoDetected(false);
         setLoading(false);
       } else {
         // No saved country, auto-detect
+        console.log('No saved country, auto-detecting...');
         await autoDetectCountry();
       }
     } catch (error) {
@@ -63,6 +67,7 @@ export const useCurrency = () => {
         }
       }
       
+      console.log('Auto-detected country:', detectedCountry);
       setUserCountry(detectedCountry);
       setAutoDetected(true);
       
@@ -88,21 +93,66 @@ export const useCurrency = () => {
     }
 
     try {
-      const { error } = await supabase
+      console.log('Updating user country to:', countryCode, 'for user:', user.id);
+      
+      // First check if profile exists, if not create it
+      const { data: existingProfile, error: fetchError } = await supabase
         .from('profiles')
-        .update({ country: countryCode })
-        .eq('id', user.id);
+        .select('id')
+        .eq('id', user.id)
+        .single();
 
-      if (error) throw error;
+      if (fetchError && fetchError.code === 'PGRST116') {
+        // Profile doesn't exist, create it
+        console.log('Profile not found, creating new profile');
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            country: countryCode,
+            full_name: user.user_metadata?.first_name && user.user_metadata?.last_name 
+              ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
+              : user.email
+          });
+
+        if (insertError) {
+          console.error('Error creating profile:', insertError);
+          throw insertError;
+        }
+      } else if (fetchError) {
+        console.error('Error checking profile:', fetchError);
+        throw fetchError;
+      } else {
+        // Profile exists, update it
+        console.log('Profile exists, updating country');
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ country: countryCode })
+          .eq('id', user.id);
+
+        if (updateError) {
+          console.error('Error updating profile:', updateError);
+          throw updateError;
+        }
+      }
       
       setUserCountry(countryCode);
       setAutoDetected(false);
       
       if (showSuccess) {
-        console.log(`Currency updated to ${countryCode}`);
+        const currency = getCurrencyByCountry(countryCode);
+        toast({
+          title: "Currency Updated",
+          description: `Prices will now be shown in ${currency.name}`,
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating user country:', error);
+      toast({
+        title: "Error",
+        description: `Failed to update currency: ${error.message}`,
+        variant: "destructive",
+      });
       throw error;
     }
   };
