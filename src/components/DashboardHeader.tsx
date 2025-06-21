@@ -44,7 +44,7 @@ const DashboardHeader = ({
         </div>
         
         <div className="flex items-center space-x-3">
-          <CurrencySelector />
+          <CurrencySelector minimal={true} />
           
           <Button
             variant="ghost"
