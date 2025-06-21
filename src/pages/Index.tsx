@@ -1,4 +1,3 @@
-
 import { Shield, Users, Award, ChevronRight, ArrowRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -85,7 +84,7 @@ const Index = () => {
           <span className="text-xl font-bold text-gray-900">PadLock</span>
         </div>
         <div className="flex items-center space-x-4">
-          <CurrencySelector />
+          <CurrencySelector minimal={true} />
           <Button variant="ghost" asChild>
             <Link to="/auth">Sign In</Link>
           </Button>

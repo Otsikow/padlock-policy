@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useCurrency } from '@/hooks/useCurrency';
 import { Button } from '@/components/ui/button';
@@ -12,9 +11,10 @@ import { toast } from '@/hooks/use-toast';
 interface CurrencySelectorProps {
   showCard?: boolean;
   compact?: boolean;
+  minimal?: boolean;
 }
 
-const CurrencySelector = ({ showCard = true, compact = false }: CurrencySelectorProps) => {
+const CurrencySelector = ({ showCard = true, compact = false, minimal = false }: CurrencySelectorProps) => {
   const { userCountry, currency, updateUserCountry, loading, autoDetected, refreshCountry } = useCurrency();
   const [updating, setUpdating] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -60,6 +60,32 @@ const CurrencySelector = ({ showCard = true, compact = false }: CurrencySelector
       setRefreshing(false);
     }
   };
+
+  if (minimal) {
+    return (
+      <Select
+        value={userCountry || 'GB'}
+        onValueChange={handleCountryChange}
+        disabled={updating || loading}
+      >
+        <SelectTrigger className="w-16 h-8 text-xs border-0 bg-transparent text-gray-500 hover:text-gray-700">
+          <SelectValue>
+            {currency ? currency.symbol : 'GBP'}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          {supportedCurrencies.map((curr) => (
+            <SelectItem key={curr.countryCode} value={curr.countryCode}>
+              <div className="flex items-center gap-2">
+                <span>{curr.symbol}</span>
+                <span className="text-sm">{curr.code}</span>
+              </div>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+  }
 
   if (compact) {
     return (
