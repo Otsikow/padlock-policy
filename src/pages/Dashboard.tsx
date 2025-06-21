@@ -132,34 +132,28 @@ const Dashboard = () => {
         return;
       }
 
-      const compareUrl = window.location.origin + '/compare';
-      
-      // Call the edge function with proper authorization
-      const response = await fetch(`https://ryqawthghqhsgjucgong.supabase.co/functions/v1/switch-policy?from_policy_id=${selectedPolicyId}&redirect_url=${encodeURIComponent(compareUrl)}`, {
+      // Call the edge function using Supabase client
+      const { data, error } = await supabase.functions.invoke('switch-policy', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json',
         },
+        body: new URLSearchParams({
+          from_policy_id: selectedPolicyId,
+          redirect_url: `${window.location.origin}/compare`
+        }),
       });
 
-      if (response.ok) {
-        // If successful, redirect to compare page
-        const redirectUrl = response.headers.get('Location');
-        if (redirectUrl) {
-          window.location.href = redirectUrl;
-        } else {
-          // Fallback redirect
-          navigate(`/compare?status=switching&from_policy_id=${selectedPolicyId}`);
-        }
-      } else {
-        const errorData = await response.json();
-        console.error('Switch policy error:', errorData);
+      if (error) {
+        console.error('Switch policy error:', error);
         toast({
           title: "Switch Policy Error",
-          description: errorData.error || "Failed to initiate policy switch",
+          description: error.message || "Failed to initiate policy switch",
           variant: "destructive",
         });
+      } else {
+        // Navigate to compare page with status
+        navigate(`/compare?status=switching&from_policy_id=${selectedPolicyId}`);
       }
     } catch (error) {
       console.error('Switch policy error:', error);

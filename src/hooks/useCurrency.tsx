@@ -36,6 +36,7 @@ export const useCurrency = () => {
         await autoDetectCountry();
       } else if (data?.country) {
         setUserCountry(data.country);
+        setAutoDetected(false);
         setLoading(false);
       } else {
         // No saved country, auto-detect
@@ -72,6 +73,7 @@ export const useCurrency = () => {
     } catch (error) {
       console.error('Country auto-detection failed:', error);
       setUserCountry('GB'); // Default fallback
+      setAutoDetected(false);
     } finally {
       setLoading(false);
     }
@@ -97,7 +99,6 @@ export const useCurrency = () => {
       setAutoDetected(false);
       
       if (showSuccess) {
-        // You could add a toast notification here
         console.log(`Currency updated to ${countryCode}`);
       }
     } catch (error) {
@@ -112,6 +113,10 @@ export const useCurrency = () => {
     return formatCurrency(amount, userCountry);
   };
 
+  const refreshCountry = async () => {
+    await autoDetectCountry();
+  };
+
   return {
     userCountry,
     currency,
@@ -119,6 +124,6 @@ export const useCurrency = () => {
     updateUserCountry,
     loading,
     autoDetected,
-    refreshCountry: autoDetectCountry,
+    refreshCountry,
   };
 };

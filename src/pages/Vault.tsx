@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,7 +25,7 @@ const Vault = () => {
   const { user } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDocumentType, setSelectedDocumentType] = useState('other');
+  const [selectedDocumentType, setSelectedDocumentType] = useState('policy'); // Changed from 'other' to 'policy'
 
   useEffect(() => {
     if (user) {

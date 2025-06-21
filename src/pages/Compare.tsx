@@ -8,9 +8,11 @@ import BottomNav from '@/components/BottomNav';
 import { useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useNavigate } from 'react-router-dom';
 
 const Compare = () => {
   const { formatAmount } = useCurrency();
+  const navigate = useNavigate();
   
   const [offers] = useState([
     {
@@ -79,6 +81,22 @@ const Compare = () => {
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     }
+  };
+
+  const handleSwitchToPlan = (offer: any) => {
+    toast({
+      title: "Switching to New Plan",
+      description: `Initiating switch to ${offer.insurerName} ${offer.policyType} Insurance.`,
+    });
+    
+    // Simulate the switch process and navigate back to dashboard
+    setTimeout(() => {
+      toast({
+        title: "Switch Successful!",
+        description: `You've successfully switched to ${offer.insurerName}. Your new premium is ${formatAmount(offer.estimatedPremium)}/month.`,
+      });
+      navigate('/dashboard');
+    }, 2000);
   };
 
   return (
@@ -173,6 +191,7 @@ const Compare = () => {
 
                 {/* Action Button */}
                 <Button 
+                  onClick={() => handleSwitchToPlan(offer)}
                   className={`w-full font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] ${
                     offer.recommended 
                       ? 'bg-gradient-to-r from-[#E2B319] via-[#f5c842] to-[#f0c432] hover:from-[#d4a617] hover:via-[#e6b73a] hover:to-[#d9b82e] text-black' 
