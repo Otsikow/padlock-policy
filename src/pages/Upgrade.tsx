@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrency } from '@/hooks/useCurrency';
@@ -106,11 +105,6 @@ const Upgrade = () => {
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             Start free, upgrade anytime. Get advanced AI insights and premium support as you grow.
           </p>
-          
-          {/* Currency Selector */}
-          <div className="mb-8">
-            <CurrencySelector compact={true} showCard={false} />
-          </div>
           
           {/* Pricing Toggle */}
           <div className="flex items-center justify-center gap-4 mb-6">
@@ -265,7 +259,7 @@ const Upgrade = () => {
           </div>
         </div>
 
-        {/* Enhanced Currency Information */}
+        {/* Currency Information - Keep only this one */}
         <div className="mt-16">
           <CurrencySelector />
         </div>
