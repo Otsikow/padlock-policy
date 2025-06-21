@@ -1,4 +1,4 @@
-import { Shield, Users, Award, ChevronRight, ArrowRight, Check } from 'lucide-react';
+import { Shield, Users, DollarSign, ChevronRight, ArrowRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,9 +16,9 @@ const Index = () => {
     title: "Expert Support",
     description: "24/7 access to insurance professionals and personalized guidance"
   }, {
-    icon: Award,
-    title: "Best Value Guarantee",
-    description: "Save Money with Padlock Padlock compares rates from leading insurers to make sure you always get the lowest price and best value for your policy."
+    icon: DollarSign,
+    title: "Save Money With Padlock",
+    description: "Padlock compares rates from leading insurers to make sure you always get the lowest price and best value for your policy."
   }];
 
   // Use current plans from pricingService
