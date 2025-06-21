@@ -15,8 +15,12 @@ const BottomNav = () => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
-      <div className="flex justify-around items-center py-2 px-4">
+    <nav 
+      className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50"
+      role="navigation"
+      aria-label="Bottom navigation"
+    >
+      <div className="flex justify-around items-center py-2 px-2 sm:px-4 max-w-screen-xl mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
@@ -25,13 +29,18 @@ const BottomNav = () => {
             <button
               key={item.id}
               onClick={() => navigate(item.path)}
-              className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors ${
+              className={`flex flex-col items-center space-y-1 p-2 sm:p-3 rounded-lg transition-colors min-h-[44px] min-w-[44px] ${
                 isActive 
                   ? 'text-[#183B6B] bg-[#183B6B]/10' 
                   : 'text-gray-600 hover:text-[#183B6B] hover:bg-gray-50'
               }`}
+              aria-label={`Navigate to ${item.label}`}
+              aria-current={isActive ? 'page' : undefined}
             >
-              <Icon className={`w-5 h-5 ${isActive ? 'text-[#183B6B]' : 'text-gray-600'}`} />
+              <Icon 
+                className={`w-5 h-5 ${isActive ? 'text-[#183B6B]' : 'text-gray-600'}`} 
+                aria-hidden="true"
+              />
               <span className={`text-xs font-medium ${isActive ? 'text-[#183B6B]' : 'text-gray-600'}`}>
                 {item.label}
               </span>
@@ -39,7 +48,7 @@ const BottomNav = () => {
           );
         })}
       </div>
-    </div>
+    </nav>
   );
 };
 

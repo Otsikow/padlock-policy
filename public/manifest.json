@@ -1,25 +1,98 @@
 
 {
-  "name": "Padlock - Insurance Optimization",
+  "name": "Padlock - AI-Powered Insurance Management",
   "short_name": "Padlock",
-  "description": "Optimize your insurance policies, compare deals, and manage claims seamlessly",
+  "description": "Revolutionize your insurance management with AI-powered insights, policy tracking, and intelligent recommendations",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#183B6B",
   "theme_color": "#183B6B",
   "orientation": "portrait-primary",
-  "icons": [
+  "scope": "/",
+  "lang": "en-US",
+  "categories": ["finance", "utilities", "business", "productivity"],
+  "screenshots": [
     {
-      "src": "/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ],
-  "categories": ["finance", "utilities", "business"],
-  "lang": "en-US"
+  "icons": [
+    {
+      "src": "/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Upload Policy",
+      "short_name": "Upload",
+      "description": "Upload a new insurance policy",
+      "url": "/upload",
+      "icons": [
+        {
+          "src": "/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Compare Policies",
+      "short_name": "Compare",
+      "description": "Compare insurance policies",
+      "url": "/compare",
+      "icons": [
+        {
+          "src": "/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
 }
