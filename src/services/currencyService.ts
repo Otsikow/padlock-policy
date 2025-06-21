@@ -37,12 +37,11 @@ export const getCurrencyByCountry = (countryCode?: string | null) => {
 
 export const formatCurrency = (amount: number, countryCode?: string | null) => {
   const currency = getCurrencyByCountry(countryCode);
-  
-  // Ensure consistent formatting - no mixing of symbols
   const formattedAmount = Number(amount).toFixed(2);
   
-  // Return ONLY the user's preferred currency symbol and amount
-  return `${currency.symbol}${formattedAmount}`;
+  // Handle spacing for multi-character symbols
+  const needsSpace = currency.symbol.length > 1 && !currency.symbol.startsWith('$');
+  return `${currency.symbol}${needsSpace ? ' ' : ''}${formattedAmount}`;
 };
 
 export const getAllSupportedCurrencies = () => {

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, DollarSign, ChevronDown, ChevronUp, Edit, Trash2, FileText } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronUp, Edit, Trash2, FileText } from 'lucide-react';
 import PolicyAISummary from './PolicyAISummary';
 import PolicyEditModal from './PolicyEditModal';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -95,7 +95,7 @@ const PolicyCard = ({ policy, onCancel, onSwitch, onPolicyUpdated }: PolicyCardP
               <span className="text-xs sm:text-sm">{formatDate(policy.start_date)} - {formatDate(policy.end_date)}</span>
             </div>
             <div className="flex items-center text-gray-600 bg-white/50 p-2 rounded-lg">
-              <DollarSign className="w-4 h-4 mr-2 text-[#183B6B]" />
+              <span className="w-4 h-4 mr-2 text-[#183B6B] text-lg">💰</span>
               <span className="text-xs sm:text-sm">{formatAmount(Number(policy.premium_amount))}/month</span>
             </div>
           </div>
