@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,8 +7,11 @@ import { Star, TrendingDown, Shield, Zap } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
+import { useCurrency } from '@/hooks/useCurrency';
 
 const Compare = () => {
+  const { formatAmount } = useCurrency();
+  
   const [offers] = useState([
     {
       id: 1,
@@ -100,7 +104,7 @@ const Compare = () => {
               <TrendingDown className="w-5 h-5 text-[#E2B319]" />
               <span className="text-white/95">Potential Monthly Savings</span>
             </div>
-            <span className="text-2xl font-bold text-[#E2B319] drop-shadow-sm">${totalSavings}</span>
+            <span className="text-2xl font-bold text-[#E2B319] drop-shadow-sm">{formatAmount(totalSavings)}</span>
           </div>
         </div>
       </div>
@@ -135,12 +139,12 @@ const Compare = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="flex items-center space-x-2">
-                      <span className="text-2xl font-bold text-[#183B6B]">${offer.estimatedPremium}</span>
+                      <span className="text-2xl font-bold text-[#183B6B]">{formatAmount(offer.estimatedPremium)}</span>
                       <span className="text-sm text-gray-500">/month</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
-                      <span className="line-through text-gray-400">${offer.originalPremium}</span>
-                      <span className="text-green-600 font-medium">Save ${offer.savings}</span>
+                      <span className="line-through text-gray-400">{formatAmount(offer.originalPremium)}</span>
+                      <span className="text-green-600 font-medium">Save {formatAmount(offer.savings)}</span>
                     </div>
                   </div>
                   <div className="text-right">
