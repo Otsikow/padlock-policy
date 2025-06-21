@@ -57,7 +57,7 @@ const Upgrade = () => {
       const plan = subscriptionPlans.find(p => p.id === planId);
       if (!plan) throw new Error('Plan not found');
 
-      const displayCurrency = currency;
+      const displayCurrency = currency?.code || 'GBP';
       const stripeCurrency = getStripeCurrency(displayCurrency);
       const amount = displayCurrency !== stripeCurrency 
         ? convertCurrency(plan.prices[displayCurrency as keyof typeof plan.prices], displayCurrency, stripeCurrency)
@@ -110,7 +110,7 @@ const Upgrade = () => {
           </p>
           {currency && (
             <p className="text-sm text-gray-500 mt-2">
-              Prices shown in {currency} for {userCountry}
+              Prices shown in {currency.code} for {userCountry}
             </p>
           )}
         </div>
@@ -142,7 +142,7 @@ const Upgrade = () => {
                 <CardDescription className="text-lg">{plan.description}</CardDescription>
                 <div className="mt-4">
                   <span className="text-4xl font-bold text-gray-900">
-                    {formatPrice(plan.prices[currency as keyof typeof plan.prices] || plan.prices.GBP, currency || 'GBP')}
+                    {formatPrice(plan.prices[currency?.code as keyof typeof plan.prices] || plan.prices.GBP, currency?.code || 'GBP')}
                   </span>
                   <span className="text-gray-600">/month</span>
                 </div>

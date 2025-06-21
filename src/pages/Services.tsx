@@ -28,7 +28,7 @@ const Services = () => {
       const service = oneTimeServices.find(s => s.id === serviceId);
       if (!service) throw new Error('Service not found');
 
-      const displayCurrency = currency;
+      const displayCurrency = currency?.code || 'GBP';
       const stripeCurrency = getStripeCurrency(displayCurrency);
       const amount = displayCurrency !== stripeCurrency 
         ? convertCurrency(service.prices[displayCurrency as keyof typeof service.prices], displayCurrency, stripeCurrency)
@@ -77,7 +77,7 @@ const Services = () => {
           </p>
           {currency && (
             <p className="text-sm text-gray-500 mt-2">
-              Prices shown in {currency} for {userCountry}
+              Prices shown in {currency.code} for {userCountry}
             </p>
           )}
         </div>
@@ -93,7 +93,7 @@ const Services = () => {
                 <CardDescription className="text-base">{service.description}</CardDescription>
                 <div className="mt-4">
                   <span className="text-3xl font-bold text-gray-900">
-                    {formatPrice(service.prices[currency as keyof typeof service.prices] || service.prices.GBP, currency || 'GBP')}
+                    {formatPrice(service.prices[currency?.code as keyof typeof service.prices] || service.prices.GBP, currency?.code || 'GBP')}
                   </span>
                 </div>
               </CardHeader>
