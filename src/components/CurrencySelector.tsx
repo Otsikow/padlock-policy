@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useCurrency } from '@/hooks/useCurrency';
 import { Button } from '@/components/ui/button';
@@ -68,7 +69,7 @@ const CurrencySelector = ({ showCard = true, compact = false, minimal = false }:
         onValueChange={handleCountryChange}
         disabled={updating || loading}
       >
-        <SelectTrigger className="w-16 h-8 text-xs border-0 bg-transparent text-gray-500 hover:text-gray-700">
+        <SelectTrigger className="w-20 h-8 text-sm border-0 bg-transparent text-white hover:text-white/80 focus:ring-0">
           <SelectValue>
             {currency ? currency.symbol : 'GBP'}
           </SelectValue>
