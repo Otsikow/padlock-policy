@@ -1,5 +1,5 @@
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Camera, X, RotateCcw, Check } from 'lucide-react';
@@ -17,8 +17,18 @@ const CameraCapture = ({ onCapture, onClose }: CameraCaptureProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  useEffect(() => {
+    // Cleanup on unmount
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [stream]);
+
   const startCamera = async () => {
     try {
+      console.log('Starting camera...');
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { 
           facingMode: 'environment', // Use back camera by default
@@ -28,36 +38,48 @@ const CameraCapture = ({ onCapture, onClose }: CameraCaptureProps) => {
         audio: false
       });
       
+      console.log('Camera stream obtained');
       setStream(mediaStream);
+      
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        await videoRef.current.play();
+        console.log('Video element playing');
       }
       setIsCapturing(true);
     } catch (error) {
       console.error('Error accessing camera:', error);
       toast({
-        title: "Camera Access Denied",
-        description: "Please allow camera access to scan documents.",
+        title: "Camera Access Error",
+        description: "Please allow camera access and ensure you're on HTTPS or localhost.",
         variant: "destructive",
       });
     }
   };
 
   const stopCamera = () => {
+    console.log('Stopping camera...');
     if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach(track => {
+        track.stop();
+        console.log('Camera track stopped');
+      });
       setStream(null);
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
     }
     setIsCapturing(false);
   };
 
   const capturePhoto = () => {
+    console.log('Capturing photo...');
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
       
-      if (context) {
+      if (context && video.videoWidth > 0 && video.videoHeight > 0) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         context.drawImage(video, 0, 0);
@@ -65,30 +87,49 @@ const CameraCapture = ({ onCapture, onClose }: CameraCaptureProps) => {
         const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
         setCapturedImage(imageDataUrl);
         stopCamera();
+        console.log('Photo captured successfully');
+      } else {
+        console.error('Video not ready or canvas context not available');
+        toast({
+          title: "Capture Error",
+          description: "Video not ready. Please try again.",
+          variant: "destructive",
+        });
       }
     }
   };
 
   const retakePhoto = () => {
+    console.log('Retaking photo...');
     setCapturedImage(null);
     startCamera();
   };
 
   const confirmCapture = () => {
+    console.log('Confirming capture...');
     if (capturedImage && canvasRef.current) {
       canvasRef.current.toBlob((blob) => {
         if (blob) {
           const file = new File([blob], `policy_${Date.now()}.jpg`, {
             type: 'image/jpeg'
           });
+          console.log('File created:', file.name, file.size);
           onCapture(file);
           handleClose();
+        } else {
+          console.error('Failed to create blob from canvas');
+          toast({
+            title: "Save Error",
+            description: "Failed to save the captured image.",
+            variant: "destructive",
+          });
         }
       }, 'image/jpeg', 0.8);
     }
   };
 
   const handleClose = () => {
+    console.log('Closing camera capture...');
     stopCamera();
     setCapturedImage(null);
     onClose();
@@ -114,6 +155,7 @@ const CameraCapture = ({ onCapture, onClose }: CameraCaptureProps) => {
             <div className="text-center space-y-4">
               <Camera className="w-16 h-16 text-gray-400 mx-auto" />
               <p className="text-gray-600">Position your insurance document in good lighting</p>
+              <p className="text-xs text-gray-500">Make sure to allow camera permissions when prompted</p>
               <Button
                 onClick={startCamera}
                 className="w-full bg-[#183B6B] hover:bg-[#1a3d6f] text-white"
@@ -131,6 +173,7 @@ const CameraCapture = ({ onCapture, onClose }: CameraCaptureProps) => {
                   ref={videoRef}
                   autoPlay
                   playsInline
+                  muted
                   className="w-full h-full object-cover"
                 />
               </div>

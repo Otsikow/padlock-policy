@@ -70,6 +70,7 @@ const Upload = () => {
     console.log('Camera captured file:', file.name, file.type, file.size);
     setFormData(prev => ({ ...prev, file }));
     setShowAIAnalysis(true);
+    setShowCamera(false); // Close camera modal
     toast({
       title: "Photo Captured",
       description: "Document photo captured! You can now use AI to analyze it and auto-fill policy details.",
@@ -365,7 +366,15 @@ const Upload = () => {
                           type="button" 
                           variant="outline" 
                           className="w-full sm:w-auto"
-                          onClick={() => document.getElementById('file')?.click()}
+                          onClick={() => {
+                            console.log('Choose File button clicked');
+                            const fileInput = document.getElementById('file') as HTMLInputElement;
+                            if (fileInput) {
+                              fileInput.click();
+                            } else {
+                              console.error('File input not found');
+                            }
+                          }}
                         >
                           <UploadIcon className="w-4 h-4 mr-2" />
                           Choose File
@@ -373,7 +382,10 @@ const Upload = () => {
                         
                         <Button
                           type="button"
-                          onClick={() => setShowCamera(true)}
+                          onClick={() => {
+                            console.log('Scan Document button clicked');
+                            setShowCamera(true);
+                          }}
                           variant="outline"
                           className="w-full sm:w-auto border-[#183B6B] text-[#183B6B] hover:bg-[#183B6B] hover:text-white"
                         >
