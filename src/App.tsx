@@ -14,6 +14,9 @@ import Compare from "./pages/Compare";
 import Vault from "./pages/Vault";
 import Settings from "./pages/Settings";
 import Chat from "./pages/Chat";
+import Upgrade from "./pages/Upgrade";
+import Services from "./pages/Services";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -106,6 +109,16 @@ const AppContent = () => (
           </ProtectedRoute>
         } 
       />
+      <Route 
+        path="/upgrade" 
+        element={
+          <ProtectedRoute>
+            <Upgrade />
+          </ProtectedRoute>
+        } 
+      />
+      <Route path="/services" element={<Services />} />
+      <Route path="/payment-success" element={<PaymentSuccess />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </BrowserRouter>
