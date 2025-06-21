@@ -1,110 +1,130 @@
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { LogOut, Crown } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
+import { Menu, X, LogOut, Plus, FileText, Shield, DollarSign } from 'lucide-react';
 
 interface DashboardHeaderProps {
-  userEmail: string;
+  userEmail?: string;
   policiesCount: number;
   totalPremium: string;
   onSignOut: () => void;
   onUploadClick: () => void;
 }
 
-const DashboardHeader = ({ 
-  userEmail, 
-  policiesCount, 
-  totalPremium, 
-  onSignOut, 
-  onUploadClick 
+const DashboardHeader = ({
+  userEmail,
+  policiesCount,
+  totalPremium,
+  onSignOut,
+  onUploadClick,
 }: DashboardHeaderProps) => {
-  const navigate = useNavigate();
+  const [showMenu, setShowMenu] = useState(false);
 
   return (
-    <>
-      {/* Header */}
-      <div className="bg-gradient-to-br from-[#183B6B] via-[#2a5490] via-[#3461a8] to-[#1e4a78] text-white p-4 sm:p-6 rounded-b-3xl shadow-2xl">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <div className="flex-1">
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold drop-shadow-lg">Welcome back!</h1>
-            <p className="text-white/90 drop-shadow-sm text-sm sm:text-base break-all sm:break-normal">{userEmail}</p>
-          </div>
+    <div className="bg-white shadow-sm border-b sticky top-0 z-40">
+      <div className="px-4 py-4">
+        <div className="flex items-center justify-between">
+          {/* Logo and Brand */}
           <div className="flex items-center space-x-3">
-            <Button
-              onClick={() => navigate('/upgrade')}
-              variant="ghost"
-              size="sm"
-              className="text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
-            >
-              <Crown className="w-4 h-4" />
+            <img 
+              src="/lovable-uploads/da2d5e44-7846-4551-bd2b-b08a7a2190dc.png" 
+              alt="Padlock Logo" 
+              className="h-8 w-auto object-contain"
+            />
+          </div>
+
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden"
+            onClick={() => setShowMenu(!showMenu)}
+          >
+            {showMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-3">
+            <Button onClick={onUploadClick} size="sm" className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Policy
             </Button>
-            <Button
-              onClick={onSignOut}
-              variant="ghost"
-              size="sm"
-              className="text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
-            >
-              <LogOut className="w-4 h-4" />
+            <Button variant="outline" size="sm" onClick={onSignOut}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
             </Button>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-white via-gray-100 to-gray-200 rounded-full flex items-center justify-center shadow-xl">
-              <img 
-                src="/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png" 
-                alt="Padlock Logo" 
-                className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
-              />
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {showMenu && (
+          <div className="md:hidden mt-4 pt-4 border-t">
+            <div className="space-y-2">
+              <Button
+                onClick={() => { onUploadClick(); setShowMenu(false); }}
+                className="w-full justify-start bg-blue-600 hover:bg-blue-700"
+                size="sm"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Policy
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => { onSignOut(); setShowMenu(false); }}
+                className="w-full justify-start"
+                size="sm"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
-          <Card className="bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-white/40 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all duration-300">
-            <CardContent className="p-3 sm:p-4 text-center">
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#E2B319] drop-shadow-lg">{policiesCount}</div>
-              <div className="text-white/95 text-xs sm:text-sm font-medium">Active Policies</div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center">
+                <Shield className="h-5 w-5 text-blue-600 mr-2" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{policiesCount}</p>
+                  <p className="text-xs text-gray-500">Active Policies</p>
+                </div>
+              </div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-white/40 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all duration-300">
-            <CardContent className="p-3 sm:p-4 text-center">
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#E2B319] drop-shadow-lg break-all sm:break-normal">{totalPremium}</div>
-              <div className="text-white/95 text-xs sm:text-sm font-medium">Total Premium</div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
 
-      {/* Action Buttons */}
-      <div className="p-4 sm:p-6 space-y-3">
-        <Button
-          onClick={onUploadClick}
-          className="w-full bg-gradient-to-r from-[#E2B319] via-[#f5c842] to-[#f0c432] hover:from-[#d4a617] hover:via-[#e6b73a] hover:to-[#d9b82e] text-black font-semibold py-3 sm:py-4 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]"
-        >
-          <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Upload New Policy
-        </Button>
-        
-        <div className="grid grid-cols-2 gap-3">
-          <Button
-            onClick={() => navigate('/upgrade')}
-            variant="outline"
-            className="border-[#183B6B] text-[#183B6B] hover:bg-[#183B6B] hover:text-white"
-          >
-            <Crown className="w-4 h-4 mr-2" />
-            Upgrade Plan
-          </Button>
-          <Button
-            onClick={() => navigate('/services')}
-            variant="outline"
-            className="border-[#E2B319] text-[#E2B319] hover:bg-[#E2B319] hover:text-black"
-          >
-            Premium Services
-          </Button>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center">
+                <DollarSign className="h-5 w-5 text-green-600 mr-2" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{totalPremium}</p>
+                  <p className="text-xs text-gray-500">Total Premium</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="col-span-2 md:col-span-1">
+            <CardContent className="p-4">
+              <div className="flex items-center">
+                <FileText className="h-5 w-5 text-purple-600 mr-2" />
+                <div>
+                  <Badge variant="secondary" className="bg-green-100 text-green-800">
+                    Protected
+                  </Badge>
+                  <p className="text-xs text-gray-500 mt-1">Status</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

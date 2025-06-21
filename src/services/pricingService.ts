@@ -1,3 +1,4 @@
+
 export interface PricingPlan {
   id: string;
   name: string;
@@ -87,13 +88,13 @@ export const subscriptionPlans: PricingPlan[] = [
     prices: {
       GBP: 3.99,
       USD: 4.99,
-      GHS: 32.99,
+      GHS: 57.02,
       NGN: 1999.99
     },
     annualPrices: {
       GBP: 39.99,
       USD: 49.99,
-      GHS: 329.99,
+      GHS: 570.20,
       NGN: 19999.99
     }
   },
@@ -116,13 +117,13 @@ export const subscriptionPlans: PricingPlan[] = [
     prices: {
       GBP: 9.99,
       USD: 12.99,
-      GHS: 79.99,
+      GHS: 142.86,
       NGN: 4999.99
     },
     annualPrices: {
       GBP: 99.99,
       USD: 129.99,
-      GHS: 799.99,
+      GHS: 1428.60,
       NGN: 49999.99
     }
   }
