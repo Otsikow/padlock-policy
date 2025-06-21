@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrency } from '@/hooks/useCurrency';
@@ -12,6 +11,9 @@ import { Check, Crown, Zap, Star, Sparkles } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { subscriptionPlans, formatPrice, getStripeCurrency, convertCurrency, getSavingsPercentage } from '@/services/pricingService';
 import { useNavigate } from 'react-router-dom';
+import CurrencySelector from '@/components/CurrencySelector';
+import PriceDisplay from '@/components/PriceDisplay';
+import { getCurrencyDisplayInfo, isStripeCurrencySupported } from '@/services/currencyService';
 
 const Upgrade = () => {
   const { user } = useAuth();
@@ -44,17 +46,21 @@ const Upgrade = () => {
       if (!plan) throw new Error('Plan not found');
 
       const displayCurrency = currency?.code || 'GBP';
-      const stripeCurrency = getStripeCurrency(displayCurrency);
       const priceSource = isAnnual ? plan.annualPrices : plan.prices;
-      const amount = displayCurrency !== stripeCurrency 
-        ? convertCurrency(priceSource[displayCurrency as keyof typeof priceSource], displayCurrency, stripeCurrency)
-        : priceSource[stripeCurrency as keyof typeof priceSource];
+      let billingCurrency = displayCurrency;
+      let amount = priceSource[displayCurrency as keyof typeof priceSource];
+
+      // If user's currency isn't supported by Stripe, bill in GBP
+      if (!isStripeCurrencySupported(displayCurrency)) {
+        billingCurrency = 'GBP';
+        amount = priceSource.GBP;
+      }
 
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
           type: 'subscription',
           planId: plan.name,
-          currency: stripeCurrency,
+          currency: billingCurrency,
           amount: amount,
           interval: isAnnual ? 'year' : 'month'
         }
@@ -110,6 +116,11 @@ const Upgrade = () => {
             Start free, upgrade anytime. Get advanced AI insights and premium support as you grow.
           </p>
           
+          {/* Currency Selector */}
+          <div className="mb-8">
+            <CurrencySelector compact={true} showCard={false} />
+          </div>
+          
           {/* Pricing Toggle */}
           <div className="flex items-center justify-center gap-4 mb-6">
             <span className={`text-sm ${!isAnnual ? 'font-semibold text-gray-900' : 'text-gray-500'}`}>Monthly</span>
@@ -126,16 +137,20 @@ const Upgrade = () => {
 
           {currency && (
             <p className="text-sm text-gray-500">
-              Prices shown in {currency.code} for {userCountry}
+              Prices shown in {currency.name} ({currency.code})
+              {!isStripeCurrencySupported(currency.code) && 
+                <span className="ml-1 text-blue-600">• Billing in GBP with approximate conversion</span>
+              }
             </p>
           )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           {subscriptionPlans.map((plan) => {
-            const savings = getSavings(plan);
             const isCurrent = isCurrentPlan(plan.id);
             const isPopular = plan.id === 'pro';
+            const priceSource = isAnnual ? plan.annualPrices : plan.prices;
+            const baseAmount = priceSource[currency?.code as keyof typeof priceSource] || priceSource.GBP;
             
             return (
               <Card 
@@ -162,17 +177,15 @@ const Upgrade = () => {
                   <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
                   <CardDescription className="text-lg">{plan.description}</CardDescription>
                   <div className="mt-4">
-                    <div className="flex items-baseline justify-center">
-                      <span className="text-4xl font-bold text-gray-900">
-                        {getPrice(plan)}
-                      </span>
-                      {!plan.isFree && (
-                        <span className="text-gray-600 ml-1">/{isAnnual ? 'year' : 'month'}</span>
-                      )}
-                    </div>
-                    {isAnnual && savings && (
+                    <PriceDisplay
+                      baseAmount={baseAmount}
+                      baseCurrency={currency?.code || 'GBP'}
+                      interval={isAnnual ? 'year' : 'month'}
+                      size="md"
+                    />
+                    {isAnnual && !plan.isFree && (
                       <div className="text-sm text-green-600 font-medium mt-1">
-                        Save {savings}% annually
+                        Save {getSavingsPercentage(plan, currency?.code || 'GBP')}% annually
                       </div>
                     )}
                   </div>
@@ -314,6 +327,11 @@ const Upgrade = () => {
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Enhanced Currency Information */}
+        <div className="mt-16">
+          <CurrencySelector />
         </div>
 
         {subscription && (

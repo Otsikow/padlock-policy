@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrency } from '@/hooks/useCurrency';
@@ -10,6 +9,8 @@ import { subscriptionPlans, formatPrice, getUpgradePrompt } from '@/services/pri
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import PriceDisplay from '@/components/PriceDisplay';
+import { isStripeCurrencySupported } from '@/services/currencyService';
 
 interface UpgradePromptProps {
   feature: string;
@@ -42,12 +43,22 @@ const UpgradePrompt = ({ feature, userPlan = 'basic', onClose, trigger = 'featur
       const selectedPlan = subscriptionPlans.find(p => p.id === planId);
       if (!selectedPlan) throw new Error('Plan not found');
 
+      const displayCurrency = currency?.code || 'GBP';
+      let billingCurrency = displayCurrency;
+      let amount = selectedPlan.prices[displayCurrency as keyof typeof selectedPlan.prices];
+
+      // If user's currency isn't supported by Stripe, bill in GBP
+      if (!isStripeCurrencySupported(displayCurrency)) {
+        billingCurrency = 'GBP';
+        amount = selectedPlan.prices.GBP;
+      }
+
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
           type: 'subscription',
           planId: selectedPlan.name,
-          currency: currency?.code || 'GBP',
-          amount: selectedPlan.prices[currency?.code as keyof typeof selectedPlan.prices] || selectedPlan.prices.GBP,
+          currency: billingCurrency,
+          amount: amount,
           interval: 'month'
         }
       });
@@ -97,10 +108,12 @@ const UpgradePrompt = ({ feature, userPlan = 'basic', onClose, trigger = 'featur
               <Badge variant="secondary">Recommended</Badge>
             </div>
             <p className="text-sm text-gray-600 mb-3">{plan.description}</p>
-            <div className="text-2xl font-bold text-blue-600">
-              {formatPrice(plan.prices[currency?.code as keyof typeof plan.prices] || plan.prices.GBP, currency?.code || 'GBP')}
-              <span className="text-sm font-normal text-gray-500">/month</span>
-            </div>
+            <PriceDisplay
+              baseAmount={plan.prices[currency?.code as keyof typeof plan.prices] || plan.prices.GBP}
+              baseCurrency={currency?.code || 'GBP'}
+              interval="month"
+              size="md"
+            />
             <ul className="mt-3 space-y-1">
               {plan.features.slice(0, 3).map((feature, index) => (
                 <li key={index} className="text-sm text-gray-600 flex items-center">
@@ -130,6 +143,11 @@ const UpgradePrompt = ({ feature, userPlan = 'basic', onClose, trigger = 'featur
 
           <p className="text-xs text-center text-gray-500">
             Upgrade anytime • Cancel anytime • 30-day money-back guarantee
+            {currency && !isStripeCurrencySupported(currency.code) && (
+              <span className="block mt-1 text-blue-600">
+                Billing in GBP with local currency display
+              </span>
+            )}
           </p>
         </CardContent>
       </Card>

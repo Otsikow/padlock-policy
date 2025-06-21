@@ -3,17 +3,20 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { getCurrencyByCountry, formatCurrency } from '@/services/currencyService';
+import { detectUserCountry, getTimezoneCountry } from '@/services/geolocationService';
 
 export const useCurrency = () => {
   const { user } = useAuth();
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [autoDetected, setAutoDetected] = useState(false);
 
   useEffect(() => {
     if (user) {
       fetchUserCountry();
     } else {
-      setLoading(false);
+      // For non-authenticated users, auto-detect country
+      autoDetectCountry();
     }
   }, [user]);
 
@@ -29,20 +32,58 @@ export const useCurrency = () => {
 
       if (error) {
         console.error('Error fetching user country:', error);
-        setUserCountry('GB'); // Default to GB
+        // Auto-detect if no saved preference
+        await autoDetectCountry();
+      } else if (data?.country) {
+        setUserCountry(data.country);
+        setLoading(false);
       } else {
-        setUserCountry(data?.country || 'GB');
+        // No saved country, auto-detect
+        await autoDetectCountry();
       }
     } catch (error) {
       console.error('Error fetching user country:', error);
-      setUserCountry('GB');
+      await autoDetectCountry();
+    }
+  };
+
+  const autoDetectCountry = async () => {
+    try {
+      setLoading(true);
+      
+      // Try multiple detection methods
+      let detectedCountry = await detectUserCountry();
+      
+      // Fallback to timezone detection
+      if (!detectedCountry || detectedCountry === 'GB') {
+        const timezoneCountry = getTimezoneCountry();
+        if (timezoneCountry !== 'GB') {
+          detectedCountry = timezoneCountry;
+        }
+      }
+      
+      setUserCountry(detectedCountry);
+      setAutoDetected(true);
+      
+      // Save detected country for authenticated users
+      if (user && detectedCountry) {
+        await updateUserCountry(detectedCountry, false);
+      }
+    } catch (error) {
+      console.error('Country auto-detection failed:', error);
+      setUserCountry('GB'); // Default fallback
     } finally {
       setLoading(false);
     }
   };
 
-  const updateUserCountry = async (countryCode: string) => {
-    if (!user) return;
+  const updateUserCountry = async (countryCode: string, showSuccess: boolean = true) => {
+    if (!user) {
+      // For non-authenticated users, just update local state
+      setUserCountry(countryCode);
+      setAutoDetected(false);
+      return;
+    }
 
     try {
       const { error } = await supabase
@@ -53,6 +94,12 @@ export const useCurrency = () => {
       if (error) throw error;
       
       setUserCountry(countryCode);
+      setAutoDetected(false);
+      
+      if (showSuccess) {
+        // You could add a toast notification here
+        console.log(`Currency updated to ${countryCode}`);
+      }
     } catch (error) {
       console.error('Error updating user country:', error);
       throw error;
@@ -71,5 +118,7 @@ export const useCurrency = () => {
     formatAmount,
     updateUserCountry,
     loading,
+    autoDetected,
+    refreshCountry: autoDetectCountry,
   };
 };
