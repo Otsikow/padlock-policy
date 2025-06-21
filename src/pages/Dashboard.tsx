@@ -193,6 +193,7 @@ const Dashboard = () => {
           onUploadClick={() => navigate('/upload')}
           onCancelPolicy={openCancelModal}
           onSwitchPolicy={openSwitchModal}
+          onPolicyUpdated={fetchPolicies}
         />
       </div>
 

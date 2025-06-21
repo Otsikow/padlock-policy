@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -21,6 +20,7 @@ const Upload = () => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     policyType: '' as PolicyType | '',
+    policyNumber: '',
     startDate: '',
     endDate: '',
     monthlyPremium: '',
@@ -34,7 +34,7 @@ const Upload = () => {
   const [showAIAnalysis, setShowAIAnalysis] = useState(false);
   const [tempPolicyForAnalysis, setTempPolicyForAnalysis] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       console.log('File selected:', file.name, file.type, file.size);
@@ -48,6 +48,7 @@ const Upload = () => {
           console.log('Text extracted from file:', text.length, 'characters');
           setDocumentText(text);
           setShowAIAnalysis(true);
+          extractPolicyNumber(text);
         };
         reader.readAsText(file);
       } else {
@@ -59,6 +60,29 @@ const Upload = () => {
           description: "You can now use AI to analyze this document and auto-fill policy details.",
         });
       }
+    }
+  };
+
+  const extractPolicyNumber = async (text: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-analysis', {
+        body: {
+          type: 'extract_policy_number',
+          data: { document_text: text }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.policy_number && data.confidence > 0.7) {
+        setFormData(prev => ({ ...prev, policyNumber: data.policy_number }));
+        toast({
+          title: "Policy Number Found!",
+          description: `Automatically extracted: ${data.policy_number}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error extracting policy number:', error);
     }
   };
 
@@ -111,6 +135,7 @@ const Upload = () => {
         .insert({
           user_id: user.id,
           policy_type: formData.policyType as PolicyType,
+          policy_number: formData.policyNumber || null,
           premium_amount: parseFloat(formData.monthlyPremium),
           start_date: formData.startDate,
           end_date: formData.endDate,
@@ -208,6 +233,7 @@ const Upload = () => {
         .insert({
           user_id: user.id,
           policy_type: 'other' as PolicyType, // Default type for analysis
+          policy_number: null,
           premium_amount: 0, // Will be updated by AI
           start_date: new Date().toISOString().split('T')[0],
           end_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -358,6 +384,18 @@ const Upload = () => {
                     <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              {/* Policy Number */}
+              <div className="space-y-2">
+                <Label htmlFor="policyNumber">Policy Number</Label>
+                <Input
+                  id="policyNumber"
+                  value={formData.policyNumber}
+                  onChange={(e) => setFormData(prev => ({ ...prev, policyNumber: e.target.value }))}
+                  placeholder="Enter policy number (auto-extracted if available)"
+                  className="border-gray-300 focus:border-[#183B6B]"
+                />
               </div>
 
               {/* Date Range */}

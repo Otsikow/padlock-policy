@@ -12,9 +12,10 @@ interface PolicyListProps {
   onUploadClick: () => void;
   onCancelPolicy: (policyId: string) => void;
   onSwitchPolicy: (policyId: string) => void;
+  onPolicyUpdated?: () => void;
 }
 
-const PolicyList = ({ policies, onUploadClick, onCancelPolicy, onSwitchPolicy }: PolicyListProps) => {
+const PolicyList = ({ policies, onUploadClick, onCancelPolicy, onSwitchPolicy, onPolicyUpdated }: PolicyListProps) => {
   return (
     <div className="mb-6">
       <h2 className="text-xl font-bold bg-gradient-to-r from-[#183B6B] to-[#2a5490] bg-clip-text text-transparent mb-4">My Policies</h2>
@@ -43,6 +44,7 @@ const PolicyList = ({ policies, onUploadClick, onCancelPolicy, onSwitchPolicy }:
               policy={policy}
               onCancel={onCancelPolicy}
               onSwitch={onSwitchPolicy}
+              onPolicyUpdated={onPolicyUpdated}
             />
           ))}
         </div>

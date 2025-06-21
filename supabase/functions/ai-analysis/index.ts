@@ -14,195 +14,137 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
-      }
-    );
-
+    const { type, data } = await req.json();
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
 
-    const { type, data } = await req.json();
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    let response;
+    let prompt = '';
+    let systemMessage = '';
+
     switch (type) {
       case 'risk_score':
-        response = await analyzeClaimRisk(data, openAIApiKey);
+        systemMessage = 'You are an AI insurance risk assessor. Analyze the claim data and provide a risk score (0-100) and identify risk factors.';
+        prompt = `Analyze this insurance claim and provide a JSON response with:
+        - risk_score: number between 0-100 (0 = low risk, 100 = high risk)
+        - risk_factors: array of strings describing specific risk factors
+        
+        Claim data:
+        Policy Type: ${data.policy_type}
+        Claim Reason: ${data.claim_reason}
+        Claim Amount: ${data.claim_amount || 'Not specified'}
+        Additional Context: ${data.context || 'None'}
+        
+        Consider factors like claim amount relative to typical claims, unusual circumstances, timing, and policy type.`;
         break;
+
       case 'policy_summary':
-        response = await generatePolicySummary(data, openAIApiKey);
+        systemMessage = 'You are an AI insurance expert that explains complex insurance policies in simple terms.';
+        prompt = `Analyze this insurance policy and provide a JSON response with:
+        - ai_summary: a clear, concise summary of the policy coverage in plain English
+        - fine_print_summary: key important details, limitations, and exclusions explained simply
+        
+        Policy data:
+        Type: ${data.policy_type}
+        Premium: $${data.premium_amount}/month
+        Coverage Period: ${data.start_date} to ${data.end_date}
+        Coverage Summary: ${data.coverage_summary || 'Standard coverage'}
+        Document Content: ${data.document_content || 'Not available'}
+        
+        Focus on what the policy covers, what it doesn't cover, and any important conditions.`;
         break;
+
+      case 'extract_policy_number':
+        systemMessage = 'You are an AI document analyzer that extracts policy numbers from insurance documents.';
+        prompt = `Extract the policy number from this insurance document text. Look for patterns like:
+        - Policy Number: [number]
+        - Policy #: [number]  
+        - Certificate Number: [number]
+        - Contract Number: [number]
+        
+        Document text: ${data.document_text}
+        
+        Return a JSON response with:
+        - policy_number: the extracted policy number (string) or null if not found
+        - confidence: number between 0-1 indicating confidence in the extraction`;
+        break;
+
       case 'chat':
-        response = await handleChatMessage(data, openAIApiKey, supabaseClient);
+        systemMessage = `You are an AI insurance assistant. You help users understand their insurance policies and answer questions about coverage. 
+        
+        User's policies:
+        ${data.user_policies.map((p: any) => `- ${p.policy_type} insurance: $${p.premium_amount}/month, coverage: ${p.coverage_summary || 'Standard coverage'}`).join('\n')}`;
+        
+        prompt = data.message;
         break;
+
       default:
-        throw new Error('Invalid analysis type');
+        throw new Error('Unknown analysis type');
     }
 
-    return new Response(JSON.stringify(response), {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemMessage },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.statusText}`);
+    }
+
+    const aiResponse = await response.json();
+    const content = aiResponse.choices[0].message.content;
+
+    // For chat responses, return the content directly
+    if (type === 'chat') {
+      // Store the message in the database
+      if (data.conversation_id) {
+        await supabase.from('chat_messages').insert([
+          { conversation_id: data.conversation_id, role: 'user', content: data.message },
+          { conversation_id: data.conversation_id, role: 'assistant', content: content }
+        ]);
+      }
+      
+      return new Response(JSON.stringify({ content }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // For other types, try to parse as JSON
+    let result;
+    try {
+      result = JSON.parse(content);
+    } catch {
+      // If not valid JSON, return the content wrapped in an object
+      result = { content };
+    }
+
+    return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Error in ai-analysis function:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    console.error('Error in AI analysis:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });
-
-async function analyzeClaimRisk(claimData: any, apiKey: string) {
-  const prompt = `Analyze this insurance claim for risk factors and provide a risk score from 0-100:
-  
-Claim Details:
-- Policy Type: ${claimData.policy_type}
-- Claim Reason: ${claimData.claim_reason}
-- Claim Amount: $${claimData.claim_amount || 'Not specified'}
-- Additional Context: ${claimData.context || 'None'}
-
-Please provide:
-1. A risk score (0-100, where 0 is low risk and 100 is high risk)
-2. A list of risk factors identified
-3. Brief explanation of the assessment
-
-Format your response as JSON with: {"risk_score": number, "risk_factors": ["factor1", "factor2"], "explanation": "text"}`;
-
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: 'You are an expert insurance claims analyst. Provide accurate risk assessments based on claim details.' },
-        { role: 'user', content: prompt }
-      ],
-      temperature: 0.3,
-    }),
-  });
-
-  const data = await response.json();
-  const content = data.choices[0].message.content;
-  
-  try {
-    return JSON.parse(content);
-  } catch {
-    return {
-      risk_score: 50,
-      risk_factors: ['Unable to parse AI response'],
-      explanation: content
-    };
-  }
-}
-
-async function generatePolicySummary(policyData: any, apiKey: string) {
-  const prompt = `Generate a comprehensive but easy-to-understand summary of this insurance policy:
-
-Policy Details:
-- Type: ${policyData.policy_type}
-- Premium: $${policyData.premium_amount}/month
-- Coverage Period: ${policyData.start_date} to ${policyData.end_date}
-- Coverage Summary: ${policyData.coverage_summary || 'Not provided'}
-- Document Content: ${policyData.document_content || 'Not provided'}
-
-Please provide:
-1. A clear AI summary of what this policy covers
-2. Key benefits and limitations
-3. Important fine print details in plain English
-
-Format as JSON with: {"ai_summary": "text", "fine_print_summary": "text"}`;
-
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: 'You are an expert insurance advisor. Explain complex policy terms in simple, clear language that anyone can understand.' },
-        { role: 'user', content: prompt }
-      ],
-      temperature: 0.3,
-    }),
-  });
-
-  const data = await response.json();
-  const content = data.choices[0].message.content;
-  
-  try {
-    return JSON.parse(content);
-  } catch {
-    return {
-      ai_summary: content,
-      fine_print_summary: 'AI summary generated successfully'
-    };
-  }
-}
-
-async function handleChatMessage(chatData: any, apiKey: string, supabase: any) {
-  const { message, conversation_id, user_policies } = chatData;
-
-  // Get conversation history
-  const { data: messages } = await supabase
-    .from('chat_messages')
-    .select('role, content')
-    .eq('conversation_id', conversation_id)
-    .order('created_at', { ascending: true });
-
-  const conversationHistory = messages || [];
-  
-  // Build context about user's policies
-  const policyContext = user_policies?.map((p: any) => 
-    `${p.policy_type} insurance: $${p.premium_amount}/month, covers ${p.coverage_summary || 'standard coverage'}`
-  ).join('\n') || 'No policies on file';
-
-  const systemPrompt = `You are a helpful insurance assistant. The user has the following policies:
-${policyContext}
-
-Answer questions about insurance coverage, claims, policies, and general insurance advice. Be helpful, accurate, and conversational.`;
-
-  const chatMessages = [
-    { role: 'system', content: systemPrompt },
-    ...conversationHistory,
-    { role: 'user', content: message }
-  ];
-
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: chatMessages,
-      temperature: 0.7,
-    }),
-  });
-
-  const data = await response.json();
-  const assistantMessage = data.choices[0].message.content;
-
-  // Save messages to database
-  await supabase.from('chat_messages').insert([
-    { conversation_id, role: 'user', content: message },
-    { conversation_id, role: 'assistant', content: assistantMessage }
-  ]);
-
-  return { message: assistantMessage };
-}
