@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,7 @@ const Vault = () => {
   const { user } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDocumentType, setSelectedDocumentType] = useState('policy'); // Changed from 'other' to 'policy'
+  const [selectedDocumentType, setSelectedDocumentType] = useState('policy');
 
   useEffect(() => {
     if (user) {
@@ -118,8 +119,8 @@ const Vault = () => {
         <div className="text-center">
           <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-white to-gray-100 rounded-full flex items-center justify-center shadow-lg">
             <img 
-              src="/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png" 
-              alt="Padlock Logo" 
+              src="/lovable-uploads/6f4f2ad0-19b7-4654-b9bf-35b79aadc6b7.png" 
+              alt="PadLock Logo" 
               className="w-8 h-8 object-contain"
             />
           </div>
@@ -137,8 +138,8 @@ const Vault = () => {
           <h1 className="text-2xl font-bold">Document Vault</h1>
           <div className="w-10 h-10 bg-gradient-to-br from-white to-gray-100 rounded-xl flex items-center justify-center shadow-lg">
             <img 
-              src="/lovable-uploads/1c0eaed1-c937-427a-b6ca-e8201b38014e.png" 
-              alt="Padlock Logo" 
+              src="/lovable-uploads/6f4f2ad0-19b7-4654-b9bf-35b79aadc6b7.png" 
+              alt="PadLock Logo" 
               className="w-6 h-6 object-contain"
             />
           </div>
