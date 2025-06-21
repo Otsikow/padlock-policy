@@ -6,7 +6,7 @@ import { LogOut } from 'lucide-react';
 interface DashboardHeaderProps {
   userEmail: string;
   policiesCount: number;
-  totalPremium: number;
+  totalPremium: string; // Changed from number to string to accept formatted currency
   onSignOut: () => void;
   onUploadClick: () => void;
 }
@@ -56,7 +56,7 @@ const DashboardHeader = ({
           </Card>
           <Card className="bg-gradient-to-br from-white/15 to-white/5 border-white/30 backdrop-blur-md shadow-lg">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-[#E2B319] drop-shadow-sm">${totalPremium.toFixed(2)}</div>
+              <div className="text-2xl font-bold text-[#E2B319] drop-shadow-sm">{totalPremium}</div>
               <div className="text-white/90 text-sm">Total Premium</div>
             </CardContent>
           </Card>
