@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Upload, File, Image, Calendar, Eye, Trash2 } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import DocumentUpload from '@/components/DocumentUpload';
+import DocumentTypeSelector from '@/components/DocumentTypeSelector';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -25,6 +26,7 @@ const Vault = () => {
   const { user } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDocumentType, setSelectedDocumentType] = useState('other');
 
   useEffect(() => {
     if (user) {
@@ -169,8 +171,15 @@ const Vault = () => {
               Upload New Document
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <DocumentUpload onUploadComplete={fetchDocuments} />
+          <CardContent className="space-y-4">
+            <DocumentTypeSelector
+              value={selectedDocumentType}
+              onChange={setSelectedDocumentType}
+            />
+            <DocumentUpload 
+              onUploadComplete={fetchDocuments}
+              documentType={selectedDocumentType}
+            />
           </CardContent>
         </Card>
 
