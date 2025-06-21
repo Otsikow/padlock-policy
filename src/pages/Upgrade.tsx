@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
-import { Sparkles, ArrowLeft, Lock } from 'lucide-react';
+import { Sparkles, ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { subscriptionPlans } from '@/services/pricingService';
 import { useNavigate } from 'react-router-dom';
@@ -97,15 +96,14 @@ const Upgrade = () => {
           </Button>
         </div>
 
-        {/* Logo and Padlock Section */}
+        {/* Logo Section */}
         <div className="flex flex-col items-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <img 
-              src="/lovable-uploads/da2d5e44-7846-4551-bd2b-b08a7a2190dc.png" 
+              src="/lovable-uploads/077b49f8-df50-4e61-a591-39459ba009ae.png" 
               alt="Padlock Logo" 
-              className="h-16 w-auto mr-4"
+              className="h-20 w-auto"
             />
-            <Lock className="h-12 w-12 text-[#183B6B]" />
           </div>
           <h1 className="text-5xl font-bold text-[#183B6B] text-center">Padlock</h1>
           <p className="text-lg text-gray-600 mt-2 text-center">Secure Your Insurance Future</p>
