@@ -38,10 +38,10 @@ export const getCurrencyByCountry = (countryCode?: string | null) => {
 export const formatCurrency = (amount: number, countryCode?: string | null) => {
   const currency = getCurrencyByCountry(countryCode);
   
-  // Format the number with appropriate decimal places
-  const formattedAmount = amount.toFixed(2);
+  // Ensure consistent formatting - no mixing of symbols
+  const formattedAmount = Number(amount).toFixed(2);
   
-  // Return formatted string with currency symbol
+  // Return ONLY the user's preferred currency symbol and amount
   return `${currency.symbol}${formattedAmount}`;
 };
 

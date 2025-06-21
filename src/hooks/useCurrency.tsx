@@ -159,6 +159,7 @@ export const useCurrency = () => {
 
   const currency = getCurrencyByCountry(userCountry);
 
+  // This is the key function - it ALWAYS uses the user's preferred currency
   const formatAmount = (amount: number) => {
     return formatCurrency(amount, userCountry);
   };
@@ -170,7 +171,7 @@ export const useCurrency = () => {
   return {
     userCountry,
     currency,
-    formatAmount,
+    formatAmount, // This ensures consistent formatting everywhere
     updateUserCountry,
     loading,
     autoDetected,

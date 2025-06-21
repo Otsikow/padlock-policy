@@ -20,7 +20,7 @@ const PriceDisplay = ({
   showBadge = true,
   className = ''
 }: PriceDisplayProps) => {
-  const { currency } = useCurrency();
+  const { formatAmount, currency } = useCurrency();
 
   const sizeClasses = {
     sm: 'text-lg',
@@ -36,27 +36,22 @@ const PriceDisplay = ({
     );
   }
 
-  // Use the user's preferred currency for display
-  const displayCurrency = currency?.code || baseCurrency;
-  const displaySymbol = currency?.symbol || '£';
-
   return (
     <div className={`${className}`}>
       <div className={`${sizeClasses[size]} font-bold text-gray-900 flex items-baseline gap-1`}>
         <span>
-          {displaySymbol}
-          {baseAmount.toFixed(2)}
+          {formatAmount(baseAmount)}
         </span>
         <span className="text-base font-normal text-gray-600">
           /{interval}
         </span>
       </div>
       
-      {showBadge && (
+      {showBadge && currency && (
         <div className="flex items-center gap-2 mt-2">
-          {isStripeCurrencySupported(displayCurrency) ? (
+          {isStripeCurrencySupported(currency.code) ? (
             <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
-              Billed in {displayCurrency}
+              Billed in {currency.code}
             </Badge>
           ) : (
             <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
