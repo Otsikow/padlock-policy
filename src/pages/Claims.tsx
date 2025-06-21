@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -5,12 +6,13 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Upload, FileText, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Upload, FileText, Clock, CheckCircle, XCircle, Edit, Trash2, Save } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import BottomNav from '@/components/BottomNav';
 import ClaimRiskIndicator from '@/components/ClaimRiskIndicator';
+import ClaimEditModal from '@/components/ClaimEditModal';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Policy = Tables<'policies'>;
@@ -28,6 +30,8 @@ const Claims = () => {
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [existingClaims, setExistingClaims] = useState<Claim[]>([]);
   const [riskAnalysis, setRiskAnalysis] = useState<any>(null);
+  const [editingClaim, setEditingClaim] = useState<Claim | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -131,6 +135,65 @@ const Claims = () => {
     }
   };
 
+  const handleEditClaim = (claim: Claim) => {
+    setEditingClaim(claim);
+    setShowEditModal(true);
+  };
+
+  const handleDeleteClaim = async (claimId: string) => {
+    if (!confirm('Are you sure you want to delete this claim?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('claims')
+        .delete()
+        .eq('id', claimId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Claim deleted successfully",
+        description: "The claim has been removed.",
+      });
+
+      fetchClaims(); // Refresh claims list
+    } catch (error: any) {
+      toast({
+        title: "Failed to delete claim",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSaveEditedClaim = async (updatedClaim: Partial<Claim>) => {
+    if (!editingClaim) return;
+
+    try {
+      const { error } = await supabase
+        .from('claims')
+        .update(updatedClaim)
+        .eq('id', editingClaim.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Claim updated successfully",
+        description: "Your changes have been saved.",
+      });
+
+      setShowEditModal(false);
+      setEditingClaim(null);
+      fetchClaims(); // Refresh claims list
+    } catch (error: any) {
+      toast({
+        title: "Failed to update claim",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
@@ -168,6 +231,10 @@ const Claims = () => {
 
   const getSelectedPolicy = () => {
     return policies.find(p => p.id === claimData.policyId);
+  };
+
+  const canEditClaim = (claim: Claim) => {
+    return claim.claim_status === 'pending' || !claim.claim_status;
   };
 
   return (
@@ -306,7 +373,7 @@ const Claims = () => {
                 existingClaims.map((claim) => (
                   <div key={claim.id} className="border border-gray-200 rounded-lg p-4">
                     <div className="flex justify-between items-start mb-3">
-                      <div>
+                      <div className="flex-1">
                         <h3 className="font-semibold text-[#183B6B]">{getPolicyName(claim.policy_id)}</h3>
                         <p className="text-sm text-gray-600 mt-1">{claim.claim_reason}</p>
                         {claim.ai_risk_score && (
@@ -317,10 +384,32 @@ const Claims = () => {
                           </div>
                         )}
                       </div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${getStatusColor(claim.claim_status || 'pending')}`}>
-                        {getStatusIcon(claim.claim_status || 'pending')}
-                        <span>{claim.claim_status || 'Pending'}</span>
-                      </span>
+                      <div className="flex items-center space-x-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${getStatusColor(claim.claim_status || 'pending')}`}>
+                          {getStatusIcon(claim.claim_status || 'pending')}
+                          <span>{claim.claim_status || 'Pending'}</span>
+                        </span>
+                        {canEditClaim(claim) && (
+                          <div className="flex space-x-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEditClaim(claim)}
+                              className="p-2 h-8 w-8"
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteClaim(claim.id)}
+                              className="p-2 h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div className="flex justify-between items-center text-sm text-gray-500">
                       <span>
@@ -335,6 +424,20 @@ const Claims = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Modal */}
+      {showEditModal && editingClaim && (
+        <ClaimEditModal
+          claim={editingClaim}
+          policies={policies}
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingClaim(null);
+          }}
+          onSave={handleSaveEditedClaim}
+        />
+      )}
 
       <BottomNav />
     </div>
