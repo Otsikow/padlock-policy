@@ -116,17 +116,14 @@ const Dashboard = () => {
     setSelectedPolicyId(null);
   };
 
-  const handleSwitchPolicy = () => {
+  const handleSwitchPolicy = async () => {
     if (!selectedPolicyId || !user) return;
 
-    // Get the auth token  
-    const getAuthToken = async () => {
+    try {
+      // Get the auth token
       const { data: { session } } = await supabase.auth.getSession();
-      return session?.access_token;
-    };
-
-    getAuthToken().then(token => {
-      if (!token) {
+      
+      if (!session?.access_token) {
         toast({
           title: "Authentication Error",
           description: "Please log in again to switch your policy.",
@@ -136,11 +133,42 @@ const Dashboard = () => {
       }
 
       const compareUrl = window.location.origin + '/compare';
-      const switchUrl = `https://ryqawthghqhsgjucgong.supabase.co/functions/v1/switch-policy?from_policy_id=${selectedPolicyId}&redirect_url=${encodeURIComponent(compareUrl)}`;
       
-      // Redirect to external logic
-      window.location.href = switchUrl;
-    });
+      // Call the edge function with proper authorization
+      const response = await fetch(`https://ryqawthghqhsgjucgong.supabase.co/functions/v1/switch-policy?from_policy_id=${selectedPolicyId}&redirect_url=${encodeURIComponent(compareUrl)}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        // If successful, redirect to compare page
+        const redirectUrl = response.headers.get('Location');
+        if (redirectUrl) {
+          window.location.href = redirectUrl;
+        } else {
+          // Fallback redirect
+          navigate(`/compare?status=switching&from_policy_id=${selectedPolicyId}`);
+        }
+      } else {
+        const errorData = await response.json();
+        console.error('Switch policy error:', errorData);
+        toast({
+          title: "Switch Policy Error",
+          description: errorData.error || "Failed to initiate policy switch",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Switch policy error:', error);
+      toast({
+        title: "Switch Policy Error",
+        description: "Failed to initiate policy switch. Please try again.",
+        variant: "destructive",
+      });
+    }
 
     setShowSwitchModal(false);
     setSelectedPolicyId(null);
