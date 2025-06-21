@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +9,7 @@ import { Upload, FileText, Clock, CheckCircle, XCircle, Edit, Trash2, Save } fro
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useCurrency } from '@/hooks/useCurrency';
 import BottomNav from '@/components/BottomNav';
 import ClaimRiskIndicator from '@/components/ClaimRiskIndicator';
 import ClaimEditModal from '@/components/ClaimEditModal';
@@ -20,6 +20,7 @@ type Claim = Tables<'claims'>;
 
 const Claims = () => {
   const { user } = useAuth();
+  const { formatAmount, currency } = useCurrency();
   const [claimData, setClaimData] = useState({
     policyId: '',
     reason: '',
@@ -275,7 +276,7 @@ const Claims = () => {
                   <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                     {policies.map((policy) => (
                       <SelectItem key={policy.id} value={policy.id}>
-                        {formatPolicyType(policy.policy_type)} Insurance - ${policy.premium_amount}/month
+                        {formatPolicyType(policy.policy_type)} Insurance - {formatAmount(Number(policy.premium_amount))}/month
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -295,7 +296,7 @@ const Claims = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="claimAmount">Claim Amount ($) - Optional</Label>
+                <Label htmlFor="claimAmount">Claim Amount ({currency.symbol}) - Optional</Label>
                 <Input
                   id="claimAmount"
                   type="number"
@@ -413,7 +414,7 @@ const Claims = () => {
                     </div>
                     <div className="flex justify-between items-center text-sm text-gray-500">
                       <span>
-                        {claim.claim_amount ? `Amount: $${Number(claim.claim_amount).toFixed(2)}` : 'Amount: TBD'}
+                        {claim.claim_amount ? `Amount: ${formatAmount(Number(claim.claim_amount))}` : 'Amount: TBD'}
                       </span>
                       <span>{new Date(claim.created_at || '').toLocaleDateString()}</span>
                     </div>

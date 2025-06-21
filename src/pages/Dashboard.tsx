@@ -7,12 +7,14 @@ import SmartNotifications from '@/components/SmartNotifications';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useCurrency } from '@/hooks/useCurrency';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Policy = Tables<'policies'>;
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { formatAmount } = useCurrency();
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
@@ -180,7 +182,7 @@ const Dashboard = () => {
       <DashboardHeader
         userEmail={user?.email}
         policiesCount={policies.filter(p => p.status !== 'cancelled').length}
-        totalPremium={totalPremium}
+        totalPremium={formatAmount(totalPremium)}
         onSignOut={handleSignOut}
         onUploadClick={() => navigate('/upload')}
       />

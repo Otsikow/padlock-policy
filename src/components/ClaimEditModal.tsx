@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Save, X } from 'lucide-react';
+import { useCurrency } from '@/hooks/useCurrency';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Policy = Tables<'policies'>;
@@ -21,6 +22,7 @@ interface ClaimEditModalProps {
 }
 
 const ClaimEditModal = ({ claim, policies, isOpen, onClose, onSave }: ClaimEditModalProps) => {
+  const { formatAmount, currency } = useCurrency();
   const [editData, setEditData] = useState({
     policy_id: claim.policy_id,
     claim_reason: claim.claim_reason,
@@ -67,7 +69,7 @@ const ClaimEditModal = ({ claim, policies, isOpen, onClose, onSave }: ClaimEditM
               <SelectContent>
                 {policies.map((policy) => (
                   <SelectItem key={policy.id} value={policy.id}>
-                    {formatPolicyType(policy.policy_type)} Insurance - ${policy.premium_amount}/month
+                    {formatPolicyType(policy.policy_type)} Insurance - {formatAmount(Number(policy.premium_amount))}/month
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -86,7 +88,7 @@ const ClaimEditModal = ({ claim, policies, isOpen, onClose, onSave }: ClaimEditM
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit-amount">Claim Amount ($)</Label>
+            <Label htmlFor="edit-amount">Claim Amount ({currency.symbol})</Label>
             <Input
               id="edit-amount"
               type="number"
