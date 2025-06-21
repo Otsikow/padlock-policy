@@ -1,3 +1,4 @@
+
 import { Shield, Users, Award, ChevronRight, ArrowRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,6 +44,24 @@ const Index = () => {
     }
   };
 
+  const getButtonText = (planId: string) => {
+    switch (planId) {
+      case 'basic': return 'Start Free Today';
+      case 'pro': return 'Upgrade To Pro';
+      case 'premium': return 'Upgrade To Premium';
+      default: return 'Get Started';
+    }
+  };
+
+  const getButtonStyles = (planId: string) => {
+    switch (planId) {
+      case 'basic': return 'bg-gray-700 hover:bg-gray-800';
+      case 'pro': return 'bg-blue-600 hover:bg-blue-700';
+      case 'premium': return 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white';
+      default: return '';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Navigation */}
@@ -51,7 +70,7 @@ const Index = () => {
           <img 
             src="/lovable-uploads/af333e86-bd90-4a46-92a1-f7c8b35bbe90.png"
             alt="PadLock Insurance Logo"
-            className="h-10 w-auto"
+            className="h-12 w-auto"
           />
           <span className="text-xl font-bold text-gray-900">PadLock</span>
         </div>
@@ -152,11 +171,16 @@ const Index = () => {
                 key={index} 
                 className={`relative border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm ${
                   plan.popular ? 'ring-2 ring-blue-500 scale-105' : ''
-                }`}
+                } ${plan.id === 'premium' ? 'ring-2 ring-yellow-400' : ''}`}
               >
                 {plan.popular && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
                     Most Popular
+                  </Badge>
+                )}
+                {plan.id === 'premium' && (
+                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
+                    Premium
                   </Badge>
                 )}
                 <CardHeader className="text-center">
@@ -185,16 +209,11 @@ const Index = () => {
                     ))}
                   </ul>
                   <Button 
-                    className={`w-full ${
-                      plan.popular 
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700' 
-                        : ''
-                    }`}
-                    variant={plan.popular ? 'default' : 'outline'}
+                    className={`w-full ${getButtonStyles(plan.id)}`}
                     asChild
                   >
                     <Link to="/auth">
-                      {plan.price === 0 ? 'Start Free Today' : 'Start Free Today'}
+                      {getButtonText(plan.id)}
                     </Link>
                   </Button>
                 </CardContent>
