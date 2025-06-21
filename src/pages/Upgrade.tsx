@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
-import { Sparkles, ArrowLeft } from 'lucide-react';
+import { Sparkles, ArrowLeft, Lock } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { subscriptionPlans } from '@/services/pricingService';
 import { useNavigate } from 'react-router-dom';
@@ -97,10 +97,24 @@ const Upgrade = () => {
           </Button>
         </div>
 
+        {/* Logo and Padlock Section */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <img 
+              src="/lovable-uploads/da2d5e44-7846-4551-bd2b-b08a7a2190dc.png" 
+              alt="Padlock Logo" 
+              className="h-16 w-auto mr-4"
+            />
+            <Lock className="h-12 w-12 text-[#183B6B]" />
+          </div>
+          <h1 className="text-5xl font-bold text-[#183B6B] text-center">Padlock</h1>
+          <p className="text-lg text-gray-600 mt-2 text-center">Secure Your Insurance Future</p>
+        </div>
+
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
             <Sparkles className="h-8 w-8 text-blue-600 mr-2" />
-            <h1 className="text-4xl font-bold text-gray-900">Choose Your Plan</h1>
+            <h2 className="text-4xl font-bold text-gray-900">Choose Your Plan</h2>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             Start free, upgrade anytime. Get advanced AI insights and premium support as you grow.
