@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { User, Bell, Shield, HelpCircle, LogOut, Edit, Key, Mail, Phone, MessageSquare } from 'lucide-react';
+import { User, Bell, Shield, HelpCircle, LogOut, Edit, Key, Mail, Phone, MessageSquare, CreditCard, Crown } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import ProfilePhotoUpload from '@/components/ProfilePhotoUpload';
 import PasswordReset from '@/components/PasswordReset';
@@ -243,6 +242,34 @@ const Settings = () => {
                 </Button>
               )}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Billing & Subscriptions */}
+        <Card className="shadow-lg border-0">
+          <CardHeader>
+            <CardTitle className="text-[#183B6B] flex items-center">
+              <CreditCard className="w-5 h-5 mr-2" />
+              Billing & Subscriptions
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start border-gray-300 hover:bg-gray-50"
+              onClick={() => navigate('/upgrade')}
+            >
+              <Crown className="w-4 h-4 mr-2" />
+              View Subscription Plans
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start border-gray-300 hover:bg-gray-50"
+              onClick={() => navigate('/services')}
+            >
+              <CreditCard className="w-4 h-4 mr-2" />
+              Premium Services
+            </Button>
           </CardContent>
         </Card>
 

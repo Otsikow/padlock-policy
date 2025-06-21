@@ -1,7 +1,8 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { LogOut } from 'lucide-react';
+import { LogOut, Crown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface DashboardHeaderProps {
   userEmail: string;
@@ -18,6 +19,8 @@ const DashboardHeader = ({
   onSignOut, 
   onUploadClick 
 }: DashboardHeaderProps) => {
+  const navigate = useNavigate();
+
   return (
     <>
       {/* Header */}
@@ -28,6 +31,14 @@ const DashboardHeader = ({
             <p className="text-white/90 drop-shadow-sm text-sm sm:text-base break-all sm:break-normal">{userEmail}</p>
           </div>
           <div className="flex items-center space-x-3">
+            <Button
+              onClick={() => navigate('/upgrade')}
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
+            >
+              <Crown className="w-4 h-4" />
+            </Button>
             <Button
               onClick={onSignOut}
               variant="ghost"
@@ -63,17 +74,35 @@ const DashboardHeader = ({
         </div>
       </div>
 
-      {/* Upload New Policy Button */}
-      <div className="p-4 sm:p-6">
+      {/* Action Buttons */}
+      <div className="p-4 sm:p-6 space-y-3">
         <Button
           onClick={onUploadClick}
-          className="w-full mb-6 bg-gradient-to-r from-[#E2B319] via-[#f5c842] to-[#f0c432] hover:from-[#d4a617] hover:via-[#e6b73a] hover:to-[#d9b82e] text-black font-semibold py-3 sm:py-4 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]"
+          className="w-full bg-gradient-to-r from-[#E2B319] via-[#f5c842] to-[#f0c432] hover:from-[#d4a617] hover:via-[#e6b73a] hover:to-[#d9b82e] text-black font-semibold py-3 sm:py-4 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]"
         >
           <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Upload New Policy
         </Button>
+        
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            onClick={() => navigate('/upgrade')}
+            variant="outline"
+            className="border-[#183B6B] text-[#183B6B] hover:bg-[#183B6B] hover:text-white"
+          >
+            <Crown className="w-4 h-4 mr-2" />
+            Upgrade Plan
+          </Button>
+          <Button
+            onClick={() => navigate('/services')}
+            variant="outline"
+            className="border-[#E2B319] text-[#E2B319] hover:bg-[#E2B319] hover:text-black"
+          >
+            Premium Services
+          </Button>
+        </div>
       </div>
     </>
   );
