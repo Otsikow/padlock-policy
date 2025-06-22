@@ -1,4 +1,3 @@
-
 import { Shield, Users, DollarSign, ChevronRight, ArrowRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Link, useNavigate } from 'react-router-dom';
 import PriceDisplay from '@/components/PriceDisplay';
 import CurrencySelector from '@/components/CurrencySelector';
-import { subscriptionPlans } from '@/services/pricingService';
+import PricingToggle from '@/components/PricingToggle';
+import { subscriptionPlans, getSavingsPercentage } from '@/services/pricingService';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrency } from '@/hooks/useCurrency';
@@ -19,6 +19,7 @@ const Index = () => {
   const { currency } = useCurrency();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
+  const [isAnnual, setIsAnnual] = useState(false);
 
   useEffect(() => {
     // Update page title and meta description
@@ -44,15 +45,19 @@ const Index = () => {
     description: "Padlock compares rates from leading insurers to make sure you always get the lowest price and best value for your policy."
   }];
 
-  // Use current plans from pricingService
-  const plans = subscriptionPlans.map(plan => ({
-    name: plan.name,
-    description: plan.description,
-    price: plan.prices.GBP,
-    features: plan.features,
-    popular: plan.id === 'pro',
-    id: plan.id
-  }));
+  // Use current plans from pricingService with annual/monthly toggle
+  const plans = subscriptionPlans.map(plan => {
+    const priceSource = isAnnual ? plan.annualPrices : plan.prices;
+    return {
+      name: plan.name,
+      description: plan.description,
+      price: priceSource.GBP,
+      features: plan.features,
+      popular: plan.id === 'pro',
+      id: plan.id,
+      plan: plan // Keep reference to full plan for savings calculation
+    };
+  });
 
   const scrollToFeatures = () => {
     const featuresSection = document.getElementById('features');
@@ -83,12 +88,15 @@ const Index = () => {
 
       const displayCurrency = currency?.code || 'GBP';
       let billingCurrency = displayCurrency;
-      let amount = selectedPlan.prices[displayCurrency as keyof typeof selectedPlan.prices];
+      
+      // Use annual or monthly pricing based on toggle
+      const priceSource = isAnnual ? selectedPlan.annualPrices : selectedPlan.prices;
+      let amount = priceSource[displayCurrency as keyof typeof priceSource];
 
       // If user's currency isn't supported by Stripe, bill in GBP
       if (!isStripeCurrencySupported(displayCurrency)) {
         billingCurrency = 'GBP';
-        amount = selectedPlan.prices.GBP;
+        amount = priceSource.GBP;
       }
 
       const { data, error } = await supabase.functions.invoke('create-checkout', {
@@ -97,7 +105,7 @@ const Index = () => {
           planId: selectedPlan.name,
           currency: billingCurrency,
           amount: amount,
-          interval: 'month'
+          interval: isAnnual ? 'year' : 'month'
         }
       });
 
@@ -253,9 +261,10 @@ const Index = () => {
             <h2 id="pricing-title" className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
               Simple, Transparent Pricing
             </h2>
-            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
               Choose the perfect plan for your insurance management needs
             </p>
+            <PricingToggle isAnnual={isAnnual} onToggle={setIsAnnual} />
           </div>
           
           <div className="grid-responsive-1-3 gap-6 md:gap-8">
@@ -296,7 +305,18 @@ const Index = () => {
                     {plan.description}
                   </CardDescription>
                   <div className="mb-4">
-                    <PriceDisplay baseAmount={plan.price} baseCurrency="GBP" size="lg" showBadge={false} />
+                    <PriceDisplay 
+                      baseAmount={plan.price} 
+                      baseCurrency="GBP" 
+                      size="lg" 
+                      showBadge={false}
+                      interval={isAnnual ? 'year' : 'month'}
+                    />
+                    {isAnnual && !plan.plan.isFree && (
+                      <div className="text-sm text-green-600 font-medium mt-2">
+                        Save {getSavingsPercentage(plan.plan, currency?.code || 'GBP')}% annually
+                      </div>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>
