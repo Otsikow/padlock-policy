@@ -3,13 +3,23 @@ import { Shield, Users, DollarSign, ChevronRight, ArrowRight, Check } from 'luci
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PriceDisplay from '@/components/PriceDisplay';
 import CurrencySelector from '@/components/CurrencySelector';
 import { subscriptionPlans } from '@/services/pricingService';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useCurrency } from '@/hooks/useCurrency';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
+import { isStripeCurrencySupported } from '@/services/currencyService';
 
 const Index = () => {
+  const { user } = useAuth();
+  const { currency } = useCurrency();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState<string | null>(null);
+
   useEffect(() => {
     // Update page title and meta description
     document.title = 'Padlock - AI-Powered Insurance Management & Optimization';
@@ -50,6 +60,59 @@ const Index = () => {
       featuresSection.scrollIntoView({
         behavior: 'smooth'
       });
+    }
+  };
+
+  const handleUpgrade = async (planId: string) => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
+    // Handle free plan
+    if (planId === 'basic') {
+      navigate('/dashboard');
+      return;
+    }
+
+    setLoading(planId);
+
+    try {
+      const selectedPlan = subscriptionPlans.find(p => p.id === planId);
+      if (!selectedPlan) throw new Error('Plan not found');
+
+      const displayCurrency = currency?.code || 'GBP';
+      let billingCurrency = displayCurrency;
+      let amount = selectedPlan.prices[displayCurrency as keyof typeof selectedPlan.prices];
+
+      // If user's currency isn't supported by Stripe, bill in GBP
+      if (!isStripeCurrencySupported(displayCurrency)) {
+        billingCurrency = 'GBP';
+        amount = selectedPlan.prices.GBP;
+      }
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          type: 'subscription',
+          planId: selectedPlan.name,
+          currency: billingCurrency,
+          amount: amount,
+          interval: 'month'
+        }
+      });
+
+      if (error) throw error;
+
+      // Open Stripe checkout in a new tab
+      window.open(data.url, '_blank');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create checkout session",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(null);
     }
   };
 
@@ -250,11 +313,11 @@ const Index = () => {
                   </ul>
                   <Button 
                     className={`w-full shadow-lg ${getButtonStyles(plan.id)}`} 
-                    asChild
+                    onClick={() => handleUpgrade(plan.id)}
+                    disabled={loading === plan.id}
+                    aria-label={`${getButtonText(plan.id)} - ${plan.name} plan`}
                   >
-                    <Link to="/auth" aria-label={`${getButtonText(plan.id)} - ${plan.name} plan`}>
-                      {getButtonText(plan.id)}
-                    </Link>
+                    {loading === plan.id ? "Processing..." : getButtonText(plan.id)}
                   </Button>
                 </CardContent>
               </Card>
