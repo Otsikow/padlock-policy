@@ -90,12 +90,21 @@ const DashboardHeader = ({
             </Link>
           </Button>
           
-          <Avatar className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-white/20 flex-shrink-0">
-            <AvatarImage src="" alt={userEmail ? `${userEmail}'s profile` : "User profile"} />
-            <AvatarFallback className="bg-white/10 text-white">
-              <User className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
-            </AvatarFallback>
-          </Avatar>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-white/20 min-w-[40px] min-h-[40px] flex-shrink-0 p-0"
+            asChild
+          >
+            <Link to="/settings" aria-label="Profile settings">
+              <Avatar className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-white/20">
+                <AvatarImage src="" alt={userEmail ? `${userEmail}'s profile` : "User profile"} />
+                <AvatarFallback className="bg-white/10 text-white">
+                  <User className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+          </Button>
         </div>
       </div>
     </header>
