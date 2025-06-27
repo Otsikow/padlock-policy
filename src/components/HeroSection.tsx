@@ -1,5 +1,5 @@
 
-import { ChevronRight, ArrowRight } from 'lucide-react';
+import { ChevronRight, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
@@ -31,7 +31,8 @@ const HeroSection = ({ onScrollToFeatures }: HeroSectionProps) => {
         </div>
         
         <Badge variant="secondary" className="mb-6 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 text-base md:text-lg px-4 md:px-6 py-2 md:py-3 border border-purple-200">
-          🚀 AI-Powered Insurance Management
+          <Sparkles className="w-4 h-4 mr-2" />
+          AI-Powered Insurance Management
         </Badge>
         
         <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">

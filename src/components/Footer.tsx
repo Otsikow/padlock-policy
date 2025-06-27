@@ -4,7 +4,27 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { ChevronUp, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
+import { 
+  ChevronUp, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Facebook, 
+  Twitter, 
+  Linkedin, 
+  Instagram,
+  Shield,
+  FileText,
+  Users,
+  Home,
+  Settings,
+  MessageSquare,
+  CreditCard,
+  BarChart3,
+  Lock,
+  Award,
+  Globe
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
@@ -70,10 +90,12 @@ const Footer = () => {
             
             {/* Trust Badges */}
             <div className="flex flex-wrap gap-2 mb-4">
-              <Badge variant="secondary" className="bg-gray-700 text-gray-200 hover:bg-gray-600">
+              <Badge variant="secondary" className="bg-gray-700 text-gray-200 hover:bg-gray-600 flex items-center gap-1">
+                <Shield className="h-3 w-3" />
                 SOC 2 Compliant
               </Badge>
-              <Badge variant="secondary" className="bg-gray-700 text-gray-200 hover:bg-gray-600">
+              <Badge variant="secondary" className="bg-gray-700 text-gray-200 hover:bg-gray-600 flex items-center gap-1">
+                <Globe className="h-3 w-3" />
                 GDPR Ready
               </Badge>
             </div>
@@ -81,36 +103,45 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-white">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
+              <Home className="h-5 w-5" />
+              Quick Links
+            </h3>
             <nav aria-label="Footer navigation">
               <ul className="space-y-3">
                 <li>
-                  <Link to="/" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">
+                  <Link to="/" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2">
+                    <Home className="h-4 w-4" />
                     Home
                   </Link>
                 </li>
                 <li>
-                  <Link to="/services" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">
+                  <Link to="/services" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2">
+                    <Users className="h-4 w-4" />
                     Services
                   </Link>
                 </li>
                 <li>
-                  <Link to="#features" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">
+                  <Link to="#features" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4" />
                     Features
                   </Link>
                 </li>
                 <li>
-                  <Link to="#pricing" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">
+                  <Link to="#pricing" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2">
+                    <CreditCard className="h-4 w-4" />
                     Pricing
                   </Link>
                 </li>
                 <li>
-                  <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">
+                  <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4" />
                     Dashboard
                   </Link>
                 </li>
                 <li>
-                  <Link to="/auth" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">
+                  <Link to="/auth" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2">
+                    <Lock className="h-4 w-4" />
                     Sign In
                   </Link>
                 </li>
@@ -120,15 +151,19 @@ const Footer = () => {
 
           {/* Legal & Support */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-white">Legal & Support</h3>
+            <h3 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Legal & Support
+            </h3>
             <ul className="space-y-3">
               <li>
                 <a 
                   href="/privacy-policy" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2"
                 >
+                  <Shield className="h-4 w-4" />
                   Privacy Policy
                 </a>
               </li>
@@ -137,8 +172,9 @@ const Footer = () => {
                   href="/terms-conditions" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2"
                 >
+                  <FileText className="h-4 w-4" />
                   Terms & Conditions
                 </a>
               </li>
@@ -147,8 +183,9 @@ const Footer = () => {
                   href="/cookie-policy" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2"
                 >
+                  <Settings className="h-4 w-4" />
                   Cookie Policy
                 </a>
               </li>
@@ -157,16 +194,18 @@ const Footer = () => {
                   href="/accessibility" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2"
                 >
+                  <Users className="h-4 w-4" />
                   Accessibility
                 </a>
               </li>
               <li>
                 <a 
                   href="/contact" 
-                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2"
                 >
+                  <MessageSquare className="h-4 w-4" />
                   Contact Support
                 </a>
               </li>
@@ -175,7 +214,10 @@ const Footer = () => {
 
           {/* Contact & Newsletter */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-white">Stay Connected</h3>
+            <h3 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
+              <Mail className="h-5 w-5" />
+              Stay Connected
+            </h3>
             
             {/* Contact Info */}
             <div className="space-y-3 mb-6">
@@ -239,7 +281,8 @@ const Footer = () => {
 
             {/* Newsletter Signup */}
             <form onSubmit={handleNewsletterSubmit} className="space-y-3">
-              <label htmlFor="newsletter-email" className="text-sm font-medium text-gray-200">
+              <label htmlFor="newsletter-email" className="text-sm font-medium text-gray-200 flex items-center gap-2">
+                <Mail className="h-4 w-4" />
                 Subscribe to Updates
               </label>
               <div className="flex space-x-2">
@@ -280,9 +323,15 @@ const Footer = () => {
           
           {/* Regulatory & Certification Info */}
           <div className="flex items-center space-x-4 text-xs text-gray-400">
-            <span>FCA Regulated</span>
+            <span className="flex items-center gap-1">
+              <Award className="h-3 w-3" />
+              FCA Regulated
+            </span>
             <Separator orientation="vertical" className="h-4 bg-gray-600" />
-            <span>ISO 27001 Certified</span>
+            <span className="flex items-center gap-1">
+              <Shield className="h-3 w-3" />
+              ISO 27001 Certified
+            </span>
           </div>
         </div>
 

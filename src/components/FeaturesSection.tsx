@@ -21,7 +21,8 @@ const FeaturesSection = () => {
     <section id="features" className="section-padding bg-gradient-to-r from-white/80 to-purple-50/80 backdrop-blur-sm" aria-labelledby="features-title">
       <div className="container-responsive max-w-6xl">
         <div className="text-center mb-12 md:mb-16">
-          <h2 id="features-title" className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+          <h2 id="features-title" className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4 flex items-center justify-center gap-3">
+            <Shield className="h-8 w-8 text-purple-600" />
             Why Choose Padlock?
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">

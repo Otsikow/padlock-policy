@@ -1,5 +1,5 @@
 
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
@@ -7,7 +7,8 @@ const CTASection = () => {
   return (
     <section className="section-padding bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 text-white" aria-labelledby="cta-title">
       <div className="container-responsive max-w-4xl text-center">
-        <h2 id="cta-title" className="text-3xl md:text-4xl font-bold mb-6">
+        <h2 id="cta-title" className="text-3xl md:text-4xl font-bold mb-6 flex items-center justify-center gap-3">
+          <Star className="h-8 w-8 text-yellow-300" />
           Ready to Transform Your Insurance Experience?
         </h2>
         <p className="text-lg md:text-xl mb-8 text-purple-100">
