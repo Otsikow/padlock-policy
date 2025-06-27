@@ -85,7 +85,7 @@ const Footer = () => {
               <span className="text-xl font-bold">Padlock</span>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed mb-6">
-              Revolutionizing insurance management with AI-powered insights, intelligent recommendations, and seamless policy tracking for modern consumers.
+              Revolutionising insurance management with AI-powered insights, intelligent recommendations, and seamless policy tracking for modern consumers.
             </p>
             
             {/* Trust Badges */}
@@ -110,37 +110,37 @@ const Footer = () => {
             <nav aria-label="Footer navigation">
               <ul className="space-y-3">
                 <li>
-                  <Link to="/" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2">
+                  <Link to="/" className="text-gray-300 hover:text-white transition-colours duration-200 text-sm flex items-center gap-2">
                     <Home className="h-4 w-4" />
                     Home
                   </Link>
                 </li>
                 <li>
-                  <Link to="/services" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2">
+                  <Link to="/services" className="text-gray-300 hover:text-white transition-colours duration-200 text-sm flex items-center gap-2">
                     <Users className="h-4 w-4" />
                     Services
                   </Link>
                 </li>
                 <li>
-                  <Link to="#features" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2">
+                  <Link to="#features" className="text-gray-300 hover:text-white transition-colours duration-200 text-sm flex items-center gap-2">
                     <BarChart3 className="h-4 w-4" />
                     Features
                   </Link>
                 </li>
                 <li>
-                  <Link to="#pricing" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2">
+                  <Link to="#pricing" className="text-gray-300 hover:text-white transition-colours duration-200 text-sm flex items-center gap-2">
                     <CreditCard className="h-4 w-4" />
                     Pricing
                   </Link>
                 </li>
                 <li>
-                  <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2">
+                  <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colours duration-200 text-sm flex items-center gap-2">
                     <BarChart3 className="h-4 w-4" />
                     Dashboard
                   </Link>
                 </li>
                 <li>
-                  <Link to="/auth" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2">
+                  <Link to="/auth" className="text-gray-300 hover:text-white transition-colours duration-200 text-sm flex items-center gap-2">
                     <Lock className="h-4 w-4" />
                     Sign In
                   </Link>
@@ -161,7 +161,7 @@ const Footer = () => {
                   href="/privacy-policy" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2"
+                  className="text-gray-300 hover:text-white transition-colours duration-200 text-sm flex items-center gap-2"
                 >
                   <Shield className="h-4 w-4" />
                   Privacy Policy
@@ -172,7 +172,7 @@ const Footer = () => {
                   href="/terms-conditions" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2"
+                  className="text-gray-300 hover:text-white transition-colours duration-200 text-sm flex items-center gap-2"
                 >
                   <FileText className="h-4 w-4" />
                   Terms & Conditions
@@ -183,7 +183,7 @@ const Footer = () => {
                   href="/cookie-policy" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2"
+                  className="text-gray-300 hover:text-white transition-colours duration-200 text-sm flex items-center gap-2"
                 >
                   <Settings className="h-4 w-4" />
                   Cookie Policy
@@ -194,7 +194,7 @@ const Footer = () => {
                   href="/accessibility" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2"
+                  className="text-gray-300 hover:text-white transition-colours duration-200 text-sm flex items-center gap-2"
                 >
                   <Users className="h-4 w-4" />
                   Accessibility
@@ -203,7 +203,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="/contact" 
-                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2"
+                  className="text-gray-300 hover:text-white transition-colours duration-200 text-sm flex items-center gap-2"
                 >
                   <MessageSquare className="h-4 w-4" />
                   Contact Support
@@ -223,19 +223,19 @@ const Footer = () => {
             <div className="space-y-3 mb-6">
               <div className="flex items-center space-x-2 text-sm text-gray-300">
                 <Mail className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-                <a href="mailto:support@padlock.com" className="hover:text-white transition-colors">
+                <a href="mailto:support@padlock.com" className="hover:text-white transition-colours">
                   support@padlock.com
                 </a>
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-300">
                 <Phone className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-                <a href="tel:+1-800-PADLOCK" className="hover:text-white transition-colors">
-                  +1 (800) PADLOCK
+                <a href="tel:+442073000000" className="hover:text-white transition-colours">
+                  +44 20 7300 0000
                 </a>
               </div>
               <div className="flex items-start space-x-2 text-sm text-gray-300">
                 <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
-                <span>123 Innovation Drive<br />Tech City, TC 12345</span>
+                <span>123 Innovation Street<br />London, EC1A 1BB</span>
               </div>
             </div>
 
@@ -245,7 +245,7 @@ const Footer = () => {
                 href="https://facebook.com/padlock" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-300 hover:text-white transition-colors duration-200"
+                className="text-gray-300 hover:text-white transition-colours duration-200"
                 aria-label="Follow us on Facebook"
               >
                 <Facebook className="h-5 w-5" />
@@ -254,7 +254,7 @@ const Footer = () => {
                 href="https://twitter.com/padlock" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-300 hover:text-white transition-colors duration-200"
+                className="text-gray-300 hover:text-white transition-colours duration-200"
                 aria-label="Follow us on Twitter"
               >
                 <Twitter className="h-5 w-5" />
@@ -263,7 +263,7 @@ const Footer = () => {
                 href="https://linkedin.com/company/padlock" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-300 hover:text-white transition-colors duration-200"
+                className="text-gray-300 hover:text-white transition-colours duration-200"
                 aria-label="Follow us on LinkedIn"
               >
                 <Linkedin className="h-5 w-5" />
@@ -272,7 +272,7 @@ const Footer = () => {
                 href="https://instagram.com/padlock" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-300 hover:text-white transition-colors duration-200"
+                className="text-gray-300 hover:text-white transition-colours duration-200"
                 aria-label="Follow us on Instagram"
               >
                 <Instagram className="h-5 w-5" />
@@ -338,7 +338,7 @@ const Footer = () => {
         {/* Additional Legal Notice */}
         <div className="mt-4 pt-4 border-t border-gray-700">
           <p className="text-xs text-gray-500 text-center leading-relaxed">
-            Padlock Insurance is authorized and regulated by the Financial Conduct Authority (FCA). 
+            Padlock Insurance is authorised and regulated by the Financial Conduct Authority (FCA). 
             Insurance products are underwritten by our panel of carefully selected insurers. 
             Padlock Technologies Ltd is registered in England and Wales (Company No. 12345678).
           </p>

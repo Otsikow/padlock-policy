@@ -116,7 +116,7 @@ const Services = () => {
             <CardHeader>
               <CardTitle className="text-2xl">Need Something Custom?</CardTitle>
               <CardDescription className="text-lg">
-                Contact our team for personalized insurance solutions
+                Contact our team for personalised insurance solutions
               </CardDescription>
             </CardHeader>
             <CardContent>

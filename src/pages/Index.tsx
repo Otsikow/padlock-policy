@@ -12,11 +12,11 @@ import { useEffect } from 'react';
 const Index = () => {
   useEffect(() => {
     // Update page title and meta description
-    document.title = 'Padlock - AI-Powered Insurance Management & Optimization';
+    document.title = 'Padlock - AI-Powered Insurance Management & Optimisation';
     
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', 'Revolutionize your insurance management with AI-powered insights, policy tracking, and intelligent recommendations. Compare deals, manage claims, and optimize coverage seamlessly.');
+      metaDescription.setAttribute('content', 'Revolutionise your insurance management with AI-powered insights, policy tracking, and intelligent recommendations. Compare deals, manage claims, and optimise coverage seamlessly.');
     }
   }, []);
 

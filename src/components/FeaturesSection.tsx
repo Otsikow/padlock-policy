@@ -10,11 +10,11 @@ const FeaturesSection = () => {
   }, {
     icon: Users,
     title: "Expert Support",
-    description: "24/7 access to insurance professionals and personalized guidance"
+    description: "24/7 access to insurance professionals and personalised guidance"
   }, {
     icon: DollarSign,
     title: "Save Money With Padlock",
-    description: "Padlock compares rates from leading insurers to make sure you always get the lowest price and best value for your policy."
+    description: "Padlock compares rates from leading insurers to ensure you always get the lowest price and best value for your policy."
   }];
 
   return (

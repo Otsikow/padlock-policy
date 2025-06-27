@@ -12,7 +12,7 @@ const CTASection = () => {
           Ready to Transform Your Insurance Experience?
         </h2>
         <p className="text-lg md:text-xl mb-8 text-purple-100">
-          Join thousands who trust Padlock to manage their insurance policies smarter.
+          Join thousands who trust Padlock to manage their insurance policies more intelligently.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button 
