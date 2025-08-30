@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
@@ -166,14 +167,13 @@ const Auth = () => {
                     <Label htmlFor="signin-password">Password</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
+                      <PasswordInput
                         id="signin-password"
                         name="password"
-                        type="password"
                         placeholder="Enter your password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className="pl-10"
+                        className="pl-10 pr-12"
                         required
                       />
                     </div>
@@ -248,14 +248,13 @@ const Auth = () => {
                     <Label htmlFor="signup-password">Password</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
+                      <PasswordInput
                         id="signup-password"
                         name="password"
-                        type="password"
                         placeholder="Create a password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className="pl-10"
+                        className="pl-10 pr-12"
                         required
                       />
                     </div>

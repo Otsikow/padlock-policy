@@ -7,35 +7,47 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 249 252 255;
     --foreground: 222.2 84% 4.9%;
 
-    --card: 0 0% 100%;
+    --card: 255 255 255;
     --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 0 0% 100%;
+    --popover: 255 255 255;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 267 70% 50%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 270 73% 85%;
+    --secondary-foreground: 267 70% 20%;
 
-    --muted: 210 40% 96.1%;
+    --muted: 270 60% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 320 70% 70%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 270 60% 92%;
+    --input: 270 60% 94%;
+    --ring: 267 70% 50%;
 
     --radius: 0.5rem;
+    
+    /* Purple gradient theme colors */
+    --gradient-primary: linear-gradient(135deg, hsl(267 70% 50%), hsl(320 70% 60%));
+    --gradient-secondary: linear-gradient(135deg, hsl(270 73% 85%), hsl(320 60% 85%));
+    --gradient-accent: linear-gradient(135deg, hsl(240 100% 98%), hsl(270 100% 98%));
+    --purple-50: 270 100% 98%;
+    --purple-100: 270 73% 95%;
+    --purple-600: 267 70% 50%;
+    --purple-700: 267 70% 40%;
+    --pink-50: 320 100% 98%;
+    --pink-600: 320 70% 60%;
+    --pink-700: 320 70% 50%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
