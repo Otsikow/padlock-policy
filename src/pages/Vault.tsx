@@ -168,7 +168,7 @@ const Vault = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
-      <div className="bg-[#183B6B] text-white p-6 rounded-b-3xl">
+      <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-600 text-white p-6 rounded-b-3xl shadow-xl">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-bold">Document Vault</h1>
           <div className="w-10 h-10 bg-gradient-to-br from-white to-gray-100 rounded-xl flex items-center justify-center shadow-lg">

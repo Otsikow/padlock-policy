@@ -27,10 +27,10 @@ const DashboardHeader = ({
   const { user } = useAuth();
 
   return (
-    <header className="bg-gradient-to-r from-[#183B6B] to-[#2563eb] text-white p-4 sm:p-6 rounded-b-3xl">
+    <header className="bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-600 text-white p-4 sm:p-6 rounded-b-3xl shadow-xl">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 space-y-4 sm:space-y-0">
         <div className="flex items-center space-x-3 w-full sm:w-auto">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-white to-gray-100 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg flex-shrink-0 border border-white/20">
             <img 
               src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png" 
               alt="PadLock Logo" 
@@ -47,7 +47,7 @@ const DashboardHeader = ({
         <div className="flex items-center space-x-2 sm:space-x-3 w-full sm:w-auto justify-between sm:justify-end">
           <Button
             onClick={onUploadClick}
-            className="bg-gradient-to-r from-[#E2B319] to-[#f5c842] hover:from-[#d4a617] hover:to-[#e6b73a] text-black font-semibold px-3 sm:px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base flex-shrink-0"
+            className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-semibold px-3 sm:px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base flex-shrink-0"
             aria-label="Upload new policy"
           >
             <Plus className="w-4 h-4 mr-1 sm:mr-2" aria-hidden="true" />
@@ -55,7 +55,7 @@ const DashboardHeader = ({
             <span className="xs:hidden">Upload</span>
           </Button>
           
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg px-2 sm:px-3 py-1 border border-white/20 hidden sm:block">
+          <div className="bg-white/20 backdrop-blur-sm rounded-lg px-2 sm:px-3 py-1 border border-white/30 hidden sm:block">
             <CurrencySelector minimal={true} />
           </div>
           

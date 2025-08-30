@@ -240,12 +240,12 @@ const Claims = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 pb-20">
       {/* Header */}
-      <div className="bg-[#183B6B] text-white p-6 rounded-b-3xl">
+      <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-600 text-white p-6 rounded-b-3xl shadow-xl">
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-bold">Claims Management</h1>
-          <div className="w-10 h-10 bg-gradient-to-br from-white to-gray-100 rounded-xl flex items-center justify-center shadow-lg">
+          <h1 className="text-2xl font-bold drop-shadow-lg">Claims Management</h1>
+          <div className="w-10 h-10 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-white/20">
             <img 
               src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png" 
               alt="Padlock Logo" 
@@ -253,16 +253,16 @@ const Claims = () => {
             />
           </div>
         </div>
-        <p className="text-white/80">Submit and track your insurance claims</p>
+        <p className="text-white/90 drop-shadow-sm">Submit and track your insurance claims</p>
       </div>
 
       {/* Content */}
       <div className="p-6 space-y-6">
         {/* Submit New Claim */}
-        <Card className="shadow-lg border-0">
+        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-[#183B6B] flex items-center">
-              <FileText className="w-5 h-5 mr-2" />
+            <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 flex items-center">
+              <FileText className="w-5 h-5 mr-2 text-purple-600" />
               Submit New Claim
             </CardTitle>
           </CardHeader>
@@ -271,10 +271,10 @@ const Claims = () => {
               <div className="space-y-2">
                 <Label htmlFor="policy">Select Policy</Label>
                 <Select value={claimData.policyId} onValueChange={(value) => setClaimData(prev => ({ ...prev, policyId: value }))}>
-                  <SelectTrigger className="border-gray-300 focus:border-[#183B6B] bg-white">
+                  <SelectTrigger className="border-purple-200 focus:border-purple-500 bg-white focus:ring-purple-500">
                     <SelectValue placeholder="Choose a policy" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+                  <SelectContent className="bg-white border border-purple-200 shadow-xl z-50">
                     {policies.map((policy) => (
                       <SelectItem key={policy.id} value={policy.id}>
                         {formatPolicyType(policy.policy_type)} Insurance - {formatAmount(Number(policy.premium_amount))}/month
@@ -291,7 +291,7 @@ const Claims = () => {
                   placeholder="Describe your claim in detail..."
                   value={claimData.reason}
                   onChange={(e) => setClaimData(prev => ({ ...prev, reason: e.target.value }))}
-                  className="border-gray-300 focus:border-[#183B6B] min-h-[100px]"
+                  className="border-purple-200 focus:border-purple-500 focus:ring-purple-500 min-h-[100px]"
                   required
                 />
               </div>
@@ -305,7 +305,7 @@ const Claims = () => {
                   placeholder="0.00"
                   value={claimData.claimAmount}
                   onChange={(e) => setClaimData(prev => ({ ...prev, claimAmount: e.target.value }))}
-                  className="border-gray-300 focus:border-[#183B6B]"
+                  className="border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                 />
               </div>
 
@@ -323,7 +323,7 @@ const Claims = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="documents">Supporting Documents</Label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-[#183B6B] transition-colors">
+                <div className="border-2 border-dashed border-purple-300 rounded-lg p-4 text-center hover:border-purple-500 transition-colors">
                   <input
                     id="documents"
                     type="file"
@@ -334,8 +334,8 @@ const Claims = () => {
                   <label htmlFor="documents" className="cursor-pointer">
                     {claimData.supportingDocs ? (
                       <div className="flex items-center justify-center space-x-2">
-                        <FileText className="w-6 h-6 text-[#183B6B]" />
-                        <span className="text-[#183B6B] font-medium">{claimData.supportingDocs.name}</span>
+                        <FileText className="w-6 h-6 text-purple-600" />
+                        <span className="text-purple-600 font-medium">{claimData.supportingDocs.name}</span>
                       </div>
                     ) : (
                       <div>
@@ -351,7 +351,7 @@ const Claims = () => {
               <Button
                 type="submit"
                 disabled={loading || !claimData.policyId}
-                className="w-full bg-[#E2B319] hover:bg-[#d4a617] text-black font-semibold py-3 rounded-lg"
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 {loading ? 'Submitting...' : 'Submit Claim'}
               </Button>
@@ -360,9 +360,9 @@ const Claims = () => {
         </Card>
 
         {/* Existing Claims */}
-        <Card className="shadow-lg border-0">
+        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-[#183B6B]">Your Claims</CardTitle>
+            <CardTitle className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Your Claims</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -373,10 +373,10 @@ const Claims = () => {
                 </div>
               ) : (
                 existingClaims.map((claim) => (
-                  <div key={claim.id} className="border border-gray-200 rounded-lg p-4">
+                  <div key={claim.id} className="border border-purple-200 rounded-lg p-4 bg-gradient-to-br from-white to-purple-50/30">
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-[#183B6B]">{getPolicyName(claim.policy_id)}</h3>
+                        <h3 className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">{getPolicyName(claim.policy_id)}</h3>
                         <p className="text-sm text-gray-600 mt-1">{claim.claim_reason}</p>
                         {claim.ai_risk_score && (
                           <div className="mt-2">

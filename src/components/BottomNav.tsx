@@ -31,17 +31,17 @@ const BottomNav = () => {
               onClick={() => navigate(item.path)}
               className={`flex flex-col items-center space-y-1 p-2 sm:p-3 rounded-lg transition-colors min-h-[44px] min-w-[44px] ${
                 isActive 
-                  ? 'text-[#183B6B] bg-[#183B6B]/10' 
-                  : 'text-gray-600 hover:text-[#183B6B] hover:bg-gray-50'
+                  ? 'text-purple-600 bg-purple-600/10' 
+                  : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50'
               }`}
               aria-label={`Navigate to ${item.label}`}
               aria-current={isActive ? 'page' : undefined}
             >
               <Icon 
-                className={`w-5 h-5 ${isActive ? 'text-[#183B6B]' : 'text-gray-600'}`} 
+                className={`w-5 h-5 ${isActive ? 'text-purple-600' : 'text-gray-600'}`} 
                 aria-hidden="true"
               />
-              <span className={`text-xs font-medium ${isActive ? 'text-[#183B6B]' : 'text-gray-600'}`}>
+              <span className={`text-xs font-medium ${isActive ? 'text-purple-600' : 'text-gray-600'}`}>
                 {item.label}
               </span>
             </button>

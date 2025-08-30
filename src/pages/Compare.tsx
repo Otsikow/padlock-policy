@@ -99,15 +99,15 @@ const Compare = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/40 via-indigo-50/30 to-purple-50/20 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 pb-20">
       {/* Header */}
-      <div className="bg-gradient-to-br from-[#183B6B] via-[#2a5490] via-[#3461a8] to-[#1e4a78] text-white p-4 sm:p-6 rounded-b-3xl shadow-2xl">
+      <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-600 text-white p-4 sm:p-6 rounded-b-3xl shadow-2xl">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
           <div className="flex-1">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold drop-shadow-lg">Better Insurance Deals</h1>
             <p className="text-white/90 drop-shadow-sm text-sm sm:text-base">Find competitive rates and save money</p>
           </div>
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-white via-gray-100 to-gray-200 rounded-xl flex items-center justify-center shadow-xl">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-xl border border-white/20">
             <img 
               src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png" 
               alt="Padlock Logo" 
@@ -120,10 +120,10 @@ const Compare = () => {
         <div className="mt-4 bg-gradient-to-r from-white/20 via-white/15 to-white/10 backdrop-blur-md rounded-xl p-4 border border-white/40 shadow-xl">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div className="flex items-center space-x-2">
-              <TrendingDown className="w-5 h-5 text-[#E2B319]" />
+              <TrendingDown className="w-5 h-5 text-yellow-300" />
               <span className="text-white/95 text-sm sm:text-base font-medium">Potential Monthly Savings</span>
             </div>
-            <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#E2B319] drop-shadow-lg">{formatAmount(totalSavings)}</span>
+            <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-yellow-300 drop-shadow-lg">{formatAmount(totalSavings)}</span>
           </div>
         </div>
       </div>
@@ -132,16 +132,16 @@ const Compare = () => {
       <div className="p-4 sm:p-6">
         <div className="space-y-4 max-w-4xl mx-auto">
           {offers.map((offer) => (
-            <Card key={offer.id} className={`shadow-xl border-0 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/40 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 ${offer.recommended ? 'ring-2 ring-[#E2B319] shadow-2xl transform hover:scale-[1.02]' : ''}`}>
+            <Card key={offer.id} className={`shadow-xl border-0 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 ${offer.recommended ? 'ring-2 ring-yellow-400 shadow-2xl transform hover:scale-[1.02]' : ''}`}>
               <CardHeader className="pb-3">
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
                   <div className="flex-1">
-                    <CardTitle className="bg-gradient-to-r from-[#183B6B] to-[#2a5490] bg-clip-text text-transparent text-lg sm:text-xl">{offer.insurerName}</CardTitle>
+                    <CardTitle className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-lg sm:text-xl">{offer.insurerName}</CardTitle>
                     <p className="text-sm text-gray-600">{offer.policyType} Insurance</p>
                   </div>
                   <div className="flex flex-col sm:items-end gap-2">
                     {offer.recommended && (
-                      <Badge className="bg-gradient-to-r from-[#E2B319] to-[#f5c842] text-black shadow-md w-fit">
+                      <Badge className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black shadow-md w-fit">
                         <Star className="w-3 h-3 mr-1" />
                         Recommended
                       </Badge>
@@ -158,7 +158,7 @@ const Compare = () => {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
-                      <span className="text-2xl sm:text-3xl font-bold text-[#183B6B]">{formatAmount(offer.estimatedPremium)}</span>
+                      <span className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">{formatAmount(offer.estimatedPremium)}</span>
                       <span className="text-sm text-gray-500">/month</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
@@ -175,7 +175,7 @@ const Compare = () => {
 
                 {/* Features */}
                 <div>
-                  <h4 className="font-medium text-[#183B6B] mb-2 flex items-center">
+                  <h4 className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-2 flex items-center">
                     <Shield className="w-4 h-4 mr-1" />
                     Key Features
                   </h4>
@@ -193,8 +193,8 @@ const Compare = () => {
                   onClick={() => handleSwitchToPlan(offer)}
                   className={`w-full font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] ${
                     offer.recommended 
-                      ? 'bg-gradient-to-r from-[#E2B319] via-[#f5c842] to-[#f0c432] hover:from-[#d4a617] hover:via-[#e6b73a] hover:to-[#d9b82e] text-black' 
-                      : 'bg-gradient-to-r from-[#183B6B] via-[#2a5490] to-[#1e4a78] hover:from-[#1a3d6f] hover:via-[#2d5799] hover:to-[#1f4b7b] text-white'
+                      ? 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 hover:from-yellow-500 hover:via-yellow-600 hover:to-yellow-500 text-black' 
+                      : 'bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:from-purple-700 hover:via-pink-700 hover:to-purple-700 text-white'
                   }`}
                 >
                   <Zap className="w-4 h-4 mr-2" />
@@ -209,7 +209,7 @@ const Compare = () => {
         <div className="max-w-4xl mx-auto">
           <Button 
             variant="outline" 
-            className="w-full mt-6 border-[#183B6B] text-[#183B6B] hover:bg-gradient-to-r hover:from-[#183B6B] hover:via-[#2a5490] hover:to-[#1e4a78] hover:text-white shadow-lg transition-all duration-300"
+            className="w-full mt-6 border-purple-600 text-purple-600 hover:bg-gradient-to-r hover:from-purple-600 hover:via-pink-600 hover:to-purple-600 hover:text-white shadow-lg transition-all duration-300"
           >
             Refresh Suggestions
           </Button>
