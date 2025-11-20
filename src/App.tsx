@@ -1,10 +1,13 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+
+import { useEffect } from "react";
+
+// Core Pages
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -18,19 +21,26 @@ import Chat from "./pages/Chat";
 import Upgrade from "./pages/Upgrade";
 import Services from "./pages/Services";
 import PaymentSuccess from "./pages/PaymentSuccess";
-import DataIngestion from "./pages/DataIngestion";
 import NotFound from "./pages/NotFound";
+
+// Insurance Company Onboarding Pages
 import CompanyOnboarding from "./pages/CompanyOnboarding";
 import CompanyVerification from "./pages/CompanyVerification";
 import CompanyDocuments from "./pages/CompanyDocuments";
 import CompanyProfile from "./pages/CompanyProfile";
 import CompanyPending from "./pages/CompanyPending";
+
+// Partner Pages
 import PartnerDashboard from "./pages/PartnerDashboard";
+
+// Admin Pages
 import AdminCompanies from "./pages/AdminCompanies";
-import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
+/* -----------------------------------------
+   ACCESSIBILITY SKIP LINK
+------------------------------------------ */
 const SkipLink = () => (
   <a 
     href="#main-content" 
@@ -41,6 +51,9 @@ const SkipLink = () => (
   </a>
 );
 
+/* -----------------------------------------
+   PROTECTED ROUTE WRAPPER
+------------------------------------------ */
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
 
@@ -63,23 +76,22 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
+  if (!user) return <Navigate to="/auth" replace />;
 
   return <>{children}</>;
 };
 
+/* -----------------------------------------
+   MAIN APP CONTENT / ROUTES
+------------------------------------------ */
 const AppContent = () => {
   useEffect(() => {
-    // Set document language
-    document.documentElement.lang = 'en';
-    
-    // Add viewport meta tag if not present
+    document.documentElement.lang = "en";
+
     if (!document.querySelector('meta[name="viewport"]')) {
-      const viewport = document.createElement('meta');
-      viewport.name = 'viewport';
-      viewport.content = 'width=device-width, initial-scale=1.0, user-scalable=yes';
+      const viewport = document.createElement("meta");
+      viewport.name = "viewport";
+      viewport.content = "width=device-width, initial-scale=1.0, user-scalable=yes";
       document.head.appendChild(viewport);
     }
   }, []);
@@ -87,142 +99,41 @@ const AppContent = () => {
   return (
     <>
       <SkipLink />
+
       <BrowserRouter>
         <main id="main-content" role="main">
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/upload" 
-              element={
-                <ProtectedRoute>
-                  <Upload />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/claims" 
-              element={
-                <ProtectedRoute>
-                  <Claims />
-                </ProtectedRoute>
-              } 
-            />
-            <Route
-              path="/compare"
-              element={
-                <ProtectedRoute>
-                  <Compare />
-                </ProtectedRoute>
-              }
-            />
             <Route path="/marketplace" element={<Marketplace />} />
-            <Route
-              path="/vault" 
-              element={
-                <ProtectedRoute>
-                  <Vault />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/chat" 
-              element={
-                <ProtectedRoute>
-                  <Chat />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/settings" 
-              element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              } 
-            />
-            <Route
-              path="/upgrade"
-              element={
-                <ProtectedRoute>
-                  <Upgrade />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/data-ingestion"
-              element={
-                <ProtectedRoute>
-                  <DataIngestion />
-                </ProtectedRoute>
-              }
-            />
             <Route path="/services" element={<Services />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
 
-            {/* Insurance Company Onboarding Routes */}
+            {/* User Protected Routes */}
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
+            <Route path="/claims" element={<ProtectedRoute><Claims /></ProtectedRoute>} />
+            <Route path="/compare" element={<ProtectedRoute><Compare /></ProtectedRoute>} />
+            <Route path="/vault" element={<ProtectedRoute><Vault /></ProtectedRoute>} />
+            <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="/upgrade" element={<ProtectedRoute><Upgrade /></ProtectedRoute>} />
+
+            {/* Insurance Company Onboarding */}
             <Route path="/company/onboarding" element={<CompanyOnboarding />} />
-            <Route
-              path="/company/verify"
-              element={
-                <ProtectedRoute>
-                  <CompanyVerification />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/company/documents"
-              element={
-                <ProtectedRoute>
-                  <CompanyDocuments />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/company/profile"
-              element={
-                <ProtectedRoute>
-                  <CompanyProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/company/pending"
-              element={
-                <ProtectedRoute>
-                  <CompanyPending />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/company/verify" element={<ProtectedRoute><CompanyVerification /></ProtectedRoute>} />
+            <Route path="/company/documents" element={<ProtectedRoute><CompanyDocuments /></ProtectedRoute>} />
+            <Route path="/company/profile" element={<ProtectedRoute><CompanyProfile /></ProtectedRoute>} />
+            <Route path="/company/pending" element={<ProtectedRoute><CompanyPending /></ProtectedRoute>} />
 
             {/* Partner Dashboard */}
-            <Route
-              path="/partner/dashboard"
-              element={
-                <ProtectedRoute>
-                  <PartnerDashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/partner/dashboard" element={<ProtectedRoute><PartnerDashboard /></ProtectedRoute>} />
 
-            {/* Admin Routes */}
-            <Route
-              path="/admin/companies"
-              element={
-                <ProtectedRoute>
-                  <AdminCompanies />
-                </ProtectedRoute>
-              }
-            />
+            {/* Admin */}
+            <Route path="/admin/companies" element={<ProtectedRoute><AdminCompanies /></ProtectedRoute>} />
 
+            {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
@@ -231,6 +142,9 @@ const AppContent = () => {
   );
 };
 
+/* -----------------------------------------
+   APP PROVIDERS
+------------------------------------------ */
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider delayDuration={300}>
