@@ -184,6 +184,219 @@ export type Database = {
         }
         Relationships: []
       }
+      insurance_companies: {
+        Row: {
+          id: string
+          user_id: string
+          legal_name: string
+          registration_number: string
+          website: string | null
+          country: string
+          phone: string
+          phone_verified: boolean | null
+          email_verified: boolean | null
+          onboarding_status: Database["public"]["Enums"]["onboarding_status_enum"] | null
+          compliance_officer_name: string | null
+          compliance_officer_email: string | null
+          compliance_officer_phone: string | null
+          rejection_reason: string | null
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          legal_name: string
+          registration_number: string
+          website?: string | null
+          country: string
+          phone: string
+          phone_verified?: boolean | null
+          email_verified?: boolean | null
+          onboarding_status?: Database["public"]["Enums"]["onboarding_status_enum"] | null
+          compliance_officer_name?: string | null
+          compliance_officer_email?: string | null
+          compliance_officer_phone?: string | null
+          rejection_reason?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          legal_name?: string
+          registration_number?: string
+          website?: string | null
+          country?: string
+          phone?: string
+          phone_verified?: boolean | null
+          email_verified?: boolean | null
+          onboarding_status?: Database["public"]["Enums"]["onboarding_status_enum"] | null
+          compliance_officer_name?: string | null
+          compliance_officer_email?: string | null
+          compliance_officer_phone?: string | null
+          rejection_reason?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      insurance_company_profiles: {
+        Row: {
+          id: string
+          company_id: string
+          logo_url: string | null
+          brand_color_primary: string | null
+          brand_color_secondary: string | null
+          company_bio: string | null
+          office_locations: Json | null
+          customer_support_email: string | null
+          customer_support_phone: string | null
+          customer_support_hours: string | null
+          insurance_types: Database["public"]["Enums"]["insurance_type_enum"][] | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          logo_url?: string | null
+          brand_color_primary?: string | null
+          brand_color_secondary?: string | null
+          company_bio?: string | null
+          office_locations?: Json | null
+          customer_support_email?: string | null
+          customer_support_phone?: string | null
+          customer_support_hours?: string | null
+          insurance_types?: Database["public"]["Enums"]["insurance_type_enum"][] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          logo_url?: string | null
+          brand_color_primary?: string | null
+          brand_color_secondary?: string | null
+          company_bio?: string | null
+          office_locations?: Json | null
+          customer_support_email?: string | null
+          customer_support_phone?: string | null
+          customer_support_hours?: string | null
+          insurance_types?: Database["public"]["Enums"]["insurance_type_enum"][] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_company_profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "insurance_companies"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      insurance_company_documents: {
+        Row: {
+          id: string
+          company_id: string
+          document_type: Database["public"]["Enums"]["company_document_type_enum"]
+          file_url: string
+          file_name: string
+          file_size: number | null
+          uploaded_by: string
+          notes: string | null
+          verified: boolean | null
+          verified_at: string | null
+          verified_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          document_type: Database["public"]["Enums"]["company_document_type_enum"]
+          file_url: string
+          file_name: string
+          file_size?: number | null
+          uploaded_by: string
+          notes?: string | null
+          verified?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          document_type?: Database["public"]["Enums"]["company_document_type_enum"]
+          file_url?: string
+          file_name?: string
+          file_size?: number | null
+          uploaded_by?: string
+          notes?: string | null
+          verified?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_company_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_companies"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      insurance_company_verifications: {
+        Row: {
+          id: string
+          company_id: string
+          verification_type: Database["public"]["Enums"]["verification_type_enum"]
+          verification_value: string
+          otp_code: string
+          verified: boolean | null
+          expires_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          verification_type: Database["public"]["Enums"]["verification_type_enum"]
+          verification_value: string
+          otp_code: string
+          verified?: boolean | null
+          expires_at: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          verification_type?: Database["public"]["Enums"]["verification_type_enum"]
+          verification_value?: string
+          otp_code?: string
+          verified?: boolean | null
+          expires_at?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_company_verifications_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_companies"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       notifications: {
         Row: {
           id: string
@@ -309,6 +522,7 @@ export type Database = {
           created_at: string | null
           full_name: string | null
           id: string
+          role: Database["public"]["Enums"]["user_role_enum"] | null
           updated_at: string | null
         }
         Insert: {
@@ -317,6 +531,7 @@ export type Database = {
           created_at?: string | null
           full_name?: string | null
           id: string
+          role?: Database["public"]["Enums"]["user_role_enum"] | null
           updated_at?: string | null
         }
         Update: {
@@ -325,6 +540,7 @@ export type Database = {
           created_at?: string | null
           full_name?: string | null
           id?: string
+          role?: Database["public"]["Enums"]["user_role_enum"] | null
           updated_at?: string | null
         }
         Relationships: []
@@ -383,9 +599,14 @@ export type Database = {
     }
     Enums: {
       claim_status_enum: "pending" | "approved" | "rejected" | "processing"
+      company_document_type_enum: "certificate_of_incorporation" | "insurance_licence" | "proof_of_address" | "compliance_document" | "other"
       document_type_enum: "policy" | "receipt" | "id" | "claim" | "other"
+      insurance_type_enum: "vehicle" | "travel" | "health" | "home" | "life" | "business" | "other"
       notification_status_enum: "read" | "unread"
+      onboarding_status_enum: "pending_verification" | "documents_uploaded" | "under_review" | "approved" | "rejected"
       policy_type_enum: "health" | "auto" | "life" | "home" | "other"
+      user_role_enum: "customer" | "insurance_company" | "admin"
+      verification_type_enum: "email" | "phone"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -502,9 +723,14 @@ export const Constants = {
   public: {
     Enums: {
       claim_status_enum: ["pending", "approved", "rejected", "processing"],
+      company_document_type_enum: ["certificate_of_incorporation", "insurance_licence", "proof_of_address", "compliance_document", "other"],
       document_type_enum: ["policy", "receipt", "id", "claim", "other"],
+      insurance_type_enum: ["vehicle", "travel", "health", "home", "life", "business", "other"],
       notification_status_enum: ["read", "unread"],
+      onboarding_status_enum: ["pending_verification", "documents_uploaded", "under_review", "approved", "rejected"],
       policy_type_enum: ["health", "auto", "life", "home", "other"],
+      user_role_enum: ["customer", "insurance_company", "admin"],
+      verification_type_enum: ["email", "phone"],
     },
   },
 } as const

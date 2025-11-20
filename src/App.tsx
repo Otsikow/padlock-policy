@@ -18,6 +18,13 @@ import Upgrade from "./pages/Upgrade";
 import Services from "./pages/Services";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
+import CompanyOnboarding from "./pages/CompanyOnboarding";
+import CompanyVerification from "./pages/CompanyVerification";
+import CompanyDocuments from "./pages/CompanyDocuments";
+import CompanyProfile from "./pages/CompanyProfile";
+import CompanyPending from "./pages/CompanyPending";
+import PartnerDashboard from "./pages/PartnerDashboard";
+import AdminCompanies from "./pages/AdminCompanies";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -149,6 +156,62 @@ const AppContent = () => {
             />
             <Route path="/services" element={<Services />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
+
+            {/* Insurance Company Onboarding Routes */}
+            <Route path="/company/onboarding" element={<CompanyOnboarding />} />
+            <Route
+              path="/company/verify"
+              element={
+                <ProtectedRoute>
+                  <CompanyVerification />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/company/documents"
+              element={
+                <ProtectedRoute>
+                  <CompanyDocuments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/company/profile"
+              element={
+                <ProtectedRoute>
+                  <CompanyProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/company/pending"
+              element={
+                <ProtectedRoute>
+                  <CompanyPending />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Partner Dashboard */}
+            <Route
+              path="/partner/dashboard"
+              element={
+                <ProtectedRoute>
+                  <PartnerDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin Routes */}
+            <Route
+              path="/admin/companies"
+              element={
+                <ProtectedRoute>
+                  <AdminCompanies />
+                </ProtectedRoute>
+              }
+            />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
