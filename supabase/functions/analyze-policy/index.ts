@@ -267,6 +267,9 @@ serve(async (req) => {
     }
 
     // Update the policy in the database with extracted information
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Supabase configuration is missing');
+    }
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
     const updateData: any = {};
