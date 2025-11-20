@@ -104,7 +104,7 @@ export class AIService {
   static async getConversationMessages(conversationId: string) {
     try {
       const { data, error } = await supabase
-        .from('chat_messages')
+        .from('messages')
         .select('*')
         .eq('conversation_id', conversationId)
         .order('created_at', { ascending: true });
