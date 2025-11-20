@@ -7,6 +7,13 @@ import { Badge } from '@/components/ui/badge';
 import { Globe, MapPin } from 'lucide-react';
 import { getCurrencyByCountry } from '@/services/currencyService';
 import { toast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface CurrencySelectorProps {
   showCard?: boolean;
@@ -53,22 +60,27 @@ const CurrencySelector = ({ showCard = true, compact = false, minimal = false }:
 
   if (minimal) {
     return (
-      <div className="inline-flex items-center gap-1 rounded-lg bg-gray-100 p-1">
-        {currencies.map((curr) => (
-          <button
-            key={curr.code}
-            onClick={() => handleCurrencyChange(curr.countryCode)}
-            disabled={updating || loading}
-            className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
-              currency?.code === curr.code
-                ? 'bg-white shadow-sm text-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            {curr.symbol}
-          </button>
-        ))}
-      </div>
+      <Select
+        value={userCountry || 'GB'}
+        onValueChange={handleCurrencyChange}
+        disabled={updating || loading}
+      >
+        <SelectTrigger className="w-[80px] h-8 bg-white/90 border-white/30 text-gray-900 font-semibold">
+          <SelectValue>
+            {selectedCurrency.symbol}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          {currencies.map((curr) => (
+            <SelectItem key={curr.code} value={curr.countryCode}>
+              <div className="flex items-center gap-2">
+                <span className="text-lg">{curr.symbol}</span>
+                <span className="text-sm">{curr.code}</span>
+              </div>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     );
   }
 
