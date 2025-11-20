@@ -309,6 +309,7 @@ export type Database = {
           created_at: string | null
           full_name: string | null
           id: string
+          role: Database["public"]["Enums"]["user_role_enum"]
           updated_at: string | null
         }
         Insert: {
@@ -317,6 +318,7 @@ export type Database = {
           created_at?: string | null
           full_name?: string | null
           id: string
+          role?: Database["public"]["Enums"]["user_role_enum"]
           updated_at?: string | null
         }
         Update: {
@@ -325,9 +327,414 @@ export type Database = {
           created_at?: string | null
           full_name?: string | null
           id?: string
+          role?: Database["public"]["Enums"]["user_role_enum"]
           updated_at?: string | null
         }
         Relationships: []
+      }
+      insurance_companies: {
+        Row: {
+          id: string
+          partner_id: string
+          company_name: string
+          company_number: string | null
+          trading_name: string | null
+          website_url: string | null
+          email: string
+          phone: string | null
+          address_line1: string | null
+          address_line2: string | null
+          city: string | null
+          postcode: string | null
+          country: string | null
+          fca_number: string | null
+          vat_number: string | null
+          company_type: string | null
+          status: Database["public"]["Enums"]["company_status_enum"]
+          verification_notes: string | null
+          verified_at: string | null
+          verified_by: string | null
+          kyc_documents: Json
+          compliance_documents: Json
+          logo_url: string | null
+          description: string | null
+          is_featured: boolean
+          display_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          partner_id: string
+          company_name: string
+          company_number?: string | null
+          trading_name?: string | null
+          website_url?: string | null
+          email: string
+          phone?: string | null
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          postcode?: string | null
+          country?: string | null
+          fca_number?: string | null
+          vat_number?: string | null
+          company_type?: string | null
+          status?: Database["public"]["Enums"]["company_status_enum"]
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          kyc_documents?: Json
+          compliance_documents?: Json
+          logo_url?: string | null
+          description?: string | null
+          is_featured?: boolean
+          display_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          partner_id?: string
+          company_name?: string
+          company_number?: string | null
+          trading_name?: string | null
+          website_url?: string | null
+          email?: string
+          phone?: string | null
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          postcode?: string | null
+          country?: string | null
+          fca_number?: string | null
+          vat_number?: string | null
+          company_type?: string | null
+          status?: Database["public"]["Enums"]["company_status_enum"]
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          kyc_documents?: Json
+          compliance_documents?: Json
+          logo_url?: string | null
+          description?: string | null
+          is_featured?: boolean
+          display_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          id: string
+          company_id: string
+          product_name: string
+          product_type: Database["public"]["Enums"]["insurance_type_enum"]
+          description: string | null
+          coverage_details: Json
+          base_premium: number
+          currency: string
+          premium_frequency: string
+          coverage_amount: number | null
+          excess_amount: number | null
+          min_age: number | null
+          max_age: number | null
+          geographic_coverage: Json
+          exclusions: string | null
+          status: Database["public"]["Enums"]["product_status_enum"]
+          admin_notes: string | null
+          rejection_reason: string | null
+          approved_at: string | null
+          approved_by: string | null
+          ai_normalized_data: Json
+          ai_risk_flags: Json
+          data_source: string | null
+          source_url: string | null
+          last_crawled_at: string | null
+          view_count: number
+          conversion_count: number
+          click_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          product_name: string
+          product_type: Database["public"]["Enums"]["insurance_type_enum"]
+          description?: string | null
+          coverage_details?: Json
+          base_premium: number
+          currency?: string
+          premium_frequency?: string
+          coverage_amount?: number | null
+          excess_amount?: number | null
+          min_age?: number | null
+          max_age?: number | null
+          geographic_coverage?: Json
+          exclusions?: string | null
+          status?: Database["public"]["Enums"]["product_status_enum"]
+          admin_notes?: string | null
+          rejection_reason?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          ai_normalized_data?: Json
+          ai_risk_flags?: Json
+          data_source?: string | null
+          source_url?: string | null
+          last_crawled_at?: string | null
+          view_count?: number
+          conversion_count?: number
+          click_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          product_name?: string
+          product_type?: Database["public"]["Enums"]["insurance_type_enum"]
+          description?: string | null
+          coverage_details?: Json
+          base_premium?: number
+          currency?: string
+          premium_frequency?: string
+          coverage_amount?: number | null
+          excess_amount?: number | null
+          min_age?: number | null
+          max_age?: number | null
+          geographic_coverage?: Json
+          exclusions?: string | null
+          status?: Database["public"]["Enums"]["product_status_enum"]
+          admin_notes?: string | null
+          rejection_reason?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          ai_normalized_data?: Json
+          ai_risk_flags?: Json
+          data_source?: string | null
+          source_url?: string | null
+          last_crawled_at?: string | null
+          view_count?: number
+          conversion_count?: number
+          click_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_companies"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      product_verifications: {
+        Row: {
+          id: string
+          product_id: string
+          admin_id: string
+          status: Database["public"]["Enums"]["verification_status_enum"]
+          comments: string | null
+          requested_documents: string[] | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          admin_id: string
+          status: Database["public"]["Enums"]["verification_status_enum"]
+          comments?: string | null
+          requested_documents?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          admin_id?: string
+          status?: Database["public"]["Enums"]["verification_status_enum"]
+          comments?: string | null
+          requested_documents?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_verifications_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      ai_crawl_logs: {
+        Row: {
+          id: string
+          operation_type: string
+          target_url: string | null
+          target_company_id: string | null
+          status: Database["public"]["Enums"]["ai_operation_status_enum"]
+          products_found: number
+          products_updated: number
+          products_created: number
+          errors: Json
+          crawl_rules: Json
+          started_at: string
+          completed_at: string | null
+          duration_seconds: number | null
+          triggered_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          operation_type: string
+          target_url?: string | null
+          target_company_id?: string | null
+          status?: Database["public"]["Enums"]["ai_operation_status_enum"]
+          products_found?: number
+          products_updated?: number
+          products_created?: number
+          errors?: Json
+          crawl_rules?: Json
+          started_at?: string
+          completed_at?: string | null
+          duration_seconds?: number | null
+          triggered_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          operation_type?: string
+          target_url?: string | null
+          target_company_id?: string | null
+          status?: Database["public"]["Enums"]["ai_operation_status_enum"]
+          products_found?: number
+          products_updated?: number
+          products_created?: number
+          errors?: Json
+          crawl_rules?: Json
+          started_at?: string
+          completed_at?: string | null
+          duration_seconds?: number | null
+          triggered_by?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_crawl_logs_target_company_id_fkey"
+            columns: ["target_company_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_companies"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      search_queries: {
+        Row: {
+          id: string
+          user_id: string | null
+          query_text: string
+          insurance_type: Database["public"]["Enums"]["insurance_type_enum"] | null
+          filters: Json
+          results_count: number
+          clicked_product_id: string | null
+          user_country: string | null
+          user_agent: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          query_text: string
+          insurance_type?: Database["public"]["Enums"]["insurance_type_enum"] | null
+          filters?: Json
+          results_count?: number
+          clicked_product_id?: string | null
+          user_country?: string | null
+          user_agent?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          query_text?: string
+          insurance_type?: Database["public"]["Enums"]["insurance_type_enum"] | null
+          filters?: Json
+          results_count?: number
+          clicked_product_id?: string | null
+          user_country?: string | null
+          user_agent?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_queries_clicked_product_id_fkey"
+            columns: ["clicked_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      analytics_events: {
+        Row: {
+          id: string
+          user_id: string | null
+          event_type: string
+          event_category: string | null
+          product_id: string | null
+          company_id: string | null
+          metadata: Json
+          user_country: string | null
+          user_region: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          event_type: string
+          event_category?: string | null
+          product_id?: string | null
+          company_id?: string | null
+          metadata?: Json
+          user_country?: string | null
+          user_region?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          event_type?: string
+          event_category?: string | null
+          product_id?: string | null
+          company_id?: string | null
+          metadata?: Json
+          user_country?: string | null
+          user_region?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_companies"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       subscriptions: {
         Row: {
@@ -386,6 +793,12 @@ export type Database = {
       document_type_enum: "policy" | "receipt" | "id" | "claim" | "other"
       notification_status_enum: "read" | "unread"
       policy_type_enum: "health" | "auto" | "life" | "home" | "other"
+      user_role_enum: "customer" | "partner" | "admin"
+      company_status_enum: "pending" | "approved" | "rejected" | "suspended" | "disabled"
+      product_status_enum: "draft" | "pending" | "approved" | "rejected" | "paused" | "active" | "archived"
+      insurance_type_enum: "health" | "auto" | "life" | "home" | "travel" | "business" | "pet" | "other"
+      ai_operation_status_enum: "running" | "completed" | "failed" | "paused"
+      verification_status_enum: "pending" | "approved" | "rejected" | "additional_docs_required"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -505,6 +918,12 @@ export const Constants = {
       document_type_enum: ["policy", "receipt", "id", "claim", "other"],
       notification_status_enum: ["read", "unread"],
       policy_type_enum: ["health", "auto", "life", "home", "other"],
+      user_role_enum: ["customer", "partner", "admin"],
+      company_status_enum: ["pending", "approved", "rejected", "suspended", "disabled"],
+      product_status_enum: ["draft", "pending", "approved", "rejected", "paused", "active", "archived"],
+      insurance_type_enum: ["health", "auto", "life", "home", "travel", "business", "pet", "other"],
+      ai_operation_status_enum: ["running", "completed", "failed", "paused"],
+      verification_status_enum: ["pending", "approved", "rejected", "additional_docs_required"],
     },
   },
 } as const

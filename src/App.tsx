@@ -5,9 +5,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { AdminRoute } from "@/components/AdminRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import Upload from "./pages/Upload";
 import Claims from "./pages/Claims";
 import Compare from "./pages/Compare";
@@ -131,21 +133,31 @@ const AppContent = () => {
                 </ProtectedRoute>
               } 
             />
-            <Route 
-              path="/settings" 
+            <Route
+              path="/settings"
               element={
                 <ProtectedRoute>
                   <Settings />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/upgrade" 
+            <Route
+              path="/upgrade"
               element={
                 <ProtectedRoute>
                   <Upgrade />
                 </ProtectedRoute>
-              } 
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute requireAdmin={true}>
+                    <AdminDashboard />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
             />
             <Route path="/services" element={<Services />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />

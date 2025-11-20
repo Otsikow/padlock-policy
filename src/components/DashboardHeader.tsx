@@ -1,9 +1,10 @@
 
-import { Bell, Settings, User, Plus } from 'lucide-react';
+import { Bell, Settings, User, Plus, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdmin } from '@/hooks/useAdmin';
 import { Link } from 'react-router-dom';
 import CurrencySelector from './CurrencySelector';
 
@@ -16,7 +17,7 @@ interface DashboardHeaderProps {
   onUploadClick?: () => void;
 }
 
-const DashboardHeader = ({ 
+const DashboardHeader = ({
   notifications = 0,
   userEmail,
   policiesCount,
@@ -25,15 +26,16 @@ const DashboardHeader = ({
   onUploadClick
 }: DashboardHeaderProps) => {
   const { user } = useAuth();
+  const { isAdmin } = useAdmin();
 
   return (
     <header className="bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-600 text-white p-4 sm:p-6 rounded-b-3xl shadow-xl">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 space-y-4 sm:space-y-0">
         <div className="flex items-center space-x-3 w-full sm:w-auto">
           <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg flex-shrink-0 border border-white/20">
-            <img 
-              src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png" 
-              alt="PadLock Logo" 
+            <img
+              src="/lovable-uploads/9fb20310-6359-4b6d-8835-5bce032472bc.png"
+              alt="PadLock Logo"
               className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
               loading="lazy"
             />
@@ -43,7 +45,7 @@ const DashboardHeader = ({
             <p className="text-white/80 text-sm sm:text-base truncate">Manage your insurance policies with ease</p>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2 sm:space-x-3 w-full sm:w-auto justify-between sm:justify-end">
           <Button
             onClick={onUploadClick}
@@ -54,6 +56,18 @@ const DashboardHeader = ({
             <span className="hidden xs:inline">Upload Policy</span>
             <span className="xs:hidden">Upload</span>
           </Button>
+
+          {isAdmin && (
+            <Button
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base flex-shrink-0"
+              asChild
+            >
+              <Link to="/admin" aria-label="Admin Control Panel">
+                <Shield className="w-4 h-4 mr-1 sm:mr-2" aria-hidden="true" />
+                <span className="hidden sm:inline">Admin</span>
+              </Link>
+            </Button>
+          )}
           
           <div className="bg-white/20 backdrop-blur-sm rounded-lg px-2 sm:px-3 py-1 border border-white/30 hidden sm:block">
             <CurrencySelector minimal={true} />
