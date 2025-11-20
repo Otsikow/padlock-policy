@@ -70,14 +70,14 @@ const MarketplaceFilters = ({ filters, onFiltersChange, onReset }: MarketplaceFi
               Insurance Type
             </Label>
             <Select
-              value={filters.policy_type || ''}
-              onValueChange={(value) => updateFilter('policy_type', value as any || undefined)}
+              value={filters.policy_type || 'all'}
+              onValueChange={(value) => updateFilter('policy_type', value === 'all' ? undefined : value as any)}
             >
               <SelectTrigger id="policy-type">
                 <SelectValue placeholder="All Types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 {POLICY_TYPES.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
@@ -155,14 +155,14 @@ const MarketplaceFilters = ({ filters, onFiltersChange, onReset }: MarketplaceFi
               Region
             </Label>
             <Select
-              value={filters.region || ''}
-              onValueChange={(value) => updateFilter('region', value || undefined)}
+              value={filters.region || 'all'}
+              onValueChange={(value) => updateFilter('region', value === 'all' ? undefined : value)}
             >
               <SelectTrigger id="region">
                 <SelectValue placeholder="All Regions" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Regions</SelectItem>
+                <SelectItem value="all">All Regions</SelectItem>
                 {UK_REGIONS.map((region) => (
                   <SelectItem key={region} value={region}>
                     {region}
