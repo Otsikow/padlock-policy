@@ -70,7 +70,8 @@ async function extractTextFromPDF(pdfUrl: string): Promise<string> {
     
   } catch (error) {
     console.error('PDF extraction error:', error);
-    throw new Error(`Failed to extract text from PDF: ${error.message}`);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to extract text from PDF: ${errorMessage}`);
   }
 }
 
@@ -141,9 +142,10 @@ serve(async (req) => {
         }
       } catch (extractionError) {
         console.error('Document extraction error:', extractionError);
+        const extractionErrorMessage = extractionError instanceof Error ? extractionError.message : 'Unknown extraction error';
         return new Response(
           JSON.stringify({ 
-            error: `Failed to extract text from document: ${extractionError.message}. For best results, please upload a PDF with extractable text or a plain text file (.txt).`,
+            error: `Failed to extract text from document: ${extractionErrorMessage}. For best results, please upload a PDF with extractable text or a plain text file (.txt).`,
             success: false 
           }), 
           {
