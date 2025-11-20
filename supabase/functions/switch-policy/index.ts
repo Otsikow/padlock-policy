@@ -2,6 +2,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { switchPolicyQuerySchema, validateQueryParams, createValidationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,14 +18,14 @@ serve(async (req) => {
   try {
     // Get authorization header
     const authHeader = req.headers.get('Authorization');
-    
+
     if (!authHeader) {
       console.error('No authorization header provided');
       return new Response(
-        JSON.stringify({ error: 'Missing authorization header' }), 
-        { 
-          status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        JSON.stringify({ error: 'Missing authorization header' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
     }
@@ -41,31 +42,28 @@ serve(async (req) => {
 
     // Get the authenticated user
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    
+
     if (authError || !user) {
       console.error('Authentication error:', authError);
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }), 
-        { 
-          status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        JSON.stringify({ error: 'Unauthorized' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
     }
 
+    // Validate query parameters
     const url = new URL(req.url);
-    const fromPolicyId = url.searchParams.get('from_policy_id');
-    const redirectUrl = url.searchParams.get('redirect_url') || `${url.origin}/compare`;
-
-    if (!fromPolicyId) {
-      return new Response(
-        JSON.stringify({ error: 'From Policy ID is required' }), 
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
+    const validationResult = validateQueryParams(url, switchPolicyQuerySchema);
+    if (!validationResult.success) {
+      console.error('Validation failed:', validationResult.errors);
+      return createValidationErrorResponse(validationResult.errors!, corsHeaders);
     }
+
+    const { from_policy_id: fromPolicyId, redirect_url } = validationResult.data;
+    const redirectUrl = redirect_url || `${url.origin}/compare`;
 
     console.log(`Initiating policy switch for user ${user.id} from policy ${fromPolicyId}`);
 

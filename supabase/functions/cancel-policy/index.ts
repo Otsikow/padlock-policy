@@ -2,6 +2,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { cancelPolicyQuerySchema, validateQueryParams, createValidationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -27,30 +28,26 @@ serve(async (req) => {
 
     // Get the authenticated user
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    
+
     if (authError || !user) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }), 
-        { 
-          status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        JSON.stringify({ error: 'Unauthorized' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
     }
 
+    // Validate query parameters
     const url = new URL(req.url);
-    const policyId = url.searchParams.get('policy_id');
-    const redirectUrl = url.searchParams.get('redirect_url') || `${url.origin}/dashboard`;
-
-    if (!policyId) {
-      return new Response(
-        JSON.stringify({ error: 'Policy ID is required' }), 
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
+    const validationResult = validateQueryParams(url, cancelPolicyQuerySchema);
+    if (!validationResult.success) {
+      return createValidationErrorResponse(validationResult.errors!, corsHeaders);
     }
+
+    const { policy_id: policyId, redirect_url } = validationResult.data;
+    const redirectUrl = redirect_url || `${url.origin}/dashboard`;
 
     console.log(`Cancelling policy ${policyId} for user ${user.id}`);
 

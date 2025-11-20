@@ -1,23 +1,12 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { aiProductIngestBodySchema, validateJsonBody, createValidationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-secret',
 };
-
-interface ProductIngestRequest {
-  source_url: string;
-  company_name?: string;
-  product_data?: {
-    product_name?: string;
-    policy_type?: string;
-    premium_amount?: number;
-    description?: string;
-    [key: string]: any;
-  };
-}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -44,18 +33,13 @@ serve(async (req) => {
       );
     }
 
-    // Parse request body
-    const ingestData: ProductIngestRequest = await req.json();
-
-    if (!ingestData.source_url) {
-      return new Response(
-        JSON.stringify({ error: 'source_url is required' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
+    // Validate request body
+    const validationResult = await validateJsonBody(req, aiProductIngestBodySchema);
+    if (!validationResult.success) {
+      return createValidationErrorResponse(validationResult.errors!, corsHeaders);
     }
+
+    const ingestData = validationResult.data;
 
     console.log('Ingesting product from:', ingestData.source_url);
 
