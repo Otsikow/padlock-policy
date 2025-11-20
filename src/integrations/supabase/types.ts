@@ -1037,6 +1037,460 @@ export type Database = {
           }
         ]
       }
+
+      /* -------------------------------------------------------------
+         DATA SOURCES & PRODUCT CATALOG
+      ------------------------------------------------------------- */
+
+      data_sources: {
+        Row: {
+          id: string
+          name: string
+          source_type: Database["public"]["Enums"]["data_source_type_enum"]
+          provider_name: string
+          status: Database["public"]["Enums"]["data_source_status_enum"] | null
+          configuration: Json | null
+          sync_frequency: string | null
+          last_sync_at: string | null
+          next_sync_at: string | null
+          error_count: number | null
+          last_error: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          source_type: Database["public"]["Enums"]["data_source_type_enum"]
+          provider_name: string
+          status?: Database["public"]["Enums"]["data_source_status_enum"] | null
+          configuration?: Json | null
+          sync_frequency?: string | null
+          last_sync_at?: string | null
+          next_sync_at?: string | null
+          error_count?: number | null
+          last_error?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          source_type?: Database["public"]["Enums"]["data_source_type_enum"]
+          provider_name?: string
+          status?: Database["public"]["Enums"]["data_source_status_enum"] | null
+          configuration?: Json | null
+          sync_frequency?: string | null
+          last_sync_at?: string | null
+          next_sync_at?: string | null
+          error_count?: number | null
+          last_error?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_sources_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+
+      product_catalog: {
+        Row: {
+          id: string
+          data_source_id: string | null
+          external_id: string | null
+          insurer_name: string
+          product_name: string
+          policy_type: Database["public"]["Enums"]["policy_type_enum"]
+          premium_amount: number | null
+          premium_frequency: string | null
+          currency: string | null
+          coverage_summary: string | null
+          coverage_limits: Json | null
+          benefits: string[] | null
+          exclusions: string[] | null
+          add_ons: Json | null
+          product_url: string | null
+          document_url: string | null
+          contact_info: Json | null
+          availability_regions: string[] | null
+          ai_summary: string | null
+          ai_normalized_data: Json | null
+          risk_score: number | null
+          status: Database["public"]["Enums"]["product_status_catalog_enum"] | null
+          is_duplicate: boolean | null
+          duplicate_of: string | null
+          last_verified_at: string | null
+          last_updated_at: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          data_source_id?: string | null
+          external_id?: string | null
+          insurer_name: string
+          product_name: string
+          policy_type: Database["public"]["Enums"]["policy_type_enum"]
+          premium_amount?: number | null
+          premium_frequency?: string | null
+          currency?: string | null
+          coverage_summary?: string | null
+          coverage_limits?: Json | null
+          benefits?: string[] | null
+          exclusions?: string[] | null
+          add_ons?: Json | null
+          product_url?: string | null
+          document_url?: string | null
+          contact_info?: Json | null
+          availability_regions?: string[] | null
+          ai_summary?: string | null
+          ai_normalized_data?: Json | null
+          risk_score?: number | null
+          status?: Database["public"]["Enums"]["product_status_catalog_enum"] | null
+          is_duplicate?: boolean | null
+          duplicate_of?: string | null
+          last_verified_at?: string | null
+          last_updated_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          data_source_id?: string | null
+          external_id?: string | null
+          insurer_name?: string
+          product_name?: string
+          policy_type?: Database["public"]["Enums"]["policy_type_enum"]
+          premium_amount?: number | null
+          premium_frequency?: string | null
+          currency?: string | null
+          coverage_summary?: string | null
+          coverage_limits?: Json | null
+          benefits?: string[] | null
+          exclusions?: string[] | null
+          add_ons?: Json | null
+          product_url?: string | null
+          document_url?: string | null
+          contact_info?: Json | null
+          availability_regions?: string[] | null
+          ai_summary?: string | null
+          ai_normalized_data?: Json | null
+          risk_score?: number | null
+          status?: Database["public"]["Enums"]["product_status_catalog_enum"] | null
+          is_duplicate?: boolean | null
+          duplicate_of?: string | null
+          last_verified_at?: string | null
+          last_updated_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_catalog_data_source_id_fkey"
+            columns: ["data_source_id"]
+            isOneToOne: false
+            referencedRelation: "data_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_catalog_duplicate_of_fkey"
+            columns: ["duplicate_of"]
+            isOneToOne: false
+            referencedRelation: "product_catalog"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+
+      product_versions: {
+        Row: {
+          id: string
+          product_id: string
+          version_number: number
+          snapshot_data: Json
+          changes: Json | null
+          changed_by: string | null
+          change_reason: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          version_number: number
+          snapshot_data: Json
+          changes?: Json | null
+          changed_by?: string | null
+          change_reason?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          version_number?: number
+          snapshot_data?: Json
+          changes?: Json | null
+          changed_by?: string | null
+          change_reason?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_versions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_catalog"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+
+      /* -------------------------------------------------------------
+         DATA INGESTION
+      ------------------------------------------------------------- */
+
+      ingestion_jobs: {
+        Row: {
+          id: string
+          data_source_id: string
+          status: Database["public"]["Enums"]["ingestion_job_status_enum"] | null
+          job_type: Database["public"]["Enums"]["ingestion_job_type_enum"] | null
+          started_at: string | null
+          completed_at: string | null
+          products_found: number | null
+          products_new: number | null
+          products_updated: number | null
+          products_duplicates: number | null
+          products_errors: number | null
+          error_message: string | null
+          metadata: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          data_source_id: string
+          status?: Database["public"]["Enums"]["ingestion_job_status_enum"] | null
+          job_type?: Database["public"]["Enums"]["ingestion_job_type_enum"] | null
+          started_at?: string | null
+          completed_at?: string | null
+          products_found?: number | null
+          products_new?: number | null
+          products_updated?: number | null
+          products_duplicates?: number | null
+          products_errors?: number | null
+          error_message?: string | null
+          metadata?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          data_source_id?: string
+          status?: Database["public"]["Enums"]["ingestion_job_status_enum"] | null
+          job_type?: Database["public"]["Enums"]["ingestion_job_type_enum"] | null
+          started_at?: string | null
+          completed_at?: string | null
+          products_found?: number | null
+          products_new?: number | null
+          products_updated?: number | null
+          products_duplicates?: number | null
+          products_errors?: number | null
+          error_message?: string | null
+          metadata?: Json | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ingestion_jobs_data_source_id_fkey"
+            columns: ["data_source_id"]
+            isOneToOne: false
+            referencedRelation: "data_sources"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+
+      ingestion_logs: {
+        Row: {
+          id: string
+          job_id: string
+          log_level: Database["public"]["Enums"]["log_level_enum"] | null
+          message: string
+          product_id: string | null
+          details: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          job_id: string
+          log_level?: Database["public"]["Enums"]["log_level_enum"] | null
+          message: string
+          product_id?: string | null
+          details?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          job_id?: string
+          log_level?: Database["public"]["Enums"]["log_level_enum"] | null
+          message?: string
+          product_id?: string | null
+          details?: Json | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ingestion_logs_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "ingestion_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ingestion_logs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_catalog"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+
+      consistency_alerts: {
+        Row: {
+          id: string
+          product_id: string
+          alert_type: string
+          severity: Database["public"]["Enums"]["alert_severity_enum"] | null
+          message: string
+          details: Json | null
+          status: Database["public"]["Enums"]["alert_status_enum"] | null
+          acknowledged_by: string | null
+          acknowledged_at: string | null
+          resolved_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          alert_type: string
+          severity?: Database["public"]["Enums"]["alert_severity_enum"] | null
+          message: string
+          details?: Json | null
+          status?: Database["public"]["Enums"]["alert_status_enum"] | null
+          acknowledged_by?: string | null
+          acknowledged_at?: string | null
+          resolved_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          alert_type?: string
+          severity?: Database["public"]["Enums"]["alert_severity_enum"] | null
+          message?: string
+          details?: Json | null
+          status?: Database["public"]["Enums"]["alert_status_enum"] | null
+          acknowledged_by?: string | null
+          acknowledged_at?: string | null
+          resolved_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consistency_alerts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consistency_alerts_acknowledged_by_fkey"
+            columns: ["acknowledged_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+
+      duplicate_detections: {
+        Row: {
+          id: string
+          product_id: string
+          duplicate_product_id: string
+          similarity_score: number
+          matching_fields: string[] | null
+          ai_analysis: Json | null
+          status: Database["public"]["Enums"]["duplicate_detection_status_enum"] | null
+          reviewed_by: string | null
+          reviewed_at: string | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          duplicate_product_id: string
+          similarity_score: number
+          matching_fields?: string[] | null
+          ai_analysis?: Json | null
+          status?: Database["public"]["Enums"]["duplicate_detection_status_enum"] | null
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          duplicate_product_id?: string
+          similarity_score?: number
+          matching_fields?: string[] | null
+          ai_analysis?: Json | null
+          status?: Database["public"]["Enums"]["duplicate_detection_status_enum"] | null
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "duplicate_detections_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duplicate_detections_duplicate_product_id_fkey"
+            columns: ["duplicate_product_id"]
+            isOneToOne: false
+            referencedRelation: "product_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duplicate_detections_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     },
 
     /* -------------------------------------------------------------
@@ -1101,6 +1555,24 @@ export type Database = {
         | "decrease_premium"
         | "require_approval"
         | "flag_for_review"
+
+      product_status_catalog_enum: "active" | "inactive" | "outdated" | "archived"
+
+      data_source_type_enum: "api" | "aggregator" | "regulator" | "feed" | "scraper"
+
+      data_source_status_enum: "active" | "paused" | "error" | "disabled"
+
+      ingestion_job_status_enum: "pending" | "running" | "completed" | "failed" | "cancelled"
+
+      ingestion_job_type_enum: "scheduled" | "manual" | "webhook"
+
+      log_level_enum: "info" | "warning" | "error" | "debug"
+
+      alert_status_enum: "active" | "acknowledged" | "resolved" | "ignored"
+
+      alert_severity_enum: "critical" | "high" | "medium" | "low"
+
+      duplicate_detection_status_enum: "pending" | "confirmed" | "false_positive" | "ignored"
     },
 
     Views: {},
@@ -1198,6 +1670,24 @@ export const Constants = {
         "require_approval",
         "flag_for_review",
       ],
+
+      product_status_catalog_enum: ["active", "inactive", "outdated", "archived"],
+
+      data_source_type_enum: ["api", "aggregator", "regulator", "feed", "scraper"],
+
+      data_source_status_enum: ["active", "paused", "error", "disabled"],
+
+      ingestion_job_status_enum: ["pending", "running", "completed", "failed", "cancelled"],
+
+      ingestion_job_type_enum: ["scheduled", "manual", "webhook"],
+
+      log_level_enum: ["info", "warning", "error", "debug"],
+
+      alert_status_enum: ["active", "acknowledged", "resolved", "ignored"],
+
+      alert_severity_enum: ["critical", "high", "medium", "low"],
+
+      duplicate_detection_status_enum: ["pending", "confirmed", "false_positive", "ignored"],
     },
   },
 } as const
