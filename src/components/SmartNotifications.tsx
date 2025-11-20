@@ -52,7 +52,7 @@ const SmartNotifications = () => {
       setNotifications(prev => 
         prev.map(notif => 
           notif.id === notificationId 
-            ? { ...notif, status: 'read' as const }
+            ? { ...notif, read: true }
             : notif
         )
       );
@@ -120,7 +120,7 @@ const SmartNotifications = () => {
               <div
                 key={notification.id}
                 className={`flex items-start gap-3 p-4 rounded-lg border transition-colors ${
-                  notification.status === 'unread'
+                  !notification.read
                     ? 'bg-blue-50 border-blue-200'
                     : 'bg-gray-50 border-gray-200'
                 }`}
@@ -130,12 +130,12 @@ const SmartNotifications = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm ${
-                    notification.status === 'unread' ? 'font-medium' : 'text-gray-600'
+                    !notification.read ? 'font-medium' : 'text-gray-600'
                   }`}>
                     {notification.message}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {new Date(notification.timestamp || '').toLocaleDateString('en-GB', {
+                    {new Date(notification.created_at).toLocaleDateString('en-GB', {
                       day: 'numeric',
                       month: 'short',
                       hour: '2-digit',
@@ -143,7 +143,7 @@ const SmartNotifications = () => {
                     })}
                   </p>
                 </div>
-                {notification.status === 'unread' && (
+                {!notification.read && (
                   <Button
                     onClick={() => handleMarkAsRead(notification.id)}
                     variant="ghost"
