@@ -20,7 +20,7 @@ external_email_enabled = true
 external_phone_enabled = true
 sms_test_otp = "123456"
 external_twitter_enabled = false
-external_google_enabled = false
+external_google_enabled = true
 
 [db]
 port = 54322
