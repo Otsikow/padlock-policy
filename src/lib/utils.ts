@@ -7,6 +7,6 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // Currency formatting utility for components that don't have access to hooks
-export const formatCurrencyStatic = (amount: number, currencySymbol: string = '£') => {
+export const formatCurrencyStatic = (amount: number, currencySymbol: string = '$') => {
   return `${currencySymbol}${amount.toFixed(2)}`;
 };

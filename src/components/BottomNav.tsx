@@ -1,6 +1,6 @@
 
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, FileText, TrendingUp, FolderOpen, Settings } from 'lucide-react';
+import { Home, FileText, TrendingUp, FolderOpen, Settings, ShoppingBag } from 'lucide-react';
 
 const BottomNav = () => {
   const navigate = useNavigate();
@@ -8,9 +8,9 @@ const BottomNav = () => {
 
   const navItems = [
     { id: 'home', label: 'Home', icon: Home, path: '/dashboard' },
+    { id: 'marketplace', label: 'Marketplace', icon: ShoppingBag, path: '/marketplace' },
     { id: 'compare', label: 'Compare', icon: TrendingUp, path: '/compare' },
     { id: 'claims', label: 'Claims', icon: FileText, path: '/claims' },
-    { id: 'vault', label: 'Vault', icon: FolderOpen, path: '/vault' },
     { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' }
   ];
 

@@ -102,7 +102,7 @@ serve(async (req) => {
               .from('notifications')
               .insert({
                 user_id: policy.user_id,
-                message: `Better Deal Found: Save £${savings.toFixed(2)}/month on your ${policy.policy_type} insurance with ${bestOffer.insurer_name}`,
+                message: `Better Deal Found: Save $${savings.toFixed(2)}/month on your ${policy.policy_type} insurance with ${bestOffer.insurer_name}`,
                 status: 'unread'
               });
 
