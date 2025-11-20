@@ -1,30 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { productSearchSchema, validate, createValidationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-interface ProductSearchRequest {
-  // Search filters
-  policy_type?: 'health' | 'auto' | 'life' | 'home' | 'other';
-  company_id?: string;
-  min_premium?: number;
-  max_premium?: number;
-  currency?: string;
-  country?: string;
-  age?: number;
-  search_term?: string;
-
-  // Pagination
-  page?: number;
-  per_page?: number;
-
-  // Sorting
-  sort_by?: 'premium_amount' | 'popularity_score' | 'created_at';
-  sort_order?: 'asc' | 'desc';
-}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -38,14 +19,24 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Parse request - support both GET and POST
-    let searchParams: ProductSearchRequest = {};
+    let rawSearchParams: any = {};
 
     if (req.method === 'POST') {
-      searchParams = await req.json();
+      try {
+        rawSearchParams = await req.json();
+      } catch {
+        return new Response(
+          JSON.stringify({ error: 'Invalid JSON body' }),
+          {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          }
+        );
+      }
     } else if (req.method === 'GET') {
       const url = new URL(req.url);
-      searchParams = {
-        policy_type: url.searchParams.get('policy_type') as any,
+      rawSearchParams = {
+        policy_type: url.searchParams.get('policy_type') || undefined,
         company_id: url.searchParams.get('company_id') || undefined,
         min_premium: url.searchParams.get('min_premium') ? parseFloat(url.searchParams.get('min_premium')!) : undefined,
         max_premium: url.searchParams.get('max_premium') ? parseFloat(url.searchParams.get('max_premium')!) : undefined,
@@ -53,16 +44,24 @@ serve(async (req) => {
         country: url.searchParams.get('country') || undefined,
         age: url.searchParams.get('age') ? parseInt(url.searchParams.get('age')!) : undefined,
         search_term: url.searchParams.get('search_term') || undefined,
-        page: url.searchParams.get('page') ? parseInt(url.searchParams.get('page')!) : 1,
-        per_page: url.searchParams.get('per_page') ? parseInt(url.searchParams.get('per_page')!) : 20,
-        sort_by: url.searchParams.get('sort_by') as any || 'popularity_score',
-        sort_order: url.searchParams.get('sort_order') as any || 'desc'
+        page: url.searchParams.get('page') ? parseInt(url.searchParams.get('page')!) : undefined,
+        per_page: url.searchParams.get('per_page') ? parseInt(url.searchParams.get('per_page')!) : undefined,
+        sort_by: url.searchParams.get('sort_by') || undefined,
+        sort_order: url.searchParams.get('sort_order') || undefined,
       };
     }
 
-    // Default pagination
-    const page = searchParams.page || 1;
-    const perPage = Math.min(searchParams.per_page || 20, 100); // Max 100 per page
+    // Validate search parameters
+    const validationResult = validate(productSearchSchema, rawSearchParams);
+    if (!validationResult.success) {
+      return createValidationErrorResponse(validationResult.errors!, corsHeaders);
+    }
+
+    const searchParams = validationResult.data;
+
+    // Pagination values are already validated and have defaults
+    const page = searchParams.page;
+    const perPage = searchParams.per_page;
     const offset = (page - 1) * perPage;
 
     // Build query
@@ -110,10 +109,9 @@ serve(async (req) => {
       );
     }
 
-    // Apply sorting
-    const sortBy = searchParams.sort_by || 'popularity_score';
+    // Apply sorting (values are already validated and have defaults)
     const sortOrder = searchParams.sort_order === 'asc' ? true : false;
-    query = query.order(sortBy, { ascending: sortOrder });
+    query = query.order(searchParams.sort_by, { ascending: sortOrder });
 
     // Apply pagination
     query = query.range(offset, offset + perPage - 1);

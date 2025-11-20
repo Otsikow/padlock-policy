@@ -1,18 +1,12 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { dataIngestionBodySchema, validateJsonBody, createValidationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-interface IngestionRequest {
-  action: 'start_ingestion' | 'get_job_status' | 'list_sources' | 'cancel_job';
-  data_source_id?: string;
-  job_id?: string;
-  job_type?: 'scheduled' | 'manual' | 'webhook';
-}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -20,7 +14,13 @@ serve(async (req) => {
   }
 
   try {
-    const { action, data_source_id, job_id, job_type }: IngestionRequest = await req.json();
+    // Validate request body
+    const validationResult = await validateJsonBody(req, dataIngestionBodySchema);
+    if (!validationResult.success) {
+      return createValidationErrorResponse(validationResult.errors!, corsHeaders);
+    }
+
+    const { action, data_source_id, job_id, job_type } = validationResult.data;
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;

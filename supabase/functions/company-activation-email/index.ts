@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { companyActivationEmailBodySchema, validateJsonBody, createValidationErrorResponse } from "../_shared/validation.ts";
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
@@ -7,11 +8,6 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-interface EmailRequest {
-  companyId: string;
-  status: 'approved' | 'rejected';
-}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -25,7 +21,13 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { companyId, status }: EmailRequest = await req.json();
+    // Validate request body
+    const validationResult = await validateJsonBody(req, companyActivationEmailBodySchema);
+    if (!validationResult.success) {
+      return createValidationErrorResponse(validationResult.errors!, corsHeaders);
+    }
+
+    const { companyId, status } = validationResult.data;
 
     // Get company details
     const { data: company, error: companyError } = await supabaseClient

@@ -1,36 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { productUpdateBodySchema, validateJsonBody, createValidationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
 };
-
-interface ProductUpdateRequest {
-  product_id: string;
-  product_name?: string;
-  product_code?: string;
-  policy_type?: 'health' | 'auto' | 'life' | 'home' | 'other';
-  description?: string;
-  coverage_details?: Record<string, any>;
-  premium_amount?: number;
-  currency?: string;
-  billing_frequency?: string;
-  coverage_limits?: Record<string, any>;
-  deductible?: number;
-  benefits?: Record<string, any>;
-  exclusions?: Record<string, any>;
-  is_active?: boolean;
-  available_countries?: string[];
-  minimum_age?: number;
-  maximum_age?: number;
-  product_image_url?: string;
-  brochure_url?: string;
-  terms_url?: string;
-  search_keywords?: string[];
-  ai_tags?: string[];
-  popularity_score?: number;
-}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -101,18 +76,13 @@ serve(async (req) => {
       );
     }
 
-    // Parse request body
-    const updateData: ProductUpdateRequest = await req.json();
-
-    if (!updateData.product_id) {
-      return new Response(
-        JSON.stringify({ error: 'product_id is required' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
+    // Validate request body
+    const validationResult = await validateJsonBody(req, productUpdateBodySchema);
+    if (!validationResult.success) {
+      return createValidationErrorResponse(validationResult.errors!, corsHeaders);
     }
+
+    const updateData = validationResult.data;
 
     // Verify product belongs to company
     const { data: existingProduct, error: fetchError } = await supabase
@@ -139,22 +109,6 @@ serve(async (req) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
-    }
-
-    // Validate policy_type if provided
-    if (updateData.policy_type) {
-      const validPolicyTypes = ['health', 'auto', 'life', 'home', 'other'];
-      if (!validPolicyTypes.includes(updateData.policy_type)) {
-        return new Response(
-          JSON.stringify({
-            error: `Invalid policy_type. Must be one of: ${validPolicyTypes.join(', ')}`
-          }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          }
-        );
-      }
     }
 
     // Build update object (exclude product_id from update)

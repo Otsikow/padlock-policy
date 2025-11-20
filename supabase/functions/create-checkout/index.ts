@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createCheckoutBodySchema, validateJsonBody, createValidationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -38,7 +39,14 @@ serve(async (req) => {
 
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    const { type, planId, currency, amount, service } = await req.json();
+    // Validate request body
+    const validationResult = await validateJsonBody(req, createCheckoutBodySchema);
+    if (!validationResult.success) {
+      logStep("Validation failed", { errors: validationResult.errors });
+      return createValidationErrorResponse(validationResult.errors!, corsHeaders);
+    }
+
+    const { type, planId, currency, amount, service } = validationResult.data;
     
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",

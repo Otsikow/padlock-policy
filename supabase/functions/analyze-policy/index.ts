@@ -2,6 +2,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { analyzePolicyBodySchema, validateJsonBody, createValidationErrorResponse } from "../_shared/validation.ts";
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -81,18 +82,21 @@ serve(async (req) => {
 
   try {
     console.log('Analyze policy function called');
-    
-    const { documentText, policyId, documentUrl } = await req.json();
-    console.log('Request data:', { 
-      policyId, 
-      hasDocumentText: !!documentText, 
-      documentLength: documentText?.length,
-      hasDocumentUrl: !!documentUrl 
-    });
 
-    if (!policyId) {
-      throw new Error('Policy ID is required');
+    // Validate request body
+    const validationResult = await validateJsonBody(req, analyzePolicyBodySchema);
+    if (!validationResult.success) {
+      console.error('Validation failed:', validationResult.errors);
+      return createValidationErrorResponse(validationResult.errors!, corsHeaders);
     }
+
+    const { documentText, policyId, documentUrl } = validationResult.data;
+    console.log('Request data:', {
+      policyId,
+      hasDocumentText: !!documentText,
+      documentLength: documentText?.length,
+      hasDocumentUrl: !!documentUrl
+    });
 
     if (!openAIApiKey) {
       console.error('OpenAI API key is not configured');

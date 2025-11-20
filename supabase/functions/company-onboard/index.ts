@@ -1,24 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { companyOnboardBodySchema, validateJsonBody, createValidationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-interface CompanyOnboardRequest {
-  name: string;
-  description?: string;
-  logo_url?: string;
-  website?: string;
-  contact_email: string;
-  contact_phone?: string;
-  address?: string;
-  country?: string;
-  business_registration_number?: string;
-  license_number?: string;
-  regulatory_body?: string;
-}
 
 // Generate a secure API key
 function generateApiKey(): string {
@@ -79,33 +66,13 @@ serve(async (req) => {
       );
     }
 
-    // Parse request body
-    const companyData: CompanyOnboardRequest = await req.json();
-
-    // Validate required fields
-    if (!companyData.name || !companyData.contact_email) {
-      return new Response(
-        JSON.stringify({
-          error: 'Missing required fields: name and contact_email are required'
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
+    // Validate request body
+    const validationResult = await validateJsonBody(req, companyOnboardBodySchema);
+    if (!validationResult.success) {
+      return createValidationErrorResponse(validationResult.errors!, corsHeaders);
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(companyData.contact_email)) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid email format' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
-    }
+    const companyData = validationResult.data;
 
     // Check if company name already exists
     const { data: existingCompany } = await supabase

@@ -1,20 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { documentUploadBodySchema, validateJsonBody, createValidationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-interface DocumentUploadRequest {
-  title: string;
-  description?: string;
-  document_type: 'policy' | 'receipt' | 'id' | 'claim' | 'other';
-  document_category?: string;
-  file_url: string;
-  file_size?: number;
-  encrypt?: boolean; // Whether to encrypt the document
-}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -72,35 +63,13 @@ serve(async (req) => {
       );
     }
 
-    // Parse request body
-    const documentData: DocumentUploadRequest = await req.json();
-
-    // Validate required fields
-    if (!documentData.title || !documentData.document_type || !documentData.file_url) {
-      return new Response(
-        JSON.stringify({
-          error: 'Missing required fields: title, document_type, and file_url are required'
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
+    // Validate request body
+    const validationResult = await validateJsonBody(req, documentUploadBodySchema);
+    if (!validationResult.success) {
+      return createValidationErrorResponse(validationResult.errors!, corsHeaders);
     }
 
-    // Validate document_type
-    const validDocumentTypes = ['policy', 'receipt', 'id', 'claim', 'other'];
-    if (!validDocumentTypes.includes(documentData.document_type)) {
-      return new Response(
-        JSON.stringify({
-          error: `Invalid document_type. Must be one of: ${validDocumentTypes.join(', ')}`
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
-    }
+    const documentData = validationResult.data;
 
     // Encryption metadata (simplified - in production use proper encryption service)
     let encryptionMetadata = {
