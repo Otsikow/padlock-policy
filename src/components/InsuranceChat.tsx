@@ -11,14 +11,14 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Policy = Tables<'policies'>;
-type ChatMessage = Tables<'chat_messages'>;
-type Conversation = Tables<'chat_conversations'>;
+type ChatMessage = Tables<'messages'>;
+type Conversation = Tables<'conversations'>;
 
 const InsuranceChat = () => {
   const { user } = useAuth();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [conversations, setConversations] = useState<Tables<'conversations'>[]>([]);
+  const [currentConversation, setCurrentConversation] = useState<Tables<'conversations'> | null>(null);
+  const [messages, setMessages] = useState<Tables<'messages'>[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [policies, setPolicies] = useState<Policy[]>([]);
