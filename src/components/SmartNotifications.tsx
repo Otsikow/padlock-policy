@@ -72,7 +72,7 @@ const SmartNotifications = () => {
     return <Bell className="w-5 h-5 text-gray-500" />;
   };
 
-  const unreadCount = notifications.filter(n => n.status === 'unread').length;
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   if (loading) {
     return (
