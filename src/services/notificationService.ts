@@ -107,11 +107,11 @@ export class NotificationService {
           await this.createNotification(user.id, {
             type: 'better_deal',
             title: 'Better Deal Found',
-            message: `Save £${savings.toFixed(2)}/month on your ${policy.policy_type} insurance with ${bestOffer.insurer_name}`,
-            metadata: { 
-              current_policy_id: policy.id, 
+            message: `Save $${savings.toFixed(2)}/month on your ${policy.policy_type} insurance with ${bestOffer.insurer_name}`,
+            metadata: {
+              current_policy_id: policy.id,
               better_offer_id: bestOffer.id,
-              savings: savings 
+              savings: savings
             }
           });
         }
