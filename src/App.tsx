@@ -18,6 +18,9 @@ import Upgrade from "./pages/Upgrade";
 import Services from "./pages/Services";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
+import PartnerDashboard from "./pages/partner/PartnerDashboard";
+import PartnerSetup from "./pages/partner/PartnerSetup";
+import ProductCreate from "./pages/partner/ProductCreate";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -149,6 +152,38 @@ const AppContent = () => {
             />
             <Route path="/services" element={<Services />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route
+              path="/partner/dashboard"
+              element={
+                <ProtectedRoute>
+                  <PartnerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/partner/setup"
+              element={
+                <ProtectedRoute>
+                  <PartnerSetup />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/partner/products/create"
+              element={
+                <ProtectedRoute>
+                  <ProductCreate />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/partner/products/:productId/edit"
+              element={
+                <ProtectedRoute>
+                  <ProductCreate />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
