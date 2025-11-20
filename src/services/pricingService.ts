@@ -7,14 +7,16 @@ export interface PricingPlan {
   prices: {
     GBP: number;
     USD: number;
-    GHS: number;
-    NGN: number;
+    CAD: number;
+    AUD: number;
+    EUR: number;
   };
   annualPrices: {
     GBP: number;
     USD: number;
-    GHS: number;
-    NGN: number;
+    CAD: number;
+    AUD: number;
+    EUR: number;
   };
   isFree?: boolean;
   policyLimit?: string;
@@ -30,8 +32,9 @@ export interface OneTimeService {
   prices: {
     GBP: number;
     USD: number;
-    GHS: number;
-    NGN: number;
+    CAD: number;
+    AUD: number;
+    EUR: number;
   };
 }
 
@@ -59,14 +62,16 @@ export const subscriptionPlans: PricingPlan[] = [
     prices: {
       GBP: 0,
       USD: 0,
-      GHS: 0,
-      NGN: 0
+      CAD: 0,
+      AUD: 0,
+      EUR: 0
     },
     annualPrices: {
       GBP: 0,
       USD: 0,
-      GHS: 0,
-      NGN: 0
+      CAD: 0,
+      AUD: 0,
+      EUR: 0
     }
   },
   {
@@ -88,14 +93,16 @@ export const subscriptionPlans: PricingPlan[] = [
     prices: {
       GBP: 3.99,
       USD: 4.99,
-      GHS: 57.02,
-      NGN: 1999.99
+      CAD: 6.79,
+      AUD: 7.59,
+      EUR: 4.59
     },
     annualPrices: {
       GBP: 39.99,
       USD: 49.99,
-      GHS: 570.20,
-      NGN: 19999.99
+      CAD: 67.99,
+      AUD: 75.99,
+      EUR: 45.99
     }
   },
   {
@@ -117,14 +124,16 @@ export const subscriptionPlans: PricingPlan[] = [
     prices: {
       GBP: 9.99,
       USD: 12.99,
-      GHS: 142.86,
-      NGN: 4999.99
+      CAD: 16.99,
+      AUD: 18.99,
+      EUR: 11.49
     },
     annualPrices: {
       GBP: 99.99,
       USD: 129.99,
-      GHS: 1428.60,
-      NGN: 49999.99
+      CAD: 169.99,
+      AUD: 189.99,
+      EUR: 114.99
     }
   }
 ];
@@ -137,8 +146,9 @@ export const oneTimeServices: OneTimeService[] = [
     prices: {
       GBP: 29.99,
       USD: 39.99,
-      GHS: 249.99,
-      NGN: 14999.99
+      CAD: 54.99,
+      AUD: 59.99,
+      EUR: 34.99
     }
   },
   {
@@ -148,8 +158,9 @@ export const oneTimeServices: OneTimeService[] = [
     prices: {
       GBP: 49.99,
       USD: 64.99,
-      GHS: 399.99,
-      NGN: 24999.99
+      CAD: 89.99,
+      AUD: 99.99,
+      EUR: 57.99
     }
   },
   {
@@ -159,8 +170,9 @@ export const oneTimeServices: OneTimeService[] = [
     prices: {
       GBP: 19.99,
       USD: 24.99,
-      GHS: 159.99,
-      NGN: 9999.99
+      CAD: 34.99,
+      AUD: 37.99,
+      EUR: 22.99
     }
   }
 ];
@@ -169,8 +181,9 @@ export const getCurrencySymbol = (currency: string): string => {
   const symbols: { [key: string]: string } = {
     GBP: '£',
     USD: '$',
-    GHS: '₵',
-    NGN: '₦'
+    CAD: 'CAD',
+    AUD: 'AUD',
+    EUR: '€'
   };
   return symbols[currency] || currency;
 };
@@ -181,30 +194,14 @@ export const formatPrice = (amount: number, currency: string): string => {
   return `${symbol}${amount.toFixed(2)}`;
 };
 
-// Fallback currencies for countries where Stripe doesn't support local currency
+// All supported currencies are Stripe-supported
 export const getStripeCurrency = (currency: string): string => {
-  const supportedCurrencies = ['GBP', 'USD'];
+  const supportedCurrencies = ['GBP', 'USD', 'CAD', 'AUD', 'EUR'];
   if (supportedCurrencies.includes(currency)) {
     return currency;
   }
-  // For GHS and NGN, fallback to USD for Stripe processing
-  return 'USD';
-};
-
-export const convertCurrency = (amount: number, fromCurrency: string, toCurrency: string): number => {
-  // Simple conversion rates - in production, you'd use a real currency API
-  const rates: { [key: string]: { [key: string]: number } } = {
-    GHS: { USD: 0.062, GBP: 0.051 },
-    NGN: { USD: 0.0012, GBP: 0.00099 }
-  };
-  
-  if (fromCurrency === toCurrency) return amount;
-  
-  if (rates[fromCurrency] && rates[fromCurrency][toCurrency]) {
-    return amount * rates[fromCurrency][toCurrency];
-  }
-  
-  return amount; // No conversion available
+  // Fallback to GBP if currency not supported
+  return 'GBP';
 };
 
 // New function to check if user has access to a feature

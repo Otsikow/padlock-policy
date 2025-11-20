@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Users, FileText, MessageSquare } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { oneTimeServices, formatPrice, getStripeCurrency, convertCurrency } from '@/services/pricingService';
+import { oneTimeServices, formatPrice, getStripeCurrency } from '@/services/pricingService';
 import { useNavigate } from 'react-router-dom';
 
 const Services = () => {
@@ -30,9 +30,7 @@ const Services = () => {
 
       const displayCurrency = currency?.code || 'GBP';
       const stripeCurrency = getStripeCurrency(displayCurrency);
-      const amount = displayCurrency !== stripeCurrency 
-        ? convertCurrency(service.prices[displayCurrency as keyof typeof service.prices], displayCurrency, stripeCurrency)
-        : service.prices[stripeCurrency as keyof typeof service.prices];
+      const amount = service.prices[stripeCurrency as keyof typeof service.prices];
 
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {

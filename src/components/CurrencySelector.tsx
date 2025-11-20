@@ -4,9 +4,8 @@ import { useCurrency } from '@/hooks/useCurrency';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Globe, MapPin, RefreshCw } from 'lucide-react';
-import { getAllSupportedCurrencies, isStripeCurrencySupported, getCurrencyByCountry } from '@/services/currencyService';
+import { Globe, MapPin } from 'lucide-react';
+import { getCurrencyByCountry } from '@/services/currencyService';
 import { toast } from '@/hooks/use-toast';
 
 interface CurrencySelectorProps {
@@ -15,18 +14,24 @@ interface CurrencySelectorProps {
   minimal?: boolean;
 }
 
+// Clean list of 5 supported currencies
+const currencies = [
+  { code: 'GBP', symbol: '£', label: 'British Pound (£)', country: 'United Kingdom', countryCode: 'GB' },
+  { code: 'USD', symbol: '$', label: 'US Dollar ($)', country: 'United States', countryCode: 'US' },
+  { code: 'CAD', symbol: 'CAD', label: 'Canadian Dollar (CAD)', country: 'Canada', countryCode: 'CA' },
+  { code: 'AUD', symbol: 'AUD', label: 'Australian Dollar (AUD)', country: 'Australia', countryCode: 'AU' },
+  { code: 'EUR', symbol: '€', label: 'Euro (€)', country: 'European Union', countryCode: 'DE' }
+];
+
 const CurrencySelector = ({ showCard = true, compact = false, minimal = false }: CurrencySelectorProps) => {
-  const { userCountry, currency, updateUserCountry, loading, autoDetected, refreshCountry } = useCurrency();
+  const { userCountry, currency, updateUserCountry, loading, autoDetected } = useCurrency();
   const [updating, setUpdating] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
 
-  const supportedCurrencies = getAllSupportedCurrencies();
-
-  const handleCountryChange = async (countryCode: string) => {
+  const handleCurrencyChange = async (countryCode: string) => {
+    if (updating || loading) return;
     setUpdating(true);
     try {
       await updateUserCountry(countryCode);
-      // Get the new currency info after update
       const newCurrency = getCurrencyByCountry(countryCode);
       toast({
         title: "Currency Updated",
@@ -43,74 +48,53 @@ const CurrencySelector = ({ showCard = true, compact = false, minimal = false }:
     }
   };
 
-  const handleRefreshLocation = async () => {
-    setRefreshing(true);
-    try {
-      await refreshCountry();
-      toast({
-        title: "Location Refreshed",
-        description: "Currency has been updated based on your location",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to detect your location",
-        variant: "destructive",
-      });
-    } finally {
-      setRefreshing(false);
-    }
-  };
+  // Get current selected currency
+  const selectedCurrency = currencies.find(c => c.countryCode === userCountry) || currencies[0];
 
   if (minimal) {
     return (
-      <Select
-        value={userCountry || 'GB'}
-        onValueChange={handleCountryChange}
-        disabled={updating || loading}
-      >
-        <SelectTrigger className="w-20 h-8 text-sm border-0 bg-transparent text-white hover:text-white/80 focus:ring-0">
-          <SelectValue>
-            {currency ? currency.symbol : 'GBP'}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          {supportedCurrencies.map((curr) => (
-            <SelectItem key={curr.countryCode} value={curr.countryCode}>
-              <div className="flex items-center gap-2">
-                <span>{curr.symbol}</span>
-                <span className="text-sm">{curr.code}</span>
-              </div>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="inline-flex items-center gap-1 rounded-lg bg-gray-100 p-1">
+        {currencies.map((curr) => (
+          <button
+            key={curr.code}
+            onClick={() => handleCurrencyChange(curr.countryCode)}
+            disabled={updating || loading}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+              currency?.code === curr.code
+                ? 'bg-white shadow-sm text-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            {curr.symbol}
+          </button>
+        ))}
+      </div>
     );
   }
 
   if (compact) {
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <Globe className="h-4 w-4 text-gray-500" />
-        <Select
-          value={userCountry || 'GB'}
-          onValueChange={handleCountryChange}
-          disabled={updating || loading}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {supportedCurrencies.map((curr) => (
-              <SelectItem key={curr.countryCode} value={curr.countryCode}>
-                <div className="flex items-center gap-2">
-                  <span>{curr.symbol}</span>
-                  <span className="text-sm">{curr.code}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="inline-flex items-center gap-2 rounded-lg bg-gray-100 p-1">
+          {currencies.map((curr) => (
+            <button
+              key={curr.code}
+              onClick={() => handleCurrencyChange(curr.countryCode)}
+              disabled={updating || loading}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                currency?.code === curr.code
+                  ? 'bg-white shadow-sm text-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <div className="flex items-center gap-1.5">
+                <span className="text-base">{curr.symbol}</span>
+                <span className="text-xs">{curr.code}</span>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
     );
   }
@@ -121,9 +105,9 @@ const CurrencySelector = ({ showCard = true, compact = false, minimal = false }:
         <div className="flex items-center gap-2">
           <Globe className="h-5 w-5 text-blue-600" />
           <div>
-            <h3 className="font-semibold">Currency & Region</h3>
+            <h3 className="font-semibold">Select Your Currency</h3>
             <p className="text-sm text-gray-600">
-              {currency ? `Currently showing prices in ${currency.name} (${currency.code})` : 'Loading...'}
+              {currency ? `Currently: ${currency.name} (${currency.code})` : 'Loading...'}
             </p>
           </div>
         </div>
@@ -136,52 +120,32 @@ const CurrencySelector = ({ showCard = true, compact = false, minimal = false }:
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Select
-            value={userCountry || 'GB'}
-            onValueChange={handleCountryChange}
-            disabled={updating || loading}
-          >
-            <SelectTrigger className="flex-1">
-              <SelectValue placeholder="Select your country/region" />
-            </SelectTrigger>
-            <SelectContent>
-              {supportedCurrencies.map((curr) => (
-                <SelectItem key={curr.countryCode} value={curr.countryCode}>
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono">{curr.symbol}</span>
-                      <span>{curr.name}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-sm text-gray-500">{curr.code}</span>
-                      {isStripeCurrencySupported(curr.code) && (
-                        <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                          Supported
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefreshLocation}
-            disabled={refreshing}
-            className="px-3"
-          >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-          </Button>
+        {/* Currency Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {currencies.map((curr) => (
+            <Button
+              key={curr.code}
+              variant={currency?.code === curr.code ? "default" : "outline"}
+              onClick={() => handleCurrencyChange(curr.countryCode)}
+              disabled={updating || loading}
+              className={`h-auto py-4 px-4 flex flex-col items-center justify-center gap-2 transition-all ${
+                currency?.code === curr.code
+                  ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md'
+                  : 'hover:bg-gray-50 hover:border-blue-300'
+              }`}
+            >
+              <span className="text-3xl font-medium">{curr.symbol}</span>
+              <div className="text-center">
+                <div className="font-semibold text-sm">{curr.code}</div>
+                <div className="text-xs opacity-80 mt-0.5">{curr.country}</div>
+              </div>
+            </Button>
+          ))}
         </div>
 
-        <div className="text-xs text-gray-500 space-y-1">
-          <p>• Prices marked "Supported" can be charged in your local currency</p>
-          <p>• Other currencies show approximate conversions alongside GBP charges</p>
-          <p>• Your location is auto-detected but you can override it anytime</p>
+        <div className="text-xs text-gray-500 space-y-1 pt-2 border-t">
+          <p>• All currencies are supported for billing with Stripe</p>
+          <p>• Your location is auto-detected but you can change it anytime</p>
         </div>
       </div>
     </>

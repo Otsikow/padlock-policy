@@ -1,30 +1,30 @@
 
-// Enhanced currency mapping with more countries and currencies
+// Simplified currency mapping - 5 supported currencies
 const CURRENCY_MAP: Record<string, { code: string; symbol: string; name: string }> = {
   GB: { code: 'GBP', symbol: '£', name: 'British Pound' },
   US: { code: 'USD', symbol: '$', name: 'US Dollar' },
-  CA: { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
-  GH: { code: 'GHS', symbol: '₵', name: 'Ghanaian Cedi' },
-  NG: { code: 'NGN', symbol: '₦', name: 'Nigerian Naira' },
-  AU: { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
-  NZ: { code: 'NZD', symbol: 'NZ$', name: 'New Zealand Dollar' },
-  ZA: { code: 'ZAR', symbol: 'R', name: 'South African Rand' },
-  IN: { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
-  KE: { code: 'KES', symbol: 'KSh', name: 'Kenyan Shilling' },
-  TZ: { code: 'TZS', symbol: 'TSh', name: 'Tanzanian Shilling' },
-  UG: { code: 'UGX', symbol: 'USh', name: 'Ugandan Shilling' },
-  RW: { code: 'RWF', symbol: 'RWF', name: 'Rwandan Franc' },
-  ET: { code: 'ETB', symbol: 'Br', name: 'Ethiopian Birr' },
-  EG: { code: 'EGP', symbol: 'E£', name: 'Egyptian Pound' },
-  MA: { code: 'MAD', symbol: 'MAD', name: 'Moroccan Dirham' },
-  DE: { code: 'EUR', symbol: '€', name: 'Euro' },
+  CA: { code: 'CAD', symbol: 'CAD', name: 'Canadian Dollar' },
+  AU: { code: 'AUD', symbol: 'AUD', name: 'Australian Dollar' },
+  // Eurozone countries
+  AT: { code: 'EUR', symbol: '€', name: 'Euro' },
+  BE: { code: 'EUR', symbol: '€', name: 'Euro' },
+  CY: { code: 'EUR', symbol: '€', name: 'Euro' },
+  EE: { code: 'EUR', symbol: '€', name: 'Euro' },
+  FI: { code: 'EUR', symbol: '€', name: 'Euro' },
   FR: { code: 'EUR', symbol: '€', name: 'Euro' },
+  DE: { code: 'EUR', symbol: '€', name: 'Euro' },
+  GR: { code: 'EUR', symbol: '€', name: 'Euro' },
+  IE: { code: 'EUR', symbol: '€', name: 'Euro' },
   IT: { code: 'EUR', symbol: '€', name: 'Euro' },
-  ES: { code: 'EUR', symbol: '€', name: 'Euro' },
+  LV: { code: 'EUR', symbol: '€', name: 'Euro' },
+  LT: { code: 'EUR', symbol: '€', name: 'Euro' },
+  LU: { code: 'EUR', symbol: '€', name: 'Euro' },
+  MT: { code: 'EUR', symbol: '€', name: 'Euro' },
   NL: { code: 'EUR', symbol: '€', name: 'Euro' },
-  JP: { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
-  SG: { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar' },
-  HK: { code: 'HKD', symbol: 'HK$', name: 'Hong Kong Dollar' },
+  PT: { code: 'EUR', symbol: '€', name: 'Euro' },
+  SK: { code: 'EUR', symbol: '€', name: 'Euro' },
+  SI: { code: 'EUR', symbol: '€', name: 'Euro' },
+  ES: { code: 'EUR', symbol: '€', name: 'Euro' },
 };
 
 // Default currency (GBP)
@@ -45,15 +45,22 @@ export const formatCurrency = (amount: number, countryCode?: string | null) => {
 };
 
 export const getAllSupportedCurrencies = () => {
-  return Object.entries(CURRENCY_MAP).map(([countryCode, currency]) => ({
-    countryCode,
-    ...currency,
-  }));
+  // Get unique currencies (avoid duplicates from Eurozone countries)
+  const uniqueCurrencies = new Map();
+  Object.entries(CURRENCY_MAP).forEach(([countryCode, currency]) => {
+    if (!uniqueCurrencies.has(currency.code)) {
+      uniqueCurrencies.set(currency.code, {
+        countryCode,
+        ...currency,
+      });
+    }
+  });
+  return Array.from(uniqueCurrencies.values());
 };
 
-// Get Stripe-supported currencies for actual billing
+// Get Stripe-supported currencies for actual billing (all 5 are Stripe-supported)
 export const getStripeSupportedCurrencies = () => {
-  return ['GBP', 'USD', 'EUR', 'CAD', 'AUD', 'SGD', 'HKD', 'JPY'];
+  return ['GBP', 'USD', 'EUR', 'CAD', 'AUD'];
 };
 
 export const isStripeCurrencySupported = (currency: string): boolean => {
