@@ -14,7 +14,274 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      claims: {
+        Row: {
+          ai_risk_score: number | null
+          claim_amount: number
+          claim_date: string | null
+          claim_reason: string
+          created_at: string | null
+          id: string
+          policy_id: string | null
+          status: Database["public"]["Enums"]["claim_status_enum"] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_risk_score?: number | null
+          claim_amount: number
+          claim_date?: string | null
+          claim_reason: string
+          created_at?: string | null
+          id?: string
+          policy_id?: string | null
+          status?: Database["public"]["Enums"]["claim_status_enum"] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_risk_score?: number | null
+          claim_amount?: number
+          claim_date?: string | null
+          claim_reason?: string
+          created_at?: string | null
+          id?: string
+          policy_id?: string | null
+          status?: Database["public"]["Enums"]["claim_status_enum"] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claims_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          created_at: string | null
+          document_type: string
+          file_name: string
+          file_size: number | null
+          file_url: string
+          id: string
+          uploaded_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          document_type: string
+          file_name: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          uploaded_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          document_type?: string
+          file_name?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          uploaded_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string | null
+          created_at: string | null
+          id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id?: string | null
+          created_at?: string | null
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string | null
+          created_at?: string | null
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      policies: {
+        Row: {
+          ai_summary: string | null
+          coverage_summary: string | null
+          created_at: string | null
+          document_url: string | null
+          end_date: string
+          fine_print_summary: string | null
+          id: string
+          policy_number: string
+          policy_type: Database["public"]["Enums"]["policy_type_enum"]
+          premium_amount: number
+          start_date: string
+          status: Database["public"]["Enums"]["policy_status_enum"] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          coverage_summary?: string | null
+          created_at?: string | null
+          document_url?: string | null
+          end_date: string
+          fine_print_summary?: string | null
+          id?: string
+          policy_number: string
+          policy_type: Database["public"]["Enums"]["policy_type_enum"]
+          premium_amount: number
+          start_date: string
+          status?: Database["public"]["Enums"]["policy_status_enum"] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_summary?: string | null
+          coverage_summary?: string | null
+          created_at?: string | null
+          document_url?: string | null
+          end_date?: string
+          fine_print_summary?: string | null
+          id?: string
+          policy_number?: string
+          policy_type?: Database["public"]["Enums"]["policy_type_enum"]
+          premium_amount?: number
+          start_date?: string
+          status?: Database["public"]["Enums"]["policy_status_enum"] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          country_code: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          stripe_customer_id: string | null
+          subscription_status: string | null
+          subscription_tier:
+            | Database["public"]["Enums"]["subscription_tier_enum"]
+            | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          country_code?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          stripe_customer_id?: string | null
+          subscription_status?: string | null
+          subscription_tier?:
+            | Database["public"]["Enums"]["subscription_tier_enum"]
+            | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          country_code?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          stripe_customer_id?: string | null
+          subscription_status?: string | null
+          subscription_tier?:
+            | Database["public"]["Enums"]["subscription_tier_enum"]
+            | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +290,10 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      claim_status_enum: "pending" | "approved" | "rejected" | "processing"
+      policy_status_enum: "active" | "expired" | "cancelled" | "pending"
+      policy_type_enum: "auto" | "home" | "life" | "health" | "other"
+      subscription_tier_enum: "free" | "basic" | "premium" | "enterprise"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +420,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      claim_status_enum: ["pending", "approved", "rejected", "processing"],
+      policy_status_enum: ["active", "expired", "cancelled", "pending"],
+      policy_type_enum: ["auto", "home", "life", "health", "other"],
+      subscription_tier_enum: ["free", "basic", "premium", "enterprise"],
+    },
   },
 } as const
