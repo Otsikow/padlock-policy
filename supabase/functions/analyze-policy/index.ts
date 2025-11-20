@@ -329,9 +329,10 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in analyze-policy function:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred during analysis';
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'An unexpected error occurred during analysis',
+        error: errorMessage,
         success: false 
       }), 
       {
