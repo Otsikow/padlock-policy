@@ -64,10 +64,8 @@ const DocumentUpload = ({ onUploadComplete, documentType }: DocumentUploadProps)
         .from('documents')
         .insert({
           user_id: user.id,
-          title,
-          document_type: finalCategory as any,
-          document_category: finalCategory,
-          description,
+          document_type: finalCategory,
+          file_name: selectedFile.name,
           file_url: data.publicUrl,
           file_size: selectedFile.size
         });
