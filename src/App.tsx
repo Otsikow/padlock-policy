@@ -17,6 +17,7 @@ import Chat from "./pages/Chat";
 import Upgrade from "./pages/Upgrade";
 import Services from "./pages/Services";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import DataIngestion from "./pages/DataIngestion";
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
 
@@ -139,13 +140,21 @@ const AppContent = () => {
                 </ProtectedRoute>
               } 
             />
-            <Route 
-              path="/upgrade" 
+            <Route
+              path="/upgrade"
               element={
                 <ProtectedRoute>
                   <Upgrade />
                 </ProtectedRoute>
-              } 
+              }
+            />
+            <Route
+              path="/data-ingestion"
+              element={
+                <ProtectedRoute>
+                  <DataIngestion />
+                </ProtectedRoute>
+              }
             />
             <Route path="/services" element={<Services />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
