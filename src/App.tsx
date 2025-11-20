@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Upload from "./pages/Upload";
 import Claims from "./pages/Claims";
 import Compare from "./pages/Compare";
+import Marketplace from "./pages/Marketplace";
 import Vault from "./pages/Vault";
 import Settings from "./pages/Settings";
 import Chat from "./pages/Chat";
@@ -107,15 +108,16 @@ const AppContent = () => {
                 </ProtectedRoute>
               } 
             />
-            <Route 
-              path="/compare" 
+            <Route
+              path="/compare"
               element={
                 <ProtectedRoute>
                   <Compare />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
+            <Route path="/marketplace" element={<Marketplace />} />
+            <Route
               path="/vault" 
               element={
                 <ProtectedRoute>
