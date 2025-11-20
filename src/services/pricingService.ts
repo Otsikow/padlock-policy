@@ -46,7 +46,7 @@ export const subscriptionPlans: PricingPlan[] = [
     supportLevel: 'Email only',
     upgradePrompts: [
       'You\'ve reached your policy limit. Upgrade to Pro for unlimited policies.',
-      'Get advanced AI analysis with Pro - only £3.99/month.',
+      'Get advanced AI analysis with Pro - from just $4.99/month.',
       'Need faster support? Upgrade to Pro for priority assistance.'
     ],
     features: [
