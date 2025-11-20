@@ -72,7 +72,7 @@ export class AIService {
   static async createConversation(userId: string, title: string = 'Insurance Chat') {
     try {
       const { data, error } = await supabase
-        .from('chat_conversations')
+        .from('conversations')
         .insert({ user_id: userId, title })
         .select()
         .single();
@@ -88,7 +88,7 @@ export class AIService {
   static async getConversations(userId: string) {
     try {
       const { data, error } = await supabase
-        .from('chat_conversations')
+        .from('conversations')
         .select('*')
         .eq('user_id', userId)
         .order('updated_at', { ascending: false });
