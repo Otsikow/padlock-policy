@@ -57,16 +57,16 @@ const AdminCompanies = () => {
     if (!user) return;
 
     try {
-      // Check if user is admin
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
+      // Use SECURITY DEFINER RPC function for server-side validation
+      const { data: isAdmin, error: rpcError } = await supabase
+        .rpc('is_admin');
 
-      if (profileError) throw profileError;
+      if (rpcError) {
+        console.error('Error checking admin access:', rpcError);
+        throw rpcError;
+      }
 
-      if (profileData.role !== 'admin') {
+      if (!isAdmin) {
         toast({
           title: 'Access Denied',
           description: 'You do not have admin access',
@@ -79,6 +79,11 @@ const AdminCompanies = () => {
       loadCompanies();
     } catch (error: any) {
       console.error('Error checking admin access:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to verify admin access',
+        variant: 'destructive',
+      });
       navigate('/dashboard');
     }
   };

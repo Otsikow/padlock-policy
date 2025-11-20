@@ -1530,7 +1530,7 @@ export type Database = {
 
       policy_type_enum: "health" | "auto" | "life" | "home" | "other"
 
-      user_role_enum: "customer" | "insurance_company" | "partner" | "admin"
+      user_role_enum: "customer" | "insurance_company" | "partner" | "admin" | "claims_processor" | "claims_reviewer"
 
       verification_type_enum: "email" | "phone"
 
@@ -1576,7 +1576,41 @@ export type Database = {
     },
 
     Views: {},
-    Functions: {},
+    Functions: {
+      has_role: {
+        Args: {
+          check_user_id?: string;
+          check_role: Database["public"]["Enums"]["user_role_enum"];
+        };
+        Returns: boolean;
+      };
+      is_admin: {
+        Args: {
+          check_user_id?: string;
+        };
+        Returns: boolean;
+      };
+      get_user_roles: {
+        Args: {
+          check_user_id?: string;
+        };
+        Returns: {
+          role: Database["public"]["Enums"]["user_role_enum"];
+        }[];
+      };
+      can_process_claims: {
+        Args: {
+          check_user_id?: string;
+        };
+        Returns: boolean;
+      };
+      can_review_claims: {
+        Args: {
+          check_user_id?: string;
+        };
+        Returns: boolean;
+      };
+    },
     CompositeTypes: {}
   }
 }
@@ -1642,7 +1676,7 @@ export const Constants = {
 
       policy_type_enum: ["health", "auto", "life", "home", "other"],
 
-      user_role_enum: ["customer", "insurance_company", "partner", "admin"],
+      user_role_enum: ["customer", "insurance_company", "partner", "admin", "claims_processor", "claims_reviewer"],
 
       verification_type_enum: ["email", "phone"],
 
