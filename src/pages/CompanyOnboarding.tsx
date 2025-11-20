@@ -94,6 +94,7 @@ const CompanyOnboarding = () => {
         email: data.email,
         password: data.password,
         options: {
+          emailRedirectTo: `${window.location.origin}/company/verify`,
           data: {
             company_name: data.legalName,
             role: 'insurance_company',
